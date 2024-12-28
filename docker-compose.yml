@@ -19,12 +19,21 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony
-      MYSQL_USER: symfony
-      MYSQL_PASSWORD: symfony
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mixlink
     volumes:
       - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: password
 
   front:
     build:
@@ -35,6 +44,7 @@ services:
       - "3000:3000"
     volumes:
       - ./front:/app
+      - /app/node_modules
     stdin_open: true
     tty: true
 
