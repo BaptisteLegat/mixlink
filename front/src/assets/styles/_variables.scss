@@ -1,0 +1,37 @@
+// --- Colors ---
+$primary-color: #6023C0;
+$secondary-color: #260E4D;
+$purple: #5520B0;
+$purple-light: #D7CFFF;
+$text-color: #000000;
+$background-color: #FFFFFF;
+
+// --- Typography ---
+$font-family: 'Satoshi', sans-serif;
+$font-size-base: 16px;
+$font-size-small: 14px;
+$font-size-large: 20px;
+
+$line-height-base: 1.5;
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+
+// --- Spacing ---
+$spacing-unit: 1rem;
+$spacing-small: 0.5rem; 
+$spacing-medium: 1rem; 
+$spacing-large: 2rem;
+
+// --- Borders ---
+$border-radius: 4px;
+$border-color: #bdc3c7;
+
+// --- Shadows ---
+$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+// --- Breakpoints (responsive design) ---
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1440px;
