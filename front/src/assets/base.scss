@@ -1,5 +1,8 @@
-@import './styles/_variables.scss';
-@import './styles/_fonts.scss';
+@use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
+
+@use './styles/_variables.scss' as *;
+@use './styles/_fonts.scss' as *;
+
 
 body {
   background-color: $background-color;
