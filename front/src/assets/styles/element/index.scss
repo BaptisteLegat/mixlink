@@ -5,19 +5,26 @@ $--colors: (
     'base': $primary-color,
   ),
   'success': (
-    'base': $purple,
+    'base': $success-color,
   ),
   'warning': (
-    'base': $secondary-color,
+    'base': $warning-color,
   ),
   'danger': (
-    'base': #db2828,
+    'base': $error-color,
   ),
   'error': (
-    'base': #db2828,
+    'base': $error-color,
   ),
   'info': (
-    'base': $purple-light,
+    'base': $info-color,
+  ),
+  'text': (
+    'primary': $primary-color,
+  ),
+  'background': (
+    'base': $background-color,
+    'overlay': rgba($primary-color, 0.05),
   ),
 );
 

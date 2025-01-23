@@ -1,0 +1,17 @@
+{
+    "header": {
+        "sign_in": "Se connecter",
+        "light_mode": "Mode clair",
+        "dark_mode": "Mode sombre"
+    },
+    "footer": {
+        "about": "À propos",
+        "contact": "Contact",
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions d'utilisation"
+    },
+    "button": {
+        "submit": "Soumettre",
+        "cancel": "Annuler"
+    }
+  }

@@ -1,0 +1,17 @@
+{
+    "header": {
+        "sign_in": "Sign in",
+        "light_mode": "Light Mode",
+        "dark_mode": "Dark Mode"
+    },
+    "footer": {
+        "about": "About",
+        "contact": "Contact",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+    },
+    "button": {
+        "submit": "Submit",
+        "cancel": "Cancel"
+    }
+}
