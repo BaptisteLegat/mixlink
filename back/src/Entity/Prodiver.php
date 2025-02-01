@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use App\Interface\BlameableInterface;
+use App\Interface\TimestampableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'provider')]
@@ -16,13 +19,14 @@ class Provider implements TimestampableInterface, BlameableInterface
     use SoftDeleteableEntity;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false)]
+    private ?User $user = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $provider;
@@ -41,12 +45,12 @@ class Provider implements TimestampableInterface, BlameableInterface
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 

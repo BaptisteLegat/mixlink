@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Interface\BlameableInterface;
+use App\Interface\TimestampableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +17,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
 #[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
-class User
+class User implements BlameableInterface, TimestampableInterface
 {
     use BlameableEntity;
     use TimestampableEntity;
@@ -25,7 +27,6 @@ class User
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[ORM\Column(type: 'integer')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -57,7 +58,70 @@ class User
         $this->providers = new ArrayCollection();
     }
 
-    // Getters and setters
+    public function getId(): ?Uuid
+    {
+        return $this->id;
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?string
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?string $profilePicture): self
+    {
+        $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
 
     public function addProvider(Provider $provider): self
     {
@@ -72,7 +136,6 @@ class User
     public function removeProvider(Provider $provider): self
     {
         if ($this->providers->removeElement($provider)) {
-            // set the owning side to null (unless already changed)
             if ($provider->getUser() === $this) {
                 $provider->setUser(null);
             }
