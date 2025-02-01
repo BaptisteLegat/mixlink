@@ -1,35 +1,35 @@
 <script setup>
-    import { ref } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import GoogleIcon from 'vue-material-design-icons/Google.vue';
+    import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
 
-    const email = ref('');
-    const password = ref('');
+    const { t } = useI18n();
 
-    function login() {
-        console.log(`Email: ${email.value}, Password: ${password.value}`);
-    // Ajouter votre logique de connexion ici
-    }
+    const redirectTo = (provider) => {
+        window.location.href = 'http://localhost:8000/auth/' + provider;
+    };
 </script>
 <template>
-    <div class="login-page">
-        <h1>{{ $t('login.title') }}</h1>
-        <el-form>
-            <el-form-item label="{{ $t('login.email') }}">
-                <el-input type="email" v-model="email" placeholder="you@example.com" />
-            </el-form-item>
-            <el-form-item label="{{ $t('login.password') }}">
-                <el-input type="password" v-model="password" placeholder="********" />
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="login">{{ $t('login.submit') }}</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
+    <el-container>
+        <el-col :span="8">
+        <h1>{{ t('header.sign_in') }}</h1>
+        <el-button
+            size="large"
+            type="primary"
+            @click="redirectTo('google')"
+        >
+            {{ t('login.connect_with_google') }}
+            <GoogleIcon style="width: 20px; height: 20px; margin-left: 10px;" />
+        </el-button>
+
+        <el-button
+            size="large"
+            type="primary"
+            @click="redirectTo('spotify')"
+        >
+            {{ t('login.connect_with_spotify') }}
+            <SpotifyIcon style="width: 20px; height: 20px; margin-left: 10px;" />
+        </el-button>
+        </el-col>
+    </el-container>
 </template>
-<style scoped>
-    .login-page {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        text-align: center;
-    }
-</style>

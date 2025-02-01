@@ -13,5 +13,10 @@
     "button": {
         "submit": "Soumettre",
         "cancel": "Annuler"
+    },
+    "login": {
+        "title": "Se connecter",
+        "connect_with_google": "Se connecter avec Google",
+        "connect_with_spotify": "Se connecter avec Spotify"
     }
   }

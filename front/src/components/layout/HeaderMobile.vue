@@ -32,10 +32,10 @@
     <el-link type="primary" :underline="false" @click="toggleMenu">
         <MenuIcon style="width: 24px; height: 24px;" />
     </el-link>
-    <el-drawer 
-        v-model="isMenuOpen" 
-        title="Menu" 
-        direction="rtl" 
+    <el-drawer
+        v-model="isMenuOpen"
+        title="Menu"
+        direction="rtl"
         size="70%"
     >
     <el-menu style="border: 0;">

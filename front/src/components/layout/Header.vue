@@ -24,8 +24,8 @@
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'">
                          mix
                         </h1>
-                        <el-image 
-                            :src="isDark ? 'logo-dark.svg' : 'logo.svg'" 
+                        <el-image
+                            :src="isDark ? 'logo-dark.svg' : 'logo.svg'"
                             alt="mixlink"
                             style="width: 40px; height: 40px;"
                         />

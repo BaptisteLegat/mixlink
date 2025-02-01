@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<psalm
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorLevel="1"
+    findUnusedCode="false"
+    resolveFromConfigFile="true"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <ignoreFiles allowMissingFiles="true">
+            <directory name="src/Entity"/>
+            <directory name="src/Repository"/>
+            <directory name="vendor"/>
+            <directory name="tests"/>
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <RiskyTruthyFalsyComparison errorLevel="suppress"/>
+        <MissingTemplateParam>
+            <errorLevel type="suppress">
+                <directory name="src/Form"/>
+            </errorLevel>
+        </MissingTemplateParam>
+    </issueHandlers>
+    <plugins>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
+            <symfonyMajorVersion>7</symfonyMajorVersion>
+        </pluginClass>
+    </plugins>
+</psalm>

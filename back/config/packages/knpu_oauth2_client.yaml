@@ -1,0 +1,16 @@
+knpu_oauth2_client:
+    clients:
+        google:
+            type: google
+            client_id: '%env(GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
+            redirect_route: app_auth_callback
+            redirect_params:
+                provider: google
+        spotify:
+            type: spotify
+            client_id: '%env(SPOTIFY_CLIENT_ID)%'
+            client_secret: '%env(SPOTIFY_CLIENT_SECRET)%'
+            redirect_route: app_auth_callback
+            redirect_params:
+                provider: spotify

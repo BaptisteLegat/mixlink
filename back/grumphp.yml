@@ -1,0 +1,39 @@
+grumphp:
+    process_timeout: 180
+    git_hook_variables:
+        EXEC_GRUMPHP_COMMAND: 'docker exec -i php'
+    tasks:
+        git_blacklist:
+            keywords:
+                - "dd("
+                - "dump("
+                - "die("
+                - "var_dump("
+                - "exit;"
+                - "console.log"
+            match_word: true
+        git_branch_name:
+            whitelist:
+                - "/(\\w+-\\d+_\\w*)|(release\\/\\d*.\\d*.\\d*)|(hotfix\\/w*)/"
+                - "master"
+                - "develop"
+        phpparser:
+            ignore_patterns: ['vendor', 'node_modules']
+        phpcsfixer2:
+            config: .php-cs-fixer.dist.php
+            triggered_by: ['PHP_CS_FIXER_IGNORE_ENV=1 php']
+        phpmd:
+            whitelist_patterns:
+                - /^src\/(.*)/
+            ruleset: ['cleancode', 'codesize']
+        phpmnd:
+            exclude: ["docker", "var", "tests", "vendor", "assets"]
+        phpstan:
+            configuration: phpstan.neon
+            memory_limit: "-1"
+        psalm:
+            config: ./psalm.xml
+            no_cache: true
+        securitychecker_symfony: ~
+        # twigcs:
+        #     path: 'templates'

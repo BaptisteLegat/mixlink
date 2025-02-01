@@ -13,5 +13,10 @@
     "button": {
         "submit": "Submit",
         "cancel": "Cancel"
+    },
+    "login": {
+        "title": "Sign in",
+        "connect_with_google": "Sign in with Google",
+        "connect_with_spotify": "Sign in with Spotify"
     }
 }
