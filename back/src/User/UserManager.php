@@ -19,11 +19,11 @@ class UserManager
 
     public function create(ResourceOwnerInterface $resourceOwner, string $provider): void
     {
-        $user = new User();
+        // $user = new User();
 
-        $this->userMapper->mapEntity($resourceOwner, $provider, $user);
-        $this->setTimestampable($user);
-        $this->setBlameable($user, $user->getEmail());
-        $this->userRepository->save($user, true);
+        // $this->userMapper->mapEntity($resourceOwner, $provider, $user);
+        // $this->setTimestampable($user);
+        // $this->setBlameable($user, $user->getEmail());
+        // $this->userRepository->save($user, true);
     }
 }

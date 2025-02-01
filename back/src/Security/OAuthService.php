@@ -38,8 +38,7 @@ class OAuthService
             'spotify' => self::SPOTIFY_SCOPES,
             default => throw new InvalidArgumentException("Provider $provider not supported")
         };
-
-        return $client->redirect($scopes, [$provider]);
+        return $client->redirect($scopes, []);
     }
 
     public function fetchUser(string $provider) : ResourceOwnerInterface

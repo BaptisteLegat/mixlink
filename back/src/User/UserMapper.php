@@ -9,7 +9,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
-    public function __construct(private ProviderMapper $providerMapper, private UserManager $userManager)
+    public function __construct(private ProviderMapper $providerMapper)
     {
     }
 

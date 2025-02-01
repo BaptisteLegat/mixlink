@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AuthenticationController extends AbstractController
 {
-
     public function __construct(private OAuthService $oAuthService, private UserManager $userManager)
     {
     }
@@ -22,13 +21,12 @@ class AuthenticationController extends AbstractController
     }
 
     #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
-public function connectCheck(string $provider): RedirectResponse
-{
-    $user = $this->oAuthService->fetchUser($provider);
+    public function connectCheck(string $provider): RedirectResponse
+    {
+        $user = $this->oAuthService->fetchUser($provider);
+        $this->userManager->create($user, $provider);
 
-    $this->userManager->create($user, $provider);
-
-    // Rediriger vers le frontend avec les informations de l'utilisateur
-    return new RedirectResponse('http://localhost:3000/profile?email=' . urlencode($user->getEmail()));
-}
+        // Rediriger vers le frontend avec les informations de l'utilisateur
+        return new RedirectResponse('http://localhost:3000/profile?email=' . urlencode($user->getEmail()));
+    }
 }

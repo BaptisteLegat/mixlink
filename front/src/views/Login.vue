@@ -6,7 +6,7 @@
     const { t } = useI18n();
 
     const redirectTo = (provider) => {
-        window.location.href = 'http://localhost:8000/auth/' + provider;
+        window.location.href = 'http://localhost/auth/' + provider;
     };
 </script>
 <template>

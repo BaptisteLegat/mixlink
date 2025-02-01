@@ -1,13 +1,23 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx:latest
+    container_name: symfony_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./back:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - db
+
   php:
     build:
       context: ./back
       dockerfile: Dockerfile
     container_name: symfony_php
-    ports:
-      - "8000:8000"
     volumes:
       - ./back:/var/www/html
     depends_on:
