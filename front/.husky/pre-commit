@@ -1,2 +1,0 @@
-#!/bin/sh
-cd ../back && docker compose exec -T php vendor/bin/grumphp run
