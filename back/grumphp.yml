@@ -1,7 +1,7 @@
 grumphp:
     process_timeout: 180
     git_hook_variables:
-        EXEC_GRUMPHP_COMMAND: 'docker exec -i php'
+        EXEC_GRUMPHP_COMMAND: 'docker compose exec -T php vendor/bin/grumphp run'
     tasks:
         git_blacklist:
             keywords:
