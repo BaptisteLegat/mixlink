@@ -89,9 +89,11 @@
         }
     },
     "require-dev": {
-        "nikic/php-parser": "^5.4",
+        "friendsofphp/php-cs-fixer": "^3.68",
         "phpro/grumphp": "^2.10",
         "phpstan/phpstan": "^2.1",
+        "povils/phpmnd": "^3.5",
+        "psalm/plugin-symfony": "^5.2",
         "vimeo/psalm": "^6.1"
     }
 }

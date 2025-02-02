@@ -2,7 +2,6 @@
 
 namespace App\Provider;
 
-use App\Entity\Provider;
 use App\Entity\User;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 

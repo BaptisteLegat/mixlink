@@ -27,6 +27,6 @@ class AuthenticationController extends AbstractController
         $this->userManager->create($user, $provider);
 
         // Rediriger vers le frontend avec les informations de l'utilisateur
-        return new RedirectResponse('http://localhost:3000/profile?email=' . urlencode($user->getEmail()));
+        return new RedirectResponse('http://localhost:3000/profile?email='.urlencode($user->getEmail()));
     }
 }

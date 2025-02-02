@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:latest
@@ -19,6 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: symfony_php
     volumes:
+      - ./.git:/var/www/html/.git
       - ./back:/var/www/html
     depends_on:
       - db

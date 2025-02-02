@@ -17,8 +17,6 @@ grumphp:
                 - "/(\\w+-\\d+_\\w*)|(release\\/\\d*.\\d*.\\d*)|(hotfix\\/w*)/"
                 - "master"
                 - "develop"
-        phpparser:
-            ignore_patterns: ['vendor', 'node_modules']
         phpcsfixer2:
             config: .php-cs-fixer.dist.php
             triggered_by: ['PHP_CS_FIXER_IGNORE_ENV=1 php']
@@ -29,11 +27,12 @@ grumphp:
         phpmnd:
             exclude: ["docker", "var", "tests", "vendor", "assets"]
         phpstan:
+            autoload_file: ~
             configuration: phpstan.neon
+            triggered_by: ['php']
             memory_limit: "-1"
+            use_grumphp_paths: false
         psalm:
-            config: ./psalm.xml
+            config: psalm.xml
             no_cache: true
         securitychecker_symfony: ~
-        # twigcs:
-        #     path: 'templates'

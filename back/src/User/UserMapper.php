@@ -2,7 +2,6 @@
 
 namespace App\User;
 
-use App\Entity\Provider;
 use App\Entity\User;
 use App\Provider\ProviderMapper;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -13,7 +12,7 @@ class UserMapper
     {
     }
 
-    public function mapEntity(ResourceOwnerInterface $resourceOwner,string $provider, ?User $user): void
+    public function mapEntity(ResourceOwnerInterface $resourceOwner, string $provider, ?User $user): void
     {
         // if (!$user) {
         //     $user = new User();

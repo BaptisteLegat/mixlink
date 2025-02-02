@@ -17,14 +17,6 @@
         </ignoreFiles>
     </projectFiles>
 
-    <issueHandlers>
-        <RiskyTruthyFalsyComparison errorLevel="suppress"/>
-        <MissingTemplateParam>
-            <errorLevel type="suppress">
-                <directory name="src/Form"/>
-            </errorLevel>
-        </MissingTemplateParam>
-    </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
             <symfonyMajorVersion>7</symfonyMajorVersion>
