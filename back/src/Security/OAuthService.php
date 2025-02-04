@@ -40,10 +40,18 @@ class OAuthService
         return $client->redirect($scopes, []);
     }
 
-    public function fetchUser(string $provider): ResourceOwnerInterface
+    public function fetchUser(string $provider): OAuthUserData
     {
         $client = $this->clientRegistry->getClient($provider);
 
-        return $client->fetchUser();
+        $accessToken = $client->getAccessToken();
+
+        $user = $client->fetchUserFromToken($accessToken);
+
+        return new OAuthUserData(
+            user: $user,
+            accessToken: $accessToken->getToken(),
+            refreshToken: $accessToken->getRefreshToken()
+        );
     }
 }

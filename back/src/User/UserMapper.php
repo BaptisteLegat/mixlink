@@ -2,26 +2,47 @@
 
 namespace App\User;
 
+use App\ApiResource\ApiReference;
 use App\Entity\User;
-use App\Provider\ProviderMapper;
+use App\Provider\ProviderManager;
+use InvalidArgumentException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
-    public function __construct(private ProviderMapper $providerMapper)
+    public function mapEntity(ResourceOwnerInterface $resourceOwner, string $providerName, ?User $user): User
     {
+        if (!$user) {
+            $user = new User();
+        }
+
+        match ($providerName) {
+            ApiReference::GOOGLE => $this->mapGoogleUser($resourceOwner, $user),
+            ApiReference::SPOTIFY => $this->mapSpotifyUser($resourceOwner, $user),
+            default => throw new InvalidArgumentException("Provider $providerName not supported"),
+        };
+
+        $user->setRoles(['ROLE_USER']);
+
+        return $user;
     }
 
-    public function mapEntity(ResourceOwnerInterface $resourceOwner, string $provider, ?User $user): void
+    private function mapGoogleUser(ResourceOwnerInterface $resourceOwner, User $user): void
     {
-        // if (!$user) {
-        //     $user = new User();
-        // }
+        $user->setFirstName($resourceOwner->getFirstName());
+        $user->setLastName($resourceOwner->getLastName());
+        $user->setEmail($resourceOwner->getEmail());
+        $user->setProfilePicture($resourceOwner->getAvatar());
+    }
 
-        // $user->setFirstName($resourceOwner->getFirstName());
-        // $user->setLastName($resourceOwner->getLastName());
-        // $user->setEmail($resourceOwner->getEmail());
+    private function mapSpotifyUser(ResourceOwnerInterface $resourceOwner, User $user): void
+    {
+        $user->setFirstName($resourceOwner->getDisplayName());
+        $user->setEmail($resourceOwner->getEmail());
 
-        // $this->providerMapper->mapEntity($resourceOwner, $provider, $user);
+        $images = $resourceOwner->getImages();
+        if (!empty($images)) {
+            $user->setProfilePicture($images[0]['url']);
+        }
     }
 }

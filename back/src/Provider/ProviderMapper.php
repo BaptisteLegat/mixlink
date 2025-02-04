@@ -2,20 +2,27 @@
 
 namespace App\Provider;
 
+use App\Entity\Provider;
 use App\Entity\User;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use App\Security\OAuthUserData;
 
 class ProviderMapper
 {
-    // public function mapEntity(ResourceOwnerInterface $resourceOwner,string $provider, ?User $user): void
-    // {
-    //     if (!$user) {
-    //         $user = new User();
-    //     }
+    public function mapEntity(
+        OAuthUserData $oauthUserData,
+        string $providerName,
+        User $user,
+        ?Provider $provider
+    ): Provider {
+        if (!$provider) {
+            $provider = new Provider();
+        }
 
-    //     $user->setProvider($provider);
-    //     $user->setProviderId($resourceOwner->getId());
-    //     $user->setAccessToken($resourceOwner->getToken()->getToken());
-    //     $user->setRefreshToken($resourceOwner->getToken()->getRefreshToken());
-    // }
+        $provider->setName($providerName);
+        $provider->setAccessToken($oauthUserData->getAccessToken());
+        $provider->setRefreshToken($oauthUserData->getRefreshToken());
+        $provider->setUser($user);
+
+        return $provider;
+    }
 }

@@ -23,10 +23,11 @@ class AuthenticationController extends AbstractController
     #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
     public function connectCheck(string $provider): RedirectResponse
     {
-        $user = $this->oAuthService->fetchUser($provider);
-        $this->userManager->create($user, $provider);
+        $oauthData = $this->oAuthService->fetchUser($provider);
 
-        // Rediriger vers le frontend avec les informations de l'utilisateur
-        return new RedirectResponse('http://localhost:3000/profile?email='.urlencode($user->getEmail()));
+        $user = $this->userManager->create($oauthData, $provider);
+        $frontendUrl = $this->getParameter('env(FRONTEND_URL)');
+
+        return new RedirectResponse($frontendUrl);
     }
 }

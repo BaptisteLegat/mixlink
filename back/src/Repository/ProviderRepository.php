@@ -9,12 +9,12 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  *
- * @extends ServiceEntityRepository<User>
+ * @extends ServiceEntityRepository<Provider>
  *
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Provider|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Provider|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Provider[]    findAll()
+ * @method Provider[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
@@ -25,9 +25,6 @@ class ProviderRepository extends ServiceEntityRepository
         parent::__construct($registry, Provider::class);
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-     */
     public function save(Provider $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -37,9 +34,6 @@ class ProviderRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-     */
     public function remove(Provider $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

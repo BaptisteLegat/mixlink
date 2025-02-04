@@ -32,8 +32,8 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 255)]
     private string $firstName;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $lastName;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $lastName = null;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $email;
@@ -75,12 +75,12 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
 
@@ -99,9 +99,15 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
+    /**
+     * @return array<array-key, string>
+     */
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self

@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'provider')]
-class Provider implements TimestampableInterface, BlameableInterface
+class Provider implements BlameableInterface, TimestampableInterface
 {
     use BlameableEntity;
     use TimestampableEntity;
@@ -24,15 +24,12 @@ class Provider implements TimestampableInterface, BlameableInterface
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providers')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providers', cascade: ['persist'])]
     #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false)]
     private ?User $user = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private string $provider;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $providerId;
+    private string $name;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $accessToken = null;
@@ -57,26 +54,14 @@ class Provider implements TimestampableInterface, BlameableInterface
         return $this;
     }
 
-    public function getProvider(): string
+    public function getName(): string
     {
-        return $this->provider;
+        return $this->name;
     }
 
-    public function setProvider(string $provider): self
+    public function setName(string $name): self
     {
-        $this->provider = $provider;
-
-        return $this;
-    }
-
-    public function getProviderId(): string
-    {
-        return $this->providerId;
-    }
-
-    public function setProviderId(string $providerId): self
-    {
-        $this->providerId = $providerId;
+        $this->name = $name;
 
         return $this;
     }

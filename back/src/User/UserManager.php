@@ -3,25 +3,40 @@
 namespace App\User;
 
 use App\Entity\User;
+use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
 use App\Trait\TraceableTrait;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use App\Security\OAuthUserData;
 
 class UserManager
 {
     use TraceableTrait;
 
-    public function __construct(private UserMapper $userMapper, private UserRepository $userRepository)
-    {
+    public function __construct(
+        private UserMapper $userMapper,
+        private ProviderManager $providerManager,
+        private UserRepository $userRepository
+    ) {
     }
 
-    public function create(ResourceOwnerInterface $resourceOwner, string $provider): void
+    public function create(OAuthUserData $oauthUserData, string $provider): User
     {
-        // $user = new User();
+        $resourceOwner = $oauthUserData->getUser();
 
-        // $this->userMapper->mapEntity($resourceOwner, $provider, $user);
-        // $this->setTimestampable($user);
-        // $this->setBlameable($user, $user->getEmail());
-        // $this->userRepository->save($user, true);
+        // Vérifier si l'utilisateur existe déjà via son email
+        $existingUser = $this->userRepository->findOneBy(['email' => $resourceOwner->getEmail()]);
+
+        // Mapper les données du user (nouveau ou existant)
+        $user = $this->userMapper->mapEntity($resourceOwner, $provider, $existingUser);
+
+        $this->setTimestampable($user, $existingUser !== null);
+
+        $this->setBlameable($user, $resourceOwner->getEmail(), $existingUser !== null);
+
+        $this->providerManager->createOrUpdateProvider($oauthUserData, $provider, $user);
+
+        $this->userRepository->save($user, true);
+
+        return $user;
     }
 }
