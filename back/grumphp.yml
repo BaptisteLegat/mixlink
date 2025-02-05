@@ -27,9 +27,7 @@ grumphp:
         phpmnd:
             exclude: ["docker", "var", "tests", "vendor", "assets"]
         phpstan:
-            autoload_file: ~
             configuration: phpstan.neon
-            triggered_by: ['php']
             memory_limit: "-1"
             use_grumphp_paths: false
         psalm:
