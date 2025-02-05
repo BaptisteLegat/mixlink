@@ -26,7 +26,7 @@ class AuthenticationController extends AbstractController
         $oauthData = $this->oAuthService->fetchUser($provider);
 
         $user = $this->userManager->create($oauthData, $provider);
-        $frontendUrl = $this->getParameter('env(FRONTEND_URL)');
+        $frontendUrl =  $_ENV['FRONTEND_URL'];
 
         return new RedirectResponse($frontendUrl);
     }

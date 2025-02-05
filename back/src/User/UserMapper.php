@@ -4,44 +4,56 @@ namespace App\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\User;
-use App\Provider\ProviderManager;
 use InvalidArgumentException;
+use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
+use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
+    private const PROVIDER_MAPPERS = [
+        ApiReference::GOOGLE => 'mapGoogleUser',
+        ApiReference::SPOTIFY => 'mapSpotifyUser',
+    ];
+
     public function mapEntity(ResourceOwnerInterface $resourceOwner, string $providerName, ?User $user): User
     {
-        if (!$user) {
-            $user = new User();
+        $user ??= new User();
+
+        if (!isset(self::PROVIDER_MAPPERS[$providerName])) {
+            throw new InvalidArgumentException("Provider $providerName not supported");
         }
 
-        match ($providerName) {
-            ApiReference::GOOGLE => $this->mapGoogleUser($resourceOwner, $user),
-            ApiReference::SPOTIFY => $this->mapSpotifyUser($resourceOwner, $user),
-            default => throw new InvalidArgumentException("Provider $providerName not supported"),
-        };
+        $method = self::PROVIDER_MAPPERS[$providerName];
+
+        if (!method_exists($this, $method)) {
+            throw new InvalidArgumentException("Mapping method for $providerName not found");
+        }
+
+        $this->$method($resourceOwner, $user);
 
         $user->setRoles(['ROLE_USER']);
 
         return $user;
     }
 
-    private function mapGoogleUser(ResourceOwnerInterface $resourceOwner, User $user): void
+    private function mapGoogleUser(GoogleUser $resourceOwner, User $user): void
     {
-        $user->setFirstName($resourceOwner->getFirstName());
-        $user->setLastName($resourceOwner->getLastName());
-        $user->setEmail($resourceOwner->getEmail());
+        $user->setFirstName((string) $resourceOwner->getFirstName());
+        $user->setLastName((string) $resourceOwner->getLastName());
+        $user->setEmail((string) $resourceOwner->getEmail());
         $user->setProfilePicture($resourceOwner->getAvatar());
     }
 
-    private function mapSpotifyUser(ResourceOwnerInterface $resourceOwner, User $user): void
+    private function mapSpotifyUser(SpotifyResourceOwner $resourceOwner, User $user): void
     {
         $user->setFirstName($resourceOwner->getDisplayName());
-        $user->setEmail($resourceOwner->getEmail());
+        $user->setEmail((string) $resourceOwner->getEmail());
 
+        /** @var array<int, array{url: string}> $images */
         $images = $resourceOwner->getImages();
-        if (!empty($images)) {
+
+        if (!empty($images) && isset($images[0]['url'])) {
             $user->setProfilePicture($images[0]['url']);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Provider;
 
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Repository\ProviderRepository;
 use App\Security\OAuthUserData;
@@ -21,8 +22,10 @@ class ProviderManager
 
         $provider = $this->providerMapper->mapEntity($oauthUserData, $providerName, $user, $existingProvider);
 
-        $this->setTimestampable($provider, $existingProvider !== null);
-        $this->setBlameable($provider, $user->getEmail(), $existingProvider !== null);
+        $isUpdate = $existingProvider instanceof Provider;
+    
+        $this->setTimestampable($provider, $isUpdate);
+        $this->setBlameable($provider, $user->getEmail(), $isUpdate);
 
         $this->providerRepository->save($provider, true);
     }

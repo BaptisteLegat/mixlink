@@ -7,16 +7,16 @@ use DateTime;
 interface TimestampableInterface
 {
     /**
-     * @phpstan-ignore-next-line
-     *
      * @psalm-suppress MissingReturnType
+     *
+     * @phpstan-ignore-next-line
      */
     public function setCreatedAt(DateTime $createdAt);
 
     /**
-     * @phpstan-ignore-next-line
-     *
      * @psalm-suppress MissingReturnType
+     *
+     * @phpstan-ignore-next-line
      */
     public function setUpdatedAt(DateTime $updatedAt);
 }

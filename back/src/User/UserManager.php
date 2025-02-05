@@ -7,6 +7,8 @@ use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
 use App\Trait\TraceableTrait;
 use App\Security\OAuthUserData;
+use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
+use League\OAuth2\Client\Provider\GoogleUser;
 
 class UserManager
 {
@@ -21,17 +23,18 @@ class UserManager
 
     public function create(OAuthUserData $oauthUserData, string $provider): User
     {
+        /** @var GoogleUser|SpotifyResourceOwner $resourceOwner */
         $resourceOwner = $oauthUserData->getUser();
 
-        // Vérifier si l'utilisateur existe déjà via son email
-        $existingUser = $this->userRepository->findOneBy(['email' => $resourceOwner->getEmail()]);
+        $existingUser = $this->userRepository->findOneBy(['email' => (string) $resourceOwner->getEmail()]);
 
-        // Mapper les données du user (nouveau ou existant)
         $user = $this->userMapper->mapEntity($resourceOwner, $provider, $existingUser);
 
-        $this->setTimestampable($user, $existingUser !== null);
+        $isUpdate = $existingUser instanceof User;
 
-        $this->setBlameable($user, $resourceOwner->getEmail(), $existingUser !== null);
+        $this->setTimestampable($user, $isUpdate);
+
+        $this->setBlameable($user, (string) $resourceOwner->getEmail(), $isUpdate);
 
         $this->providerManager->createOrUpdateProvider($oauthUserData, $provider, $user);
 
