@@ -2,12 +2,14 @@
     import { isDark } from '@/composables/dark';
     import HeaderMobile from '@/components/layout/HeaderMobile.vue';
     import { useMediaQuery } from '@vueuse/core';
+    import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
     import TranslateIcon from 'vue-material-design-icons/Translate.vue';
     import SunIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue';
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
 
     const { locale } = useI18n();
+    const authStore = useAuthStore();
 
     const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -62,7 +64,12 @@
                             :inactive-icon="MoonIcon"
                             style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023C0; margin-right: 20px;"
                         />
-                        <el-button type="primary" @click="$router.push('/login')">{{ $t('header.sign_in') }}</el-button>
+                        <el-button v-if="authStore.isAuthenticated" type="primary" @click="authStore.logout()">
+                            {{ $t('header.logout') }}
+                        </el-button>
+                        <el-button v-else type="primary" @click="$router.push('/login')">
+                            {{ $t('header.login') }}
+                        </el-button>
                     </template>
                 </el-row>
             </el-col>

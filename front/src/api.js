@@ -1,8 +1,8 @@
-export async function fetchUserProfile(token) {
+export async function fetchUserProfile() {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
         method: 'GET',
+        credentials: 'include',
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
     });
@@ -12,4 +12,11 @@ export async function fetchUserProfile(token) {
     }
 
     return response.json();
+}
+
+export async function apiLogout() {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/logout`, {
+        method: 'POST',
+        credentials: 'include',
+    });
 }

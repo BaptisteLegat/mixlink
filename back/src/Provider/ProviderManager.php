@@ -23,10 +23,15 @@ class ProviderManager
         $provider = $this->providerMapper->mapEntity($oauthUserData, $providerName, $user, $existingProvider);
 
         $isUpdate = $existingProvider instanceof Provider;
-    
+
         $this->setTimestampable($provider, $isUpdate);
         $this->setBlameable($provider, $user->getEmail(), $isUpdate);
 
         $this->providerRepository->save($provider, true);
+    }
+
+    public function findByAccessToken(string $accessToken): ?User
+    {
+        return $this->providerRepository->findOneBy(['accessToken' => $accessToken])?->getUser();
     }
 }

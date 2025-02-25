@@ -3,8 +3,11 @@
     import { useI18n } from 'vue-i18n';
     import { isDark } from '@/composables/dark';
     import MenuIcon from 'vue-material-design-icons/Menu.vue';
+    import { useAuthStore } from '@/stores/authStore';
 
     const { locale, t } = useI18n();
+    const authStore = useAuthStore();
+
     const isMenuOpen = ref(false);
 
     const languageText = computed(() => {
@@ -45,8 +48,11 @@
         <el-menu-item @click="toggleTheme">
             {{ themeText }}
         </el-menu-item>
-        <el-menu-item>
-            {{ $t('header.sign_in') }}
+        <el-menu-item v-if="authStore.isAuthenticated" @click="authStore.logout()">
+            {{ t('header.logout') }}
+        </el-menu-item>
+        <el-menu-item v-else @click="$router.push('/login')">
+            {{ t('header.login') }}
         </el-menu-item>
       </el-menu>
     </el-drawer>

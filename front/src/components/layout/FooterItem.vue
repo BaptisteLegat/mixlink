@@ -1,12 +1,12 @@
 <script setup>
-import { useI18n } from 'vue-i18n';
-import { isDark } from '@/composables/dark';
-import FacebookIcon from 'vue-material-design-icons/Facebook.vue';
-import TwitterIcon from 'vue-material-design-icons/Twitter.vue';
-import InstagramIcon from 'vue-material-design-icons/Instagram.vue';
-import LinkedinIcon from 'vue-material-design-icons/Linkedin.vue';
+    import { useI18n } from 'vue-i18n';
+    import { isDark } from '@/composables/dark';
+    import FacebookIcon from 'vue-material-design-icons/Facebook.vue';
+    import TwitterIcon from 'vue-material-design-icons/Twitter.vue';
+    import InstagramIcon from 'vue-material-design-icons/Instagram.vue';
+    import LinkedinIcon from 'vue-material-design-icons/Linkedin.vue';
 
-const { t } = useI18n();
+    const { t } = useI18n();
 </script>
 <template>
     <el-footer style="border-top: 1px solid #ebeef5; padding: 20px 0;">

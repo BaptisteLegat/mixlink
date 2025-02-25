@@ -2,15 +2,20 @@
 
 namespace App\Controller\Security;
 
+use App\Entity\Provider;
+use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AuthenticationController extends AbstractController
 {
-    public function __construct(private OAuthService $oAuthService, private UserManager $userManager)
+    public function __construct(private OAuthService $oAuthService, private ProviderManager $providerManager, private UserManager $userManager)
     {
     }
 
@@ -24,10 +29,56 @@ class AuthenticationController extends AbstractController
     public function connectCheck(string $provider): RedirectResponse
     {
         $oauthData = $this->oAuthService->fetchUser($provider);
-
         $user = $this->userManager->create($oauthData, $provider);
-        $frontendUrl =  $_ENV['FRONTEND_URL'];
 
-        return new RedirectResponse($frontendUrl);
+        $providerEntity = $user->getProviderByName($provider);
+        $accessToken = $providerEntity ? $providerEntity->getAccessToken() : null;
+
+        if (null === $accessToken) {
+            return new RedirectResponse($_ENV['FRONTEND_ERROR_URL']);
+        }
+
+        $cookie = Cookie::create('AUTH_TOKEN')
+            ->withValue($accessToken)
+            ->withHttpOnly(true)
+            ->withSecure(true)
+            ->withSameSite('strict')
+        ;
+
+        $response = new RedirectResponse($_ENV['FRONTEND_URL']);
+        $response->headers->setCookie($cookie);
+
+        return $response;
+    }
+
+    #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    public function getUserProfile(Request $request): JsonResponse
+    {
+        $accessToken = $request->cookies->get('AUTH_TOKEN');
+
+        if (null === $accessToken) {
+            return new JsonResponse(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = $this->providerManager->findByAccessToken($accessToken);
+
+        if ($user === null) {
+            return new JsonResponse(['error' => 'Invalid token'], 401);
+        }
+
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'providers' => array_map(fn(Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
+        ]);
+    }
+
+    #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        $response = new JsonResponse(['message' => 'Déconnexion réussie']);
+        $response->headers->clearCookie('AUTH_TOKEN');
+
+        return $response;
     }
 }

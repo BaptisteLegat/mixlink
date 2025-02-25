@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '@/views/Home.vue';
-import Login from '@/views/Login.vue';
+import HomeView from '@/views/HomeView.vue';
+import LoginView from '@/views/LoginView.vue';
 import { useAuthStore } from '@/stores/authStore';
 
 const routes = [
-    { path: '/', component: Home },
-    { path: '/login', component: Login },
+    { path: '/', component: HomeView },
+    { path: '/login', component: LoginView },
 ];
 
 const router = createRouter({
@@ -14,21 +14,17 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const authStore = useAuthStore();
 
-    if (token) {
-        const authStore = useAuthStore();
-        authStore.setToken(token);
-
-        window.history.replaceState({}, document.title, to.path);
-
+    if (!authStore.user) {
         await authStore.fetchUser();
-
-        next('/');
-    } else {
-        next();
     }
+
+    if (to.path === '/login' && authStore.isAuthenticated) {
+        return next('/');
+    }
+
+    next();
 });
 
 export default router;

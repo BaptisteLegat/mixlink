@@ -5,8 +5,8 @@ import { useAuthStore } from '@/stores/authStore';
 
 import enLocale from 'element-plus/es/locale/lang/en';
 import frLocale from 'element-plus/es/locale/lang/fr';
-import Header from '@/components/layout/Header.vue';
-import Footer from './components/layout/Footer.vue';
+import Header from '@/components/layout/HeaderItem.vue';
+import Footer from './components/layout/FooterItem.vue';
 
 const { locale } = useI18n();
 const authStore = useAuthStore();

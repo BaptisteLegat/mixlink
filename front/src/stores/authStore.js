@@ -1,38 +1,32 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { fetchUserProfile } from '@/api';
+import { fetchUserProfile, apiLogout } from '@/api';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
-    const token = ref(localStorage.getItem('accessToken') || null);
-    const isAuthenticated = computed(() => !!token.value);
+    const isAuthenticated = computed(() => !!user.value);
 
     async function fetchUser() {
-        if (!token.value) return;
         try {
-            user.value = await fetchUserProfile(token.value);
+            user.value = await fetchUserProfile();
         } catch {
-            logout();
+            user.value = null;
         }
     }
 
-    function setToken(newToken) {
-        token.value = newToken;
-        localStorage.setItem('accessToken', newToken);
-    }
-
-    function logout() {
-        user.value = null;
-        token.value = null;
-        localStorage.removeItem('accessToken');
+    async function logout() {
+        try {
+            await apiLogout();
+        } finally {
+            document.cookie = "AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            user.value = null;
+        }
     }
 
     return {
         user,
-        token,
         isAuthenticated,
         fetchUser,
-        setToken,
         logout,
     };
 });

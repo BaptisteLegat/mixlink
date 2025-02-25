@@ -1,6 +1,7 @@
 {
     "header": {
-        "sign_in": "Sign in",
+        "login": "Sign in",
+        "logout": "Sign out",
         "light_mode": "Light Mode",
         "dark_mode": "Dark Mode"
     },

@@ -1,6 +1,7 @@
 {
     "header": {
-        "sign_in": "Se connecter",
+        "login": "Se connecter",
+        "logout": "Se déconnecter",
         "light_mode": "Mode clair",
         "dark_mode": "Mode sombre"
     },
