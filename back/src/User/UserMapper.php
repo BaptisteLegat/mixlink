@@ -26,10 +26,6 @@ class UserMapper
 
         $method = self::PROVIDER_MAPPERS[$providerName];
 
-        if (!method_exists($this, $method)) {
-            throw new InvalidArgumentException("Mapping method for $providerName not found");
-        }
-
         $this->$method($resourceOwner, $user);
 
         $user->setRoles(['ROLE_USER']);

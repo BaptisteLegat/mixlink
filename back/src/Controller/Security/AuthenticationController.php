@@ -57,26 +57,39 @@ class AuthenticationController extends AbstractController
         $accessToken = $request->cookies->get('AUTH_TOKEN');
 
         if (null === $accessToken) {
-            return new JsonResponse(['error' => 'Unauthorized'], 401);
+            return new JsonResponse([
+                'isAuthenticated' => false,
+                'user' => null,
+            ]);
         }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
 
         if ($user === null) {
-            return new JsonResponse(['error' => 'Invalid token'], 401);
+            return new JsonResponse([
+                'isAuthenticated' => false,
+                'user' => null,
+            ]);
         }
 
-        return new JsonResponse([
+        $response = new JsonResponse([
+            'isAuthenticated' => true,
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'providers' => array_map(fn(Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
         ]);
+
+        return $response;
     }
 
     #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
     public function logout(): JsonResponse
     {
-        $response = new JsonResponse(['message' => 'Déconnexion réussie']);
+        $response = new JsonResponse([
+            'isAuthenticated' => false,
+            'user' => null,
+        ]);
+
         $response->headers->clearCookie('AUTH_TOKEN');
 
         return $response;

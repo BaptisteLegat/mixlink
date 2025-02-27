@@ -31,6 +31,6 @@ grumphp:
             memory_limit: "-1"
             use_grumphp_paths: false
         psalm:
-            config: psalm.xml
+            config: ./psalm.xml
             no_cache: true
         securitychecker_symfony: ~

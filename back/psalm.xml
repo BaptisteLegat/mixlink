@@ -17,6 +17,10 @@
         </ignoreFiles>
     </projectFiles>
 
+    <issueHandlers>
+        <ClassMustBeFinal errorLevel="suppress" />
+    </issueHandlers>
+
     <plugins>
         <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
             <symfonyMajorVersion>7</symfonyMajorVersion>
