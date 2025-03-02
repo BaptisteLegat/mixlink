@@ -35,7 +35,7 @@ class AuthenticationController extends AbstractController
         $accessToken = $providerEntity ? $providerEntity->getAccessToken() : null;
 
         if (null === $accessToken) {
-            return new RedirectResponse($_ENV['FRONTEND_ERROR_URL']);
+            return new RedirectResponse($_ENV['FRONTEND_URL']);
         }
 
         $cookie = Cookie::create('AUTH_TOKEN')

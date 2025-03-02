@@ -4,15 +4,14 @@ namespace App\Security;
 
 use InvalidArgumentException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class OAuthService
 {
     public const GOOGLE_SCOPES = [
-        'https://www.googleapis.com/auth/youtube', // Accès à YouTube
-        'https://www.googleapis.com/auth/userinfo.email', // Accès à l'email
-        'https://www.googleapis.com/auth/userinfo.profile', // Accès au profil
+        'https://www.googleapis.com/auth/youtube', // Access to YouTube
+        'https://www.googleapis.com/auth/userinfo.email', // Access to email
+        'https://www.googleapis.com/auth/userinfo.profile', // Access to profile
     ];
 
     public const SPOTIFY_SCOPES = [
