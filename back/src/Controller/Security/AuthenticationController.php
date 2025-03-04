@@ -82,7 +82,7 @@ class AuthenticationController extends AbstractController
         return $response;
     }
 
-    #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
+    #[Route('/api/logout', name: 'api_logout')]
     public function logout(): JsonResponse
     {
         $response = new JsonResponse([

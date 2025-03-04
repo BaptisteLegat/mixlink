@@ -1,0 +1,44 @@
+App\Entity\User:
+  user_1 (template):
+    firstName: 'John'
+    lastName: 'Doe'
+    email: 'john.doe@test.fr'
+    roles: ['ROLE_USER']
+    profilePicture: 'https://test.fr/profile1.jpg'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  user_2 (template):
+    firstName: 'Jane'
+    lastName: 'Smith'
+    email: 'jane.smith@test.fr'
+    roles: ['ROLE_USER', 'ROLE_ADMIN']
+    profilePicture: 'https://test.fr/profile2.jpg'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  user_3 (template):
+    firstName: 'Alice'
+    lastName: 'Johnson'
+    email: 'alice.johnson@test.fr'
+    roles: ['ROLE_USER']
+    profilePicture: null
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  user_4 (template):
+    firstName: 'Bob'
+    lastName: null
+    email: 'bob@test.fr'
+    roles: ['ROLE_USER']
+    profilePicture: null
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>

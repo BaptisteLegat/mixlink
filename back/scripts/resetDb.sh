@@ -20,3 +20,6 @@ docker-compose exec -it php bash -c "php bin/console doctrine:database:create $E
 
 # Play the migrations
 docker-compose exec -it php bash -c "php bin/console doctrine:migrations:migrate $ENV_ARG"
+
+# Load the fixtures
+docker-compose exec -it php bash -c "php bin/console hautelook:fixture:load $ENV_ARG"

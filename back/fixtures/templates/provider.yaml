@@ -1,0 +1,28 @@
+App\Entity\Provider:
+  provider_1 (template):
+    name: 'spotify'
+    accessToken: 'spotify_access_token_123'
+    refreshToken: 'spotify_refresh_token_456'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  provider_2 (template):
+    name: 'youTube'
+    accessToken: 'youtube_access_token_789'
+    refreshToken: 'youtube_refresh_token_012'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  provider_3 (template):
+    name: 'deezer'
+    accessToken: 'deezer_access_token_345'
+    refreshToken: 'deezer_refresh_token_678'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
