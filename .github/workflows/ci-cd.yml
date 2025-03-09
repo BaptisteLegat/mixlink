@@ -13,6 +13,9 @@ jobs:
     if: '! github.event.pull_request.draft'
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink?serverVersion=8.0&charset=utf8mb4
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -59,8 +62,6 @@ jobs:
           php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
       - name: Run database migrations
-        env:
-          DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink?serverVersion=8.0&charset=utf8mb4
         run: |
           cd back
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
@@ -71,8 +72,6 @@ jobs:
           echo "DATABASE_URL=$DATABASE_URL"
 
       - name: Run PHPUnit tests
-        env:
-          DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink?serverVersion=8.0&charset=utf8mb4
         run: |
           cd back
           vendor/bin/phpunit tests/unit tests/functional
