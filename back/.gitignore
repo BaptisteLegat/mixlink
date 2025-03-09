@@ -13,10 +13,6 @@
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
-###> phpstan/phpstan ###
-phpstan.neon
-###< phpstan/phpstan ###
-
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
