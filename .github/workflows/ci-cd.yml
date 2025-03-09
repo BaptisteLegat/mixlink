@@ -5,59 +5,66 @@ on:
     branches: [ "*" ]
     types: ['opened', 'reopened', 'synchronize', 'ready_for_review']
 
-jobs:
-  build-and-test:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+permissions:
+  contents: read
 
-    services:
-      db:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: mixlink
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+jobs:
+  symfony-tests:
+    if: '! github.event.pull_request.draft'
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Docker Compose
-      run: docker-compose up -d
-
-    - name: Wait for MySQL to be ready
-      run: |
-        while ! docker exec symfony_mysql mysqladmin --user=root --password=password --host db ping; do
-          sleep 1
-        done
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2-fpm'
 
     - name: Install Symfony CLI
       run: |
         curl -sS https://get.symfony.com/cli/installer | bash
-        mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
+        mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
+
+    - name: Set up MySQL
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 3306
+        mysql version: '8.0'
+        mysql database: 'mixlink_test'
+        mysql root password: 'password'
+        mysql password: 'password'
+
+    - name: Wait for MySQL to be ready
+      run: |
+        while ! mysqladmin ping --host=127.0.0.1 --port=3306 --password=password --silent; do
+          sleep 1
+        done
+
+    - name: Copy .env.test.local
+      run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
     - name: Install PHP dependencies
-      run: docker exec symfony_php composer install --prefer-dist --no-progress --no-suggest
+      run: composer install --no-ansi --no-interaction --no-progress
 
-    - name: Create .env.test.local
-      run: docker exec symfony_php php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-
-    - name: Build assets
-      run: docker exec symfony_php php bin/console assets:install
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
 
     - name: Install NPM dependencies
-      run: docker exec vue_front npm install
+      run: |
+        npm install
+        npm run build
 
     - name: Run database migrations
-      run: docker exec symfony_php php bin/console doctrine:migrations:migrate --no-interaction
+      env:
+        DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
+      run: php bin/console doctrine:migrations:migrate --no-interaction
 
     - name: Run GrumPHP
-      run: docker exec symfony_php php bin/grumphp run
+      run: vendor/bin/grumphp run
 
-    - name: Run PHPUnit Unit tests
-      run: docker exec symfony_php php bin/phpunit tests/unit
-
-    - name: Run PHPUnit Functional tests
-      run: docker exec symfony_php php bin/phpunit tests/functional
+    - name: Run PHPUnit tests
+      run: vendor/bin/phpunit tests/unit tests/functional
