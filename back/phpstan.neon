@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+    tmpDir: var/tmp
+    paths:
+        - src
+    excludePaths:
+        - src/Entity/*
+        - src/Repository/*
+        - tests
+        - vendor
