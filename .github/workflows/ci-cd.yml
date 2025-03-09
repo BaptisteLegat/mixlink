@@ -84,7 +84,12 @@ jobs:
       # - name: Run GrumPHP
       #   run: vendor/bin/grumphp run
 
-      - name: Run PHPUnit tests
+      - name: Run PHPUnit unit tests
         run: |
           cd back
           vendor/bin/phpunit tests/unit
+
+      - name: Run PHPUnit functional tests
+        run: |
+          cd back
+          vendor/bin/phpunit tests/functional
