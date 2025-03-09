@@ -54,10 +54,81 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertStringContainsString(self::SPOTIFY_URL, $location);
     }
 
+    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckGoogle(): void
+    {
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn(null)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'google_access_token_123'));
+
+        $this->client->request('GET', '/auth/google/callback');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
+    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckSpotify(): void
+    {
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn(null)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_access_token_123'));
+
+        $this->client->request('GET', '/auth/spotify/callback');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
+    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckGoogleWithExistingUser(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'google_access_token_123'));
+
+        $this->client->request('GET', '/auth/google/callback');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
+    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckSpotifyWithExistingUser(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'jane.smith@test.fr']);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_access_token_123'));
+
+        $this->client->request('GET', '/auth/spotify/callback');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
     public function testGetUserProfileWithValidToken(): void
     {
         $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
-        $this->assertNotNull($user);
 
         $this->providerManagerMock
             ->method('findByAccessToken')

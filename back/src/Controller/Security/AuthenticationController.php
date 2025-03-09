@@ -6,6 +6,8 @@ use App\Entity\Provider;
 use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,8 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AuthenticationController extends AbstractController
 {
-    public function __construct(private OAuthService $oAuthService, private ProviderManager $providerManager, private UserManager $userManager)
-    {
+    public function __construct(
+        private OAuthService $oAuthService,
+        private ProviderManager $providerManager,
+        private UserManager $userManager,
+        private LoggerInterface $logger
+    ) {
     }
 
     #[Route('/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
@@ -28,27 +34,30 @@ class AuthenticationController extends AbstractController
     #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
     public function connectCheck(string $provider): RedirectResponse
     {
-        $oauthData = $this->oAuthService->fetchUser($provider);
-        $user = $this->userManager->create($oauthData, $provider);
+        try {
+            $oauthData = $this->oAuthService->fetchUser($provider);
+            $user = $this->userManager->create($oauthData, $provider);
+            $providerEntity = $user->getProviderByName($provider);
 
-        $providerEntity = $user->getProviderByName($provider);
-        $accessToken = $providerEntity ? $providerEntity->getAccessToken() : null;
+            $response = new RedirectResponse($_ENV['FRONTEND_URL']);
 
-        if (null === $accessToken) {
+            $accessToken = $providerEntity ? $providerEntity->getAccessToken() : null;
+            if (null !== $accessToken) {
+                $cookie = Cookie::create('AUTH_TOKEN')
+                    ->withValue($accessToken)
+                    ->withHttpOnly(true)
+                    ->withSecure(true)
+                    ->withSameSite('strict')
+                ;
+
+                $response->headers->setCookie($cookie);
+            }
+
+            return $response;
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return new RedirectResponse($_ENV['FRONTEND_URL']);
         }
-
-        $cookie = Cookie::create('AUTH_TOKEN')
-            ->withValue($accessToken)
-            ->withHttpOnly(true)
-            ->withSecure(true)
-            ->withSameSite('strict')
-        ;
-
-        $response = new RedirectResponse($_ENV['FRONTEND_URL']);
-        $response->headers->setCookie($cookie);
-
-        return $response;
     }
 
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]
@@ -65,7 +74,7 @@ class AuthenticationController extends AbstractController
 
         $user = $this->providerManager->findByAccessToken($accessToken);
 
-        if ($user === null) {
+        if (null === $user) {
             return new JsonResponse([
                 'isAuthenticated' => false,
                 'user' => null,

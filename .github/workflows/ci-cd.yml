@@ -1,0 +1,63 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [ "*" ]
+    types: ['opened', 'reopened', 'synchronize', 'ready_for_review']
+
+jobs:
+  build-and-test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: mixlink
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Compose
+      run: docker-compose up -d
+
+    - name: Wait for MySQL to be ready
+      run: |
+        while ! docker exec symfony_mysql mysqladmin --user=root --password=password --host db ping; do
+          sleep 1
+        done
+
+    - name: Install Symfony CLI
+      run: |
+        curl -sS https://get.symfony.com/cli/installer | bash
+        mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
+
+    - name: Install PHP dependencies
+      run: docker exec symfony_php composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Create .env.test.local
+      run: docker exec symfony_php php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+
+    - name: Build assets
+      run: docker exec symfony_php php bin/console assets:install
+
+    - name: Install NPM dependencies
+      run: docker exec vue_front npm install
+
+    - name: Run database migrations
+      run: docker exec symfony_php php bin/console doctrine:migrations:migrate --no-interaction
+
+    - name: Run GrumPHP
+      run: docker exec symfony_php php bin/grumphp run
+
+    - name: Run PHPUnit Unit tests
+      run: docker exec symfony_php php bin/phpunit tests/unit
+
+    - name: Run PHPUnit Functional tests
+      run: docker exec symfony_php php bin/phpunit tests/functional

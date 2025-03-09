@@ -3,17 +3,16 @@ include:
   - ./templates/user.yaml
 
 App\Entity\Provider:
-  spotify (extends provider_1):
-    user: '@john-doe'
+  spotify-1 (extends spotify):
+    user: '@jane-smith-1'
 
-  youtube (extends provider_2):
-    user: '@jane-smith'
+  google-1 (extends google):
+    user: '@john-doe-1'
 
-  deezer (extends provider_3):
-    user: '@alice-johnson'
+  deezer-1 (extends deezer):
+    user: '@alice-johnson-1'
 
 App\Entity\User:
-  john-doe (extends user_1): ~
-  jane-smith (extends user_2): ~
-  alice-johnson (extends user_3): ~
-  bob (extends user_4): ~
+  john-doe-1 (extends john-doe): ~
+  jane-smith-1 (extends jane-smith): ~
+  alice-johnson-1 (extends alice-johnson): ~

@@ -1,5 +1,5 @@
 App\Entity\User:
-  user_1 (template):
+  john-doe (template):
     firstName: 'John'
     lastName: 'Doe'
     email: 'john.doe@test.fr'
@@ -10,7 +10,7 @@ App\Entity\User:
     updatedBy: "anon."
     updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
 
-  user_2 (template):
+  jane-smith (template):
     firstName: 'Jane'
     lastName: 'Smith'
     email: 'jane.smith@test.fr'
@@ -21,7 +21,7 @@ App\Entity\User:
     updatedBy: "anon."
     updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
 
-  user_3 (template):
+  alice-johnson (template):
     firstName: 'Alice'
     lastName: 'Johnson'
     email: 'alice.johnson@test.fr'
@@ -32,7 +32,7 @@ App\Entity\User:
     updatedBy: "anon."
     updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
 
-  user_4 (template):
+  bob (template):
     firstName: 'Bob'
     lastName: null
     email: 'bob@test.fr'
