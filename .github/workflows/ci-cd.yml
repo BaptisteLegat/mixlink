@@ -68,10 +68,9 @@ jobs:
           npm install
           npm run build
 
-
       - name: Run database migrations
         env:
-          DATABASE_URL: mysql://root:password@localhost:3306/mixlink_test?serverVersion=14&charset=utf8
+          DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
