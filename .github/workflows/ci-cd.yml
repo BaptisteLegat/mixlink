@@ -65,8 +65,7 @@ jobs:
       - name: Installer les dépendances NPM et construire le frontend
         run: |
           cd front
-          npm config set unsafe-perm true
-          npm install --arch=x64
+          npm install
           npm run build
 
 

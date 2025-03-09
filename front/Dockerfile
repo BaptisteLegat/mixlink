@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --arch=x64
+RUN npm install
 
 COPY . .
 
