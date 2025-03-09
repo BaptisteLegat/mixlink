@@ -66,5 +66,8 @@ jobs:
     - name: Run GrumPHP
       run: vendor/bin/grumphp run
 
-    - name: Run PHPUnit tests
-      run: vendor/bin/phpunit tests/unit tests/functional
+    - name: Run PHPUnit unit tests
+      run: vendor/bin/phpunit tests/unit
+
+    - name: Run PHPUnit functional tests
+      run: vendor/bin/phpunit tests/functional
