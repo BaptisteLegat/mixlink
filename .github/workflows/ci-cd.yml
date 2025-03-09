@@ -9,86 +9,43 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests:
-    if: '! github.event.pull_request.draft'
+  build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: mixlink_test
+          MYSQL_USER: mixlink
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+
     steps:
-      - name: Set up PHP 8.2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2-fpm'
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install Symfony CLI
+      - name: Set up Docker Compose
+        run: docker-compose up -d --build
+
+      - name: Install PHP dependencies
         run: |
-          curl -sS https://get.symfony.com/cli/installer | bash
-          mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
-
-      - uses: actions/checkout@v3
-
-      - name: Set up MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          host port: 3800
-          mysql version: '8.0'
-          mysql database: 'mixlink_test'
-          mysql root password: 'password'
-          mysql password: 'password'
-
-      - name: Wait for MySQL to be ready
-        run: |
-          while ! mysqladmin ping --host=127.0.0.1 --port=3800 --password=password --silent; do
-            sleep 1
-          done
-
-      - name: Install PHP Deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libzip-dev
-
-      - name: Copy .env.test.local
-        run: |
-          cd back
-          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-
-      - name: Make build dir
-        run: |
-          cd back
-          mkdir public/bundles
-
-      - name: Install Dependencies
-        run: |
-          cd back
-          composer install --no-ansi --no-interaction --no-progress
-          bin/console c:c --env=test
-
-      - name: Installer les dépendances NPM et construire le frontend
-        run: |
-          cd front
-          npm install
-          npm run build
+          docker exec symfony_php composer install --no-interaction --prefer-dist
 
       - name: Run database migrations
-        env:
-          DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
         run: |
-          cd back
-          php bin/console doctrine:migration:migrate --env=test --no-interaction
+          docker exec symfony_php php bin/console doctrine:migrations:migrate --no-interaction
 
-      - name: Set up Node.js 18
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Run PHPUnit unit tests
+      - name: Install Node.js dependencies
         run: |
-          cd back
-          vendor/bin/phpunit tests/unit
+          docker exec vue_front npm install
 
-      - name: Run PHPUnit functional tests
-        env:
-          DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
+      - name: Run unit and functional tests
         run: |
-          cd back
-          bin/console c:c --env=test
-          vendor/bin/phpunit tests/functional
+          docker exec symfony_php vendor/bin/phpunit
+
+      - name: Shutdown Docker Compose
+        if: always()
+        run: docker-compose down
