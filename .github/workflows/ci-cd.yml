@@ -63,7 +63,7 @@ jobs:
       - name: Run GrumPHP
         run: |
           cd back
-          vendor/bin/grumphp run
+          vendor/bin/grumphp run -v
 
       - name: Run PHPUnit tests
         run: |
