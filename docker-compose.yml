@@ -23,13 +23,16 @@ services:
       - db
 
   db:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: symfony_mysql
+    restart: always
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mixlink
+      MYSQL_USER: mixlink
+      MYSQL_PASSWORD: password
     volumes:
       - db_data:/var/lib/mysql
 
