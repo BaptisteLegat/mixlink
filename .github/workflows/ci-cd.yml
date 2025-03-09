@@ -58,10 +58,6 @@ jobs:
           cd back
           php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
-      - name: Make tmp dir
-        run: |
-          mkdir var/tmp
-
       - name: Run database migrations
         env:
           DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
