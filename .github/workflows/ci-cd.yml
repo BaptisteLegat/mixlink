@@ -54,7 +54,7 @@ jobs:
 
       - name: Run database migrations
         env:
-          DATABASE_URL: mysql://root:password@db:3306/mixlink_test?serverVersion=14&charset=utf8mb4
+          DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
           php bin/console doctrine:migrations:migrate --no-interaction
@@ -63,12 +63,15 @@ jobs:
       #     cd back
       #     vendor/bin/grumphp run
 
-      - name: Run PHPUnit tests
-        env:
-          DATABASE_URL: mysql://root:password@db:3306/mixlink_test?serverVersion=14&charset=utf8mb4
+      - name: Run PHPUnit functional tests
         run: |
           cd back
           vendor/bin/phpunit tests/unit tests/functional
+
+      - name: Run PHPUnit unit tests
+        run: |
+          cd back
+          vendor/bin/phpunit tests/unit
 
       - name: Set up Node.js 18
         uses: actions/setup-node@v3
