@@ -17,64 +17,66 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up PHP
+      - name: Set up PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
-            php-version: '8.2-fpm'
+          php-version: '8.2-fpm'
+          extensions: mbstring, pdo, pdo_mysql, curl, bcmath, xml
 
       - name: Install Symfony CLI
         run: |
-            curl -sS https://get.symfony.com/cli/installer | bash
-            mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
+          curl -sS https://get.symfony.com/cli/installer | bash
+          mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
 
       - name: Set up MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-            host port: 3306
-            mysql version: '8.0'
-            mysql database: 'mixlink_test'
-            mysql root password: 'password'
-            mysql password: 'password'
+          host port: 3306
+          mysql version: '8.0'
+          mysql database: 'mixlink_test'
+          mysql root password: 'password'
+          mysql password: 'password'
 
       - name: Wait for MySQL to be ready
         run: |
-            while ! mysqladmin ping --host=127.0.0.1 --port=3306 --password=password --silent; do
-                sleep 1
-            done
-
-      - name: Set working directory to back
-        run: cd back
-
-      - name: Copy .env.test.local
-        run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+          while ! mysqladmin ping --host=127.0.0.1 --port=3306 --password=password --silent; do
+            sleep 1
+          done
 
       - name: Install PHP dependencies
-        run: composer install --no-ansi --no-interaction --no-progress
-        working-directory: ./back
+        run: |
+          cd back
+          composer install --no-ansi --no-interaction --no-progress
+
+      - name: Copy .env.test.local
+        run: |
+          cd back
+          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
       - name: Run database migrations
         env:
-            DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
-        run: php bin/console doctrine:migrations:migrate --no-interaction
-        working-directory: ./back
+          DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
+        run: |
+          cd back
+          php bin/console doctrine:migrations:migrate --no-interaction
 
       - name: Run GrumPHP
-        run: vendor/bin/grumphp run
-        working-directory: ./back
+        run: |
+          cd back
+          vendor/bin/grumphp run
 
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit tests/unit tests/functional
-        working-directory: ./back
+        run: |
+          cd back
+          vendor/bin/phpunit tests/unit tests/functional
 
-      - name: Set working directory to front
-        run: cd ../front
-
-      - name: Install Node.js
+      - name: Set up Node.js 18
         uses: actions/setup-node@v3
         with:
-            node-version: 18
+          node-version: 18
 
-      - name: Install NPM dependencies
+      - name: Install NPM dependencies and build frontend
         run: |
-            npm install
-            npm run build
+          cd front
+          npm install
+          npm run build
