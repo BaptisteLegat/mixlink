@@ -62,11 +62,13 @@ jobs:
           composer install --no-ansi --no-interaction --no-progress
           bin/console c:c --env=test
 
-      - name: Install NPM dependencies and build frontend
+      - name: Installer les dépendances NPM et construire le frontend
         run: |
-            cd front
-            npm install
-            npm run build
+          cd front
+          npm config set unsafe-perm true
+          npm install --arch=x64
+          npm run build
+
 
       - name: Run database migrations
         env:
