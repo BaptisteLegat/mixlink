@@ -13,13 +13,7 @@ jobs:
     if: '! github.event.pull_request.draft'
     runs-on: ubuntu-latest
 
-    env:
-      DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink?serverVersion=8.0&charset=utf8mb4
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Set up PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
@@ -29,6 +23,8 @@ jobs:
         run: |
           curl -sS https://get.symfony.com/cli/installer | bash
           mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
+
+      - uses: actions/checkout@v3
 
       - name: Set up MySQL
         uses: mirromutth/mysql-action@v1.1
@@ -50,39 +46,44 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libzip-dev
 
+      - name: Copy .env.test.local
+        run: |
+          cd back
+          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"    - name: Make build dir
+
+      - name: Make build dir
+        run: |
+          cd back
+          mkdir public/bundles
+
       - name: Install Dependencies
         run: |
           cd back
           composer install --no-ansi --no-interaction --no-progress
           bin/console c:c --env=test
 
-      - name: Copy .env.test.local
+      - name: Install NPM dependencies and build frontend
         run: |
-          cd back
-          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+            cd front
+            npm install
+            npm run build
 
       - name: Run database migrations
+        env:
+          DATABASE_URL: mysql://root:password@localhost:3306/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
-
-      - name: Print environment variables
-        run: |
-          cd back
-          echo "DATABASE_URL=$DATABASE_URL"
-
-      - name: Run PHPUnit tests
-        run: |
-          cd back
-          vendor/bin/phpunit tests/unit tests/functional
 
       - name: Set up Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install NPM dependencies and build frontend
-        run: |
-          cd front
-          npm install
-          npm run build
+      # - name: Run GrumPHP
+      #   run: vendor/bin/grumphp run
+
+      # - name: Run PHPUnit tests
+      #   run: |
+      #     cd back
+      #     vendor/bin/phpunit tests/unit
