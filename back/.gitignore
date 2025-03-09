@@ -24,3 +24,7 @@
 .phpunit.cache
 coverage/
 ###< phpunit/phpunit ###
+
+###> MySQL Docker data ###
+/docker/mysql/data/*
+###< MySQL Docker data ###
