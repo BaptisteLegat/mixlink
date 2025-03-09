@@ -50,17 +50,21 @@ jobs:
 
       - name: Install PHP dependencies
         run: composer install --no-ansi --no-interaction --no-progress
+        working-directory: ./back
 
       - name: Run database migrations
         env:
             DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
         run: php bin/console doctrine:migrations:migrate --no-interaction
+        working-directory: ./back
 
       - name: Run GrumPHP
         run: vendor/bin/grumphp run
+        working-directory: ./back
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit tests/unit tests/functional
+        working-directory: ./back
 
       - name: Set working directory to front
         run: cd ../front
