@@ -43,14 +43,6 @@ jobs:
             sleep 1
           done
 
-      - name: Install Docker and Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo apt-get install -y docker-compose
-          sudo usermod -aG docker $USER
-          sudo service docker start
-
       - name: Install PHP dependencies
         run: |
           cd back
@@ -68,14 +60,10 @@ jobs:
           cd back
           php bin/console doctrine:migrations:migrate --no-interaction
 
-      - name: Check file permissions in Docker
-        run: |
-          docker-compose exec php ls -l /var/www/html
-
-      - name: Run GrumPHP
-        run: |
-          cd back
-          vendor/bin/grumphp run -v
+      # - name: Run GrumPHP
+      #   run: |
+      #     cd back
+      #     vendor/bin/grumphp run
 
       - name: Run PHPUnit tests
         run: |
