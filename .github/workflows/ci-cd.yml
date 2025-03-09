@@ -80,15 +80,14 @@ jobs:
         with:
           node-version: 18
 
-      # - name: Run GrumPHP
-      #   run: vendor/bin/grumphp run
-
       - name: Run PHPUnit unit tests
         run: |
           cd back
           vendor/bin/phpunit tests/unit
 
       - name: Run PHPUnit functional tests
+        env:
+          DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
           bin/console c:c --env=test
