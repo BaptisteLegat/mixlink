@@ -29,7 +29,7 @@ jobs:
       - name: Set up MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-          host port: 3306
+          host port: 3800
           mysql version: '8.0'
           mysql database: 'mixlink_test'
           mysql root password: 'password'
@@ -37,7 +37,7 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          while ! mysqladmin ping --host=127.0.0.1 --port=3306 --password=password --silent; do
+          while ! mysqladmin ping --host=127.0.0.1 --port=3800 --password=password --silent; do
             sleep 1
           done
 
@@ -49,7 +49,7 @@ jobs:
       - name: Copy .env.test.local
         run: |
           cd back
-          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"    - name: Make build dir
+          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
       - name: Make build dir
         run: |
@@ -73,8 +73,7 @@ jobs:
           DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
-          php bin/console doctrine:database:create --env=test --if-not-exists
-          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          php bin/console doctrine:migration:migrate --env=test --no-interaction
 
       - name: Set up Node.js 18
         uses: actions/setup-node@v3
@@ -92,4 +91,5 @@ jobs:
       - name: Run PHPUnit functional tests
         run: |
           cd back
+          bin/console c:c --env=test
           vendor/bin/phpunit tests/functional
