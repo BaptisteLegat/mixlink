@@ -84,14 +84,11 @@ jobs:
         run: |
           cd back
           vendor/bin/phpunit tests/unit
-      - name: Ajuster la configuration pour CI
-        run: |
-          cd back
-          sed -i 's/database/127.0.0.1/g' .env.test
-          sed -i 's/3306/3800/g' .env.test
 
       - name: Run PHPUnit functional tests
         run: |
           cd back
+          sed -i 's/database/127.0.0.1/g' phpunit.xml.dist
+          sed -i 's/3306/3800/g' phpunit.xml.dist
           bin/console c:c --env=test
           vendor/bin/phpunit tests/functional
