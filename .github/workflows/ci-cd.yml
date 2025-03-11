@@ -62,7 +62,7 @@ jobs:
           composer install --no-ansi --no-interaction --no-progress
           bin/console c:c --env=test
 
-      - name: Installer les dépendances NPM et construire le frontend
+      - name: Build front
         run: |
           cd front
           npm install
@@ -79,6 +79,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
+      - name: Run GrumPHP
+        run: |
+          cd back
+          vendor/bin/grumphp run
 
       - name: Run PHPUnit unit tests
         run: |
