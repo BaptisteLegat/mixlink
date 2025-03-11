@@ -157,7 +157,7 @@ class User implements BlameableInterface, TimestampableInterface
 
     public function getProviderByName(string $name): ?Provider
     {
-        $criteria = $this->providers->filter(fn(Provider $p) => $p->getName() === $name);
+        $criteria = $this->providers->filter(fn (Provider $p) => $p->getName() === $name);
 
         return $criteria->isEmpty() ? null : $criteria->first();
     }

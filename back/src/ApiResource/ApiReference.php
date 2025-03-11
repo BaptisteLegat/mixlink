@@ -4,6 +4,6 @@ namespace App\ApiResource;
 
 class ApiReference
 {
-    public const GOOGLE = 'google';
-    public const SPOTIFY = 'spotify';
+    public const string GOOGLE = 'google';
+    public const string SPOTIFY = 'spotify';
 }
