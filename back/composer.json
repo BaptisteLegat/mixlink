@@ -89,12 +89,12 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.70.1",
-        "hautelook/alice-bundle": "^2.14",
+        "friendsofphp/php-cs-fixer": "^3.71",
+        "hautelook/alice-bundle": "^2.14.1",
         "phpmd/phpmd": "^2.15",
         "phpro/grumphp": "^2.11",
-        "phpstan/phpstan": "^2.1.6",
-        "phpunit/phpunit": "^11.5.10",
+        "phpstan/phpstan": "^2.1.8",
+        "phpunit/phpunit": "^11.5.12",
         "povils/phpmnd": "^3.5",
         "psalm/plugin-symfony": "^5.2.7",
         "symfony/browser-kit": "7.2.*",

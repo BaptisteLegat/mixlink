@@ -62,23 +62,12 @@ jobs:
           composer install --no-ansi --no-interaction --no-progress
           bin/console c:c --env=test
 
-      - name: Build front
-        run: |
-          cd front
-          npm install
-          npm run build
-
       - name: Run database migrations
         env:
           DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
         run: |
           cd back
           php bin/console doctrine:migration:migrate --env=test --no-interaction
-
-      - name: Set up Node.js 18
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - name: Run GrumPHP
         run: |
@@ -97,3 +86,50 @@ jobs:
           sed -i 's/3306/3800/g' phpunit.xml.dist
           bin/console c:c --env=test
           vendor/bin/phpunit tests/functional
+
+  frontend-tests:
+    if: '! github.event.pull_request.draft'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          cd front
+          npm install
+
+      - name: Run ESLint
+        run: |
+          cd front
+          npm run lint
+
+      - name: Run Prettier
+        run: |
+          cd front
+          npm run format
+
+      - name: Run Unit Tests
+        run: |
+          cd front
+          npm run test:unit
+
+      - name: Build front
+        run: |
+          cd front
+          npm run build
+
+      - name: Run E2E Tests
+        run: |
+          cd front
+          npm run test:e2e
+
+      - name: Preview Build
+        run: |
+          cd front
+          npm run preview
