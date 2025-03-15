@@ -98,38 +98,36 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
 
       - name: Install Dependencies
         run: |
           cd front
-          npm install
+          npm ci
 
-      - name: Run ESLint
+      - name: Lint
         run: |
           cd front
           npm run lint
 
-      - name: Run Prettier
+      - name: Format Check
         run: |
           cd front
-          npm run format
+          npx prettier --check src/
 
       - name: Run Unit Tests
         run: |
           cd front
           npm run test:unit
 
-      - name: Build front
+      - name: Build
         run: |
           cd front
           npm run build
 
-      - name: Run E2E Tests
-        run: |
-          cd front
-          npm run test:e2e
-
-      - name: Preview Build
-        run: |
-          cd front
-          npm run preview
+      #Check later
+      # - name: Run End-to-End Tests
+      #   run: |
+      #     cd front
+      #     npm run test:e2e

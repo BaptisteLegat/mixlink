@@ -11,7 +11,7 @@
     const isMenuOpen = ref(false);
 
     const languageText = computed(() => {
-        return locale.value === 'en' ? 'English 🇬🇧' : 'Français  🇫🇷';
+        return locale.value === 'en' ? 'English 🇬🇧' : 'Français 🇫🇷';
     });
 
     const themeText = computed(() => {
