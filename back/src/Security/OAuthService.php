@@ -8,13 +8,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class OAuthService
 {
-    public const GOOGLE_SCOPES = [
+    public const array GOOGLE_SCOPES = [
         'https://www.googleapis.com/auth/youtube', // Access to YouTube
         'https://www.googleapis.com/auth/userinfo.email', // Access to email
         'https://www.googleapis.com/auth/userinfo.profile', // Access to profile
     ];
 
-    public const SPOTIFY_SCOPES = [
+    public const array SPOTIFY_SCOPES = [
         'user-read-email',
         'user-read-private',
     ];

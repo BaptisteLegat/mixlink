@@ -4,23 +4,28 @@
 @use './styles/_fonts.scss' as *;
 
 body {
-  	font-family: $font-family, sans-serif;
+    font-family: $font-family, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
-	&.primary {
-		color: $primary-color;
-	}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    &.primary {
+        color: $primary-color;
+    }
 
-	&.secondary {
-		color: $secondary-color;
-	}
+    &.secondary {
+        color: $secondary-color;
+    }
 
-	&.primary-dark {
-		color: $purple-light;
-	}
+    &.primary-dark {
+        color: $purple-light;
+    }
 
-	&.secondary-dark {
-		color: $purple;
-	}
+    &.secondary-dark {
+        color: $purple;
+    }
 }

@@ -9,8 +9,9 @@ class OAuthUserData
     public function __construct(
         private ResourceOwnerInterface $user,
         private string $accessToken,
-        private ?string $refreshToken = null
-    ) {}
+        private ?string $refreshToken = null,
+    ) {
+    }
 
     public function getUser(): ResourceOwnerInterface
     {

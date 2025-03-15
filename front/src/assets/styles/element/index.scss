@@ -1,38 +1,38 @@
 @use '../_variables.scss' as *;
 
 $--colors: (
-  'primary': (
-    'base': $primary-color,
-  ),
-  'success': (
-    'base': $success-color,
-  ),
-  'warning': (
-    'base': $warning-color,
-  ),
-  'danger': (
-    'base': $error-color,
-  ),
-  'error': (
-    'base': $error-color,
-  ),
-  'info': (
-    'base': $info-color,
-  ),
-  'text': (
-    'primary': $primary-color,
-  ),
-  'background': (
-    'base': $background-color,
-    'overlay': rgba($primary-color, 0.05),
-  ),
+    'primary': (
+        'base': $primary-color,
+    ),
+    'success': (
+        'base': $success-color,
+    ),
+    'warning': (
+        'base': $warning-color,
+    ),
+    'danger': (
+        'base': $error-color,
+    ),
+    'error': (
+        'base': $error-color,
+    ),
+    'info': (
+        'base': $info-color,
+    ),
+    'text': (
+        'primary': $primary-color,
+    ),
+    'background': (
+        'base': $background-color,
+        'overlay': rgba($primary-color, 0.05),
+    ),
 );
 
 // You should use them in scss, because we calculate it by sass.
 // comment next lines to use default color
 @forward 'element-plus/theme-chalk/src/common/var.scss' with (
-  // do not use same name, it will override.
-  $colors: $--colors,
+    // do not use same name, it will override.
+    $colors: $--colors
 );
 
 // if you want to import all

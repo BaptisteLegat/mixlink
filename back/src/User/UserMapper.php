@@ -11,7 +11,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
-    private const PROVIDER_MAPPERS = [
+    private const array PROVIDER_MAPPERS = [
         ApiReference::GOOGLE => 'mapGoogleUser',
         ApiReference::SPOTIFY => 'mapSpotifyUser',
     ];

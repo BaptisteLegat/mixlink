@@ -6,6 +6,8 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import compression from 'vite-plugin-compression';
+import WindiCSS from 'vite-plugin-windicss';
 
 export default defineConfig({
     plugins: [
@@ -17,6 +19,8 @@ export default defineConfig({
         Components({
           resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
         }),
+        compression({ algorithm: 'brotliCompress' }),
+        WindiCSS(),
     ],
     resolve: {
         alias: {
@@ -37,6 +41,32 @@ export default defineConfig({
                     @use "@/assets/styles/element/index.scss" as *;
                 `,
                 api: 'modern-compiler',
+            },
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules/element-plus')) {
+                        return 'element-plus';
+                    }
+                    if (id.includes('node_modules/vue')) {
+                        return 'vue';
+                    }
+                    if (id.includes('node_modules/vue-router')) {
+                        return 'vue-router';
+                    }
+                    if (id.includes('node_modules/pinia')) {
+                        return 'pinia';
+                    }
+                    if (id.includes('node_modules/vue-i18n')) {
+                        return 'vue-i18n';
+                    }
+                    if (id.includes('node_modules')) {
+                        return 'vendor';
+                    }
+                },
             },
         },
     },

@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
         } catch (error) {
             console.error('Erreur lors de la déconnexion :', error);
         } finally {
-            document.cookie = "AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
             user.value = null;
             isAuthenticated.value = false;

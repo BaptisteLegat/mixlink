@@ -25,22 +25,14 @@
     <el-container v-if="!authStore.isAuthenticated">
         <el-col :span="8">
             <h1>{{ t('header.login') }}</h1>
-            <el-button
-                size="large"
-                type="primary"
-                @click="redirectTo('google')"
-            >
+            <el-button size="large" type="primary" @click="redirectTo('google')">
                 {{ t('login.connect_with_google') }}
-                <GoogleIcon style="width: 20px; height: 20px; margin-left: 10px;" />
+                <GoogleIcon style="width: 20px; height: 20px; margin-left: 10px" />
             </el-button>
 
-            <el-button
-                size="large"
-                type="primary"
-                @click="redirectTo('spotify')"
-            >
+            <el-button size="large" type="primary" @click="redirectTo('spotify')">
                 {{ t('login.connect_with_spotify') }}
-                <SpotifyIcon style="width: 20px; height: 20px; margin-left: 10px;" />
+                <SpotifyIcon style="width: 20px; height: 20px; margin-left: 10px" />
             </el-button>
         </el-col>
     </el-container>

@@ -21,7 +21,7 @@ class AuthenticationController extends AbstractController
         private OAuthService $oAuthService,
         private ProviderManager $providerManager,
         private UserManager $userManager,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -56,6 +56,7 @@ class AuthenticationController extends AbstractController
             return $response;
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return new RedirectResponse($_ENV['FRONTEND_URL']);
         }
     }
@@ -85,7 +86,7 @@ class AuthenticationController extends AbstractController
             'isAuthenticated' => true,
             'id' => $user->getId(),
             'email' => $user->getEmail(),
-            'providers' => array_map(fn(Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
+            'providers' => array_map(fn (Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
         ]);
 
         return $response;

@@ -5,8 +5,8 @@ namespace App\User;
 use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
-use App\Trait\TraceableTrait;
 use App\Security\OAuthUserData;
+use App\Trait\TraceableTrait;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
 
@@ -17,7 +17,7 @@ class UserManager
     public function __construct(
         private UserMapper $userMapper,
         private ProviderManager $providerManager,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
     ) {
     }
 

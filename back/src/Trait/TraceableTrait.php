@@ -8,6 +8,9 @@ use DateTime;
 
 trait TraceableTrait
 {
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function setTimestampable(TimestampableInterface $timestampable, bool $isUpdate = false): void
     {
         $date = new DateTime();
@@ -18,6 +21,9 @@ trait TraceableTrait
         $timestampable->setUpdatedAt($date);
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function setBlameable(BlameableInterface $blameable, string $userEmail, bool $isUpdate = false): void
     {
         if (!$isUpdate) {
