@@ -11,6 +11,86 @@
         "privacy": "Politique de confidentialité",
         "terms": "Conditions d'utilisation"
     },
+    "home": {
+        "title_1": "Unifiez Vos",
+        "title_2": "Playlists",
+        "title_3": "Musicales",
+        "subtitle": "Créez des playlists collaboratives entre différentes plateformes de streaming en quelques clics. Plus besoin de changement d'application ou d'inscriptions.",
+        "start_free": "Commencer gratuitement",
+        "view_demo": "Voir la démo",
+        "how_it_works": "Comment ça fonctionne",
+        "features": {
+            "title": "Fonctionnalités",
+            "feature1": {
+                "title": "Création Multi-Plateformes",
+                "description": "Créez des playlists qui intègrent des morceaux de différentes plateformes de streaming en un seul endroit."
+            },
+            "feature2": {
+                "title": "Partage Facile",
+                "description": "Partagez un simple lien avec vos amis pour qu'ils puissent contribuer à votre playlist."
+            },
+            "feature3": {
+                "title": "Ajout via URL",
+                "description": "Ajoutez des morceaux en collant simplement l'URL ou en recherchant par nom et artiste."
+            },
+            "feature4": {
+                "title": "Historique Complet",
+                "description": "Consultez l'historique complet de toutes vos playlists créées."
+            }
+        },
+       "plans": {
+            "title": "Plans d'abonnement",
+            "subtitle": "Choisissez le plan qui correspond le mieux à vos besoins",
+            "per_month": "/mois",
+            "free": {
+                "title": "Gratuit",
+                "feature1": "Créez jusqu'à 5 playlists",
+                "feature2": "Ajout jusqu'à 50 morceaux par playlist",
+                "cta": "Commencer, gratuitement"
+            },
+            "premium": {
+                "title": "Premium",
+                "feature1": "Playlists illimitées",
+                "feature2": "Nombre illimité de morceaux",
+                "feature3": "Historique complet",
+                "cta": "Obtenir premium"
+            },
+            "enterprise": {
+                "title": "Entreprise",
+                "price": "Sur mesure",
+                "feature1": "Toutes les fonctionnalités premium",
+                "feature2": "Solutions personnalisables",
+                "cta": "Contactez-nous"
+            }
+        },
+        "tabs": {
+            "one": {
+                "title": "1. Créez une playlist",
+                "description": "Créez une nouvelle session mixlink et configurez les paramètres de votre playlist."
+            },
+            "two": {
+                "title": "2. Partagez le lien",
+                "description": "Envoyez le lien de votre session à vos amis ou collègues pour qu'ils puissent contribuer."
+            },
+            "three": {
+                "title": "3. Ajoutez des morceaux",
+                "description": "Vous et vos invités ajoutez des morceaux via URL ou recherche, quelle que soit la plateforme."
+            },
+            "four": {
+                "title": "4. Profitez de votre playlist",
+                "description": "Validez les morceaux et exportez la playlist vers votre plateforme de streaming préférée."
+            },
+            "create": "Créer",
+            "share": "Partager",
+            "add": "Ajouter",
+            "enjoy": "Profiter"
+        },
+        "cta": {
+            "title": "Prêt à révolutionner votre façon de créer des playlists ?",
+            "subtitle": "Rejoignez des milliers d'utilisateurs qui créent déjà des playlists collaboratives multi-plateformes.",
+            "button": "Commencer maintenant"
+        }
+    },
     "button": {
         "submit": "Soumettre",
         "cancel": "Annuler"

@@ -7,7 +7,6 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import compression from 'vite-plugin-compression';
-import WindiCSS from 'vite-plugin-windicss';
 
 export default defineConfig({
     plugins: [
@@ -20,7 +19,6 @@ export default defineConfig({
           resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
         }),
         compression({ algorithm: 'brotliCompress' }),
-        WindiCSS(),
     ],
     resolve: {
         alias: {

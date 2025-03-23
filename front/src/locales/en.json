@@ -11,6 +11,86 @@
         "privacy": "Privacy Policy",
         "terms": "Terms of Service"
     },
+    "home": {
+        "title_1": "Unify Your",
+        "title_2": "Music",
+        "title_3": "Playlists",
+        "subtitle": "Create collaborative playlists between different streaming platforms in a few clicks. No need for app switching or sign-ups.",
+        "start_free": "Start Free",
+        "view_demo": "View Demo",
+        "how_it_works": "How It Works",
+        "features": {
+            "title": "Features",
+            "feature1": {
+                "title": "Cross-Platform Creation",
+                "description": "Create playlists that integrate songs from different streaming platforms in one place."
+            },
+            "feature2": {
+                "title": "Easy Sharing",
+                "description": "Share a simple link with your friends so they can contribute to your playlist."
+            },
+            "feature3": {
+                "title": "URL Addition",
+                "description": "Add songs by simply pasting the URL or searching by name and artist."
+            },
+            "feature4": {
+                "title": "Complete History",
+                "description": "View the complete history of all playlists created."
+            }
+        },
+       "plans": {
+            "title": "Subscription Plans",
+            "subtitle": "Choose the plan that best suits your needs",
+            "per_month": "/month",
+            "free": {
+                "title": "Free",
+                "feature1": "Create up to 5 playlists",
+                "feature2": "Add up to 50 songs per playlist",
+                "cta": "Get Started, Free"
+            },
+            "premium": {
+                "title": "Premium",
+                "feature1": "Unlimited playlists",
+                "feature2": "Unlimited number of songs",
+                "feature3": "Complete history",
+                "cta": "Get Premium"
+            },
+            "enterprise": {
+                "title": "Enterprise",
+                "price": "Custom-made",
+                "feature1": "Everything in Premium",
+                "feature2": "Custom branding",
+                "cta": "Contact Us"
+            }
+        },
+        "tabs": {
+            "one": {
+                "title": "1. Create a playlist",
+                "description": "Create a new mixlink session and configure your playlist settings."
+            },
+            "two": {
+                "title": "2. Share the link",
+                "description": "Send the link to your session to friends or colleagues so they can contribute."
+            },
+            "three": {
+                "title": "3. Enjoy the music",
+                "description": "Listen to your collaborative playlist and enjoy the music together."
+            },
+            "four": {
+                "title": "4. Enjoy your playlist",
+                "description": "Validate the songs and export the playlist to your favorite streaming platform."
+            },
+            "create": "Create",
+            "share": "Share",
+            "add": "Add",
+            "enjoy": "Enjoy"
+        },
+        "cta": {
+            "title": "Ready to revolutionize your music experience?",
+            "subtitle": "Join us and start creating collaborative playlists today.",
+            "button": "Get Started"
+        }
+    },
     "button": {
         "submit": "Submit",
         "cancel": "Cancel"
