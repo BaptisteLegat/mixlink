@@ -14,57 +14,120 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4-fpm'
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2-fpm'
+      - name: Install Symfony CLI
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          mv /home/runner/.symfony*/bin/symfony /usr/local/bin/symfony
 
-    - name: Install Symfony CLI
-      run: |
-        curl -sS https://get.symfony.com/cli/installer | bash
-        mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
+      - uses: actions/checkout@v3
 
-    - name: Set up MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        host port: 3306
-        mysql version: '8.0'
-        mysql database: 'mixlink_test'
-        mysql root password: 'password'
-        mysql password: 'password'
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3800
+          mysql version: '8.0'
+          mysql database: 'mixlink_test'
+          mysql root password: 'password'
+          mysql password: 'password'
 
-    - name: Wait for MySQL to be ready
-      run: |
-        while ! mysqladmin ping --host=127.0.0.1 --port=3306 --password=password --silent; do
-          sleep 1
-        done
+      - name: Wait for MySQL to be ready
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --port=3800 --password=password --silent; do
+            sleep 1
+          done
 
-    - name: Copy .env.test.local
-      run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+      - name: Install PHP Deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libzip-dev
 
-    - name: Install PHP dependencies
-      run: composer install --no-ansi --no-interaction --no-progress
+      - name: Copy .env.test.local
+        run: |
+          cd back
+          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Make build dir
+        run: |
+          cd back
+          mkdir public/bundles
 
-    - name: Install NPM dependencies
-      run: |
-        npm install
-        npm run build
+      - name: Install Dependencies
+        run: |
+          cd back
+          composer install --no-ansi --no-interaction --no-progress
+          bin/console c:c --env=test
 
-    - name: Run database migrations
-      env:
-        DATABASE_URL: mysql://root:password@127.0.0.1:3306/mixlink_test?serverVersion=8.0&charset=utf8mb4
-      run: php bin/console doctrine:migrations:migrate --no-interaction
+      - name: Run database migrations
+        env:
+          DATABASE_URL: mysql://root:password@127.0.0.1:3800/mixlink_test?serverVersion=14&charset=utf8
+        run: |
+          cd back
+          php bin/console doctrine:migration:migrate --env=test --no-interaction
 
-    - name: Run GrumPHP
-      run: vendor/bin/grumphp run
+      - name: Run GrumPHP
+        run: |
+          cd back
+          vendor/bin/grumphp run
 
-    - name: Run PHPUnit tests
-      run: vendor/bin/phpunit tests/unit tests/functional
+      - name: Run PHPUnit unit tests
+        run: |
+          cd back
+          vendor/bin/phpunit tests/unit
+
+      - name: Run PHPUnit functional tests
+        run: |
+          cd back
+          sed -i 's/database/127.0.0.1/g' phpunit.xml.dist
+          sed -i 's/3306/3800/g' phpunit.xml.dist
+          bin/console c:c --env=test
+          vendor/bin/phpunit tests/functional
+
+  frontend-tests:
+    if: '! github.event.pull_request.draft'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'front/package-lock.json'
+
+      - name: Install Dependencies
+        run: |
+          cd front
+          npm ci
+
+      - name: Lint
+        run: |
+          cd front
+          npm run lint
+
+      - name: Format Check
+        run: |
+          cd front
+          npx prettier --check src/
+
+      - name: Run Unit Tests
+        run: |
+          cd front
+          npm run test:unit
+
+      - name: Build
+        run: |
+          cd front
+          npm run build
+
+      #Check later
+      # - name: Run End-to-End Tests
+      #   run: |
+      #     cd front
+      #     npm run test:e2e

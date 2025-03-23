@@ -13,10 +13,6 @@
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
-###> phpstan/phpstan ###
-phpstan.neon
-###< phpstan/phpstan ###
-
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
@@ -28,3 +24,7 @@ phpstan.neon
 .phpunit.cache
 coverage/
 ###< phpunit/phpunit ###
+
+###> MySQL Docker data ###
+/docker/mysql/data/*
+###< MySQL Docker data ###

@@ -1,35 +1,35 @@
 @use '../_variables.scss' as *;
 
 $--colors: (
-	'primary': (
-		'base': $purple,
-	),
-	'success': (
-		'base': $success-color,
-	),
-	'warning': (
-		'base': $warning-color,
-	),
-	'danger': (
-		'base': $error-color,
-	),
-	'error': (
-		'base': $error-color,
-	),
-	'info': (
-		'base': $info-color,
-	),
-	'text': (
-		'primary': #FFFFFF,
-		'secondary': rgba(#FFFFFF, 0.6),
-		'disabled': rgba(#FFFFFF, 0.4),
-	),
-	'background': (
-		'base': #1E1E2F,
-		'overlay': rgba(#FFFFFF, 0.1),
-	),
+    'primary': (
+        'base': $purple,
+    ),
+    'success': (
+        'base': $success-color,
+    ),
+    'warning': (
+        'base': $warning-color,
+    ),
+    'danger': (
+        'base': $error-color,
+    ),
+    'error': (
+        'base': $error-color,
+    ),
+    'info': (
+        'base': $info-color,
+    ),
+    'text': (
+        'primary': #ffffff,
+        'secondary': rgba(#ffffff, 0.6),
+        'disabled': rgba(#ffffff, 0.4),
+    ),
+    'background': (
+        'base': #1e1e2f,
+        'overlay': rgba(#ffffff, 0.1),
+    ),
 );
 
 @forward 'element-plus/theme-chalk/src/dark/var.scss' with (
-  $colors: $--colors
+    $colors: $--colors
 );

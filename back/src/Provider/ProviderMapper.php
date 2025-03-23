@@ -12,7 +12,7 @@ class ProviderMapper
         OAuthUserData $oauthUserData,
         string $providerName,
         User $user,
-        ?Provider $provider
+        ?Provider $provider,
     ): Provider {
         if (!$provider) {
             $provider = new Provider();

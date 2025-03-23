@@ -18,22 +18,14 @@
     }
 </script>
 <template>
-    <el-header style="border-bottom: 1px solid #ebeef5;" height="80px">
+    <el-header style="border-bottom: 1px solid #ebeef5" height="80px">
         <el-row align="middle">
             <el-col :span="8">
                 <el-row>
                     <el-link :underline="false" href="/">
-                        <h1 :class="isDark ? 'secondary-dark' : 'secondary'">
-                         mix
-                        </h1>
-                        <el-image
-                            :src="isDark ? 'logo-dark.svg' : 'logo.svg'"
-                            alt="mixlink"
-                            style="width: 40px; height: 40px;"
-                        />
-                        <h1 :class="isDark ? 'primary-dark' : 'primary'">
-                            link
-                        </h1>
+                        <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
+                        <el-image :src="isDark ? 'logo-dark.svg' : 'logo.svg'" alt="mixlink" style="width: 40px; height: 40px" />
+                        <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>
                     </el-link>
                 </el-row>
             </el-col>
@@ -41,19 +33,15 @@
                 <el-row justify="end" align="middle">
                     <HeaderMobile v-if="isMobile" />
                     <template v-else>
-                        <el-dropdown style="margin-right: 20px;">
+                        <el-dropdown style="margin-right: 20px">
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item @click="changeLanguage('en')" :disabled="locale.value === 'en'">
-                                        English
-                                    </el-dropdown-item>
-                                    <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'">
-                                        Français
-                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="changeLanguage('en')" :disabled="locale.value === 'en'"> English </el-dropdown-item>
+                                    <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'"> Français </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                             <el-link type="primary" :underline="false">
-                                <TranslateIcon style="width: 20px; height: 20px;" />
+                                <TranslateIcon style="width: 20px; height: 20px" />
                             </el-link>
                         </el-dropdown>
                         <el-switch
@@ -62,7 +50,7 @@
                             inline-prompt
                             :active-icon="SunIcon"
                             :inactive-icon="MoonIcon"
-                            style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023C0; margin-right: 20px;"
+                            style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023c0; margin-right: 20px"
                         />
                         <el-button v-if="authStore.isAuthenticated" type="primary" @click="authStore.logout()">
                             {{ $t('header.logout') }}

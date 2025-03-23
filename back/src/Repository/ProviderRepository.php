@@ -25,6 +25,9 @@ class ProviderRepository extends ServiceEntityRepository
         parent::__construct($registry, Provider::class);
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function save(Provider $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -34,6 +37,9 @@ class ProviderRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function remove(Provider $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
