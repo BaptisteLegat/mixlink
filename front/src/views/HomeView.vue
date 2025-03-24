@@ -64,23 +64,23 @@
 
     const features = [
         {
-            title:'home.features.feature1.title',
-            description:'home.features.feature1.description',
+            title: 'home.features.feature1.title',
+            description: 'home.features.feature1.description',
             icon: PlaylistMusicIcon,
         },
         {
-            title:'home.features.feature2.title',
-            description:'home.features.feature2.description',
+            title: 'home.features.feature2.title',
+            description: 'home.features.feature2.description',
             icon: ShareVariantIcon,
         },
         {
-            title:'home.features.feature3.title',
-            description:'home.features.feature3.description',
+            title: 'home.features.feature3.title',
+            description: 'home.features.feature3.description',
             icon: LinkVariantIcon,
         },
         {
-            title:'home.features.feature4.title',
-            description:'home.features.feature4.description',
+            title: 'home.features.feature4.title',
+            description: 'home.features.feature4.description',
             icon: HistoryIcon,
         },
     ];
@@ -89,31 +89,21 @@
         {
             name: 'home.plans.free.title',
             price: '0',
-            features: [
-                'home.plans.free.feature1',
-                'home.plans.free.feature2',
-            ],
+            features: ['home.plans.free.feature1', 'home.plans.free.feature2'],
             cta: 'home.plans.free.cta',
             highlighted: false,
         },
         {
             name: 'home.plans.premium.title',
             price: '3,99',
-            features: [
-                'home.plans.premium.feature1',
-                'home.plans.premium.feature2',
-                'home.plans.premium.feature3',
-            ],
+            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3'],
             cta: 'home.plans.premium.cta',
             highlighted: true,
         },
         {
             name: 'home.plans.enterprise.title',
             price: 'home.plans.enterprise.price',
-            features: [
-                'home.plans.enterprise.feature1',
-                'home.plans.enterprise.feature2',
-            ],
+            features: ['home.plans.enterprise.feature1', 'home.plans.enterprise.feature2'],
             cta: 'home.plans.enterprise.cta',
             highlighted: false,
         },
@@ -132,7 +122,10 @@
             <el-row :gutter="20" justify="center" align="middle">
                 <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                     <div class="hero-content">
-                        <h1 class="hero-title">{{ t('home.title_1') }} <span :class="isDark ? 'primary-dark' : 'primary'">{{ t('home.title_2') }}</span> {{ t('home.title_3') }}</h1>
+                        <h1 class="hero-title">
+                            {{ t('home.title_1') }} <span :class="isDark ? 'primary-dark' : 'primary'">{{ t('home.title_2') }}</span>
+                            {{ t('home.title_3') }}
+                        </h1>
                         <p class="hero-subtitle">
                             {{ t('home.subtitle') }}
                         </p>

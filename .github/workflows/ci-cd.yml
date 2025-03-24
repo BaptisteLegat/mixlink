@@ -107,8 +107,8 @@ jobs:
           file: ./back/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/backend:latest
-            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/backend:latest
+            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/backend:${{ github.sha }}
 
   frontend-tests:
     if: '! github.event.pull_request.draft'
@@ -175,5 +175,5 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/frontend:latest
-            ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/frontend:latest
+            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/frontend:${{ github.sha }}

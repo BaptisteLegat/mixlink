@@ -38,7 +38,7 @@
                 "description": "Consultez l'historique complet de toutes vos playlists créées."
             }
         },
-       "plans": {
+        "plans": {
             "title": "Plans d'abonnement",
             "subtitle": "Choisissez le plan qui correspond le mieux à vos besoins",
             "per_month": "/mois",
