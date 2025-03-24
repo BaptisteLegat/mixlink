@@ -100,6 +100,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repository
+        id: lowercase_repo
+        run: |
+          echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v4
         with:
@@ -107,8 +112,8 @@ jobs:
           file: ./back/Dockerfile
           push: true
           tags: |
-            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/backend:latest
-            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/backend:${{ github.sha }}
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:${{ github.sha }}
 
   frontend-tests:
     if: '! github.event.pull_request.draft'
@@ -168,6 +173,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repository
+        id: lowercase_repo
+        run: |
+          echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v4
         with:
@@ -175,5 +185,5 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: |
-            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/frontend:latest
-            ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/frontend:${{ github.sha }}
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:${{ github.sha }}
