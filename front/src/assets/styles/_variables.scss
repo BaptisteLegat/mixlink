@@ -3,7 +3,6 @@ $primary-color: #6023c0;
 $secondary-color: #260e4d;
 $purple: #753ed6;
 $purple-light: #baacff;
-$text-color: #333333;
 $background-color: #ffffff;
 $error-color: #e74c3c;
 $success-color: #27ae60;
@@ -11,7 +10,7 @@ $warning-color: #f39c12;
 $info-color: #3498db;
 
 // --- Typography ---
-$font-family: 'Satoshi', sans-serif;
+$app-font-family: 'Satoshi', sans-serif;
 $font-size-base: 16px;
 $font-size-small: 14px;
 $font-size-large: 20px;
@@ -25,13 +24,6 @@ $spacing-unit: 1rem;
 $spacing-small: 0.5rem;
 $spacing-medium: 1rem;
 $spacing-large: 2rem;
-
-// --- Borders ---
-$border-radius: 4px;
-$border-color: #bdc3c7;
-
-// --- Shadows ---
-$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 // --- Breakpoints (responsive design) ---
 $breakpoint-xs: 480px;

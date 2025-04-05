@@ -4,7 +4,7 @@
 @use './styles/_fonts.scss' as *;
 
 body {
-    font-family: $font-family, sans-serif;
+    font-family: $app-font-family;
 }
 
 h1,

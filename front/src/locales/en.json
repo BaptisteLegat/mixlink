@@ -21,6 +21,7 @@
         "how_it_works": "How It Works",
         "features": {
             "title": "Features",
+            "subtitle": "Discover what makes mixlink unique",
             "feature1": {
                 "title": "Cross-Platform Creation",
                 "description": "Create playlists that integrate songs from different streaming platforms in one place."
@@ -42,6 +43,7 @@
             "title": "Subscription Plans",
             "subtitle": "Choose the plan that best suits your needs",
             "per_month": "/month",
+            "popular": "Popular",
             "free": {
                 "title": "Free",
                 "feature1": "Create up to 5 playlists",

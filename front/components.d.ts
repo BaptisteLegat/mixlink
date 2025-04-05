@@ -7,10 +7,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CtaSection: typeof import('./src/components/home/CtaSection.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCard: typeof import('element-plus/es')['ElCard']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElContainer: typeof import('element-plus/es')['ElContainer']
+    ElDivider: typeof import('element-plus/es')['ElDivider']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
@@ -24,13 +27,20 @@ declare module 'vue' {
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElSpace: typeof import('element-plus/es')['ElSpace']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElText: typeof import('element-plus/es')['ElText']
+    FeaturesSection: typeof import('./src/components/home/FeaturesSection.vue')['default']
     FooterItem: typeof import('./src/components/layout/FooterItem.vue')['default']
     HeaderItem: typeof import('./src/components/layout/HeaderItem.vue')['default']
     HeaderMobile: typeof import('./src/components/layout/HeaderMobile.vue')['default']
+    HeroSection: typeof import('./src/components/home/HeroSection.vue')['default']
+    HowItWorks: typeof import('./src/components/home/HowItWorks.vue')['default']
+    PricingSection: typeof import('./src/components/home/PricingSection.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    WorkflowStep: typeof import('./src/components/home/WorkflowStep.vue')['default']
   }
 }
