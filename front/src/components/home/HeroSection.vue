@@ -1,10 +1,64 @@
 <script setup>
     import { useI18n } from 'vue-i18n';
     import { isDark } from '@/composables/dark';
-    import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
-    import YoutubeIcon from 'vue-material-design-icons/Youtube.vue';
+    import LandingPageImg from '@/assets/images/landing-page.png';
+    import { ref } from 'vue';
+    import { useMotion } from '@vueuse/motion';
 
     const { t } = useI18n();
+
+    const titleRef = ref(null);
+    const subtitleRef = ref(null);
+    const ctaRef = ref(null);
+    const imageRef = ref(null);
+
+    useMotion(titleRef, {
+        initial: { opacity: 0, x: -30 },
+        enter: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: 800,
+                type: 'spring',
+            },
+        },
+    });
+
+    useMotion(subtitleRef, {
+        initial: { opacity: 0, y: 20 },
+        enter: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                delay: 200,
+                duration: 600,
+            },
+        },
+    });
+
+    useMotion(ctaRef, {
+        initial: { opacity: 0, y: 30 },
+        enter: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                delay: 400,
+                duration: 600,
+            },
+        },
+    });
+
+    useMotion(imageRef, {
+        initial: { opacity: 0, x: 30 },
+        enter: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                delay: 100,
+                duration: 800,
+            },
+        },
+    });
 </script>
 
 <template>
@@ -12,26 +66,66 @@
         <el-row :gutter="20" justify="center" align="middle">
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                 <el-space direction="vertical">
-                    <el-text tag="h1" class="hero-title">
+                    <el-text tag="h1" ref="titleRef" class="hero-title">
                         {{ t('home.title_1') }} <span :class="isDark ? 'primary-dark' : 'primary'">{{ t('home.title_2') }}</span>
                         {{ t('home.title_3') }}
                     </el-text>
-                    <el-text tag="p" class="hero-subtitle">
+                    <el-text tag="p" ref="subtitleRef" class="hero-subtitle">
                         {{ t('home.subtitle') }}
                     </el-text>
-                    <el-space>
-                        <el-button type="primary" size="large" @click="$router.push('/login')">{{ t('home.start_free') }}</el-button>
-                        <el-button size="large" bg>{{ t('home.view_demo') }}</el-button>
+                    <el-space ref="ctaRef" class="hero-cta">
+                        <el-button
+                            type="primary"
+                            size="large"
+                            @click="$router.push('/login')"
+                            v-motion="{
+                                hover: {
+                                    scale: 1.05,
+                                    transition: { duration: 300 },
+                                },
+                                press: {
+                                    scale: 0.95,
+                                },
+                            }"
+                        >
+                            {{ t('home.start_free') }}
+                        </el-button>
+                        <el-button
+                            size="large"
+                            bg
+                            v-motion="{
+                                hover: {
+                                    scale: 1.05,
+                                    transition: { duration: 300 },
+                                },
+                                press: {
+                                    scale: 0.95,
+                                },
+                            }"
+                        >
+                            {{ t('home.view_demo') }}
+                        </el-button>
                     </el-space>
-                </el-space>
-                <el-space class="supported-platforms">
-                    <SpotifyIcon :size="32" />
-                    <YoutubeIcon :size="32" />
                 </el-space>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-                <div class="hero-image">
-                    <el-image :src="isDark ? '/img/hero-dark.svg' : '/img/hero.svg'" alt="MixLink Demo" fit="contain" class="floating" />
+                <div ref="imageRef" class="hero-image">
+                    <el-image
+                        :src="LandingPageImg"
+                        alt="MixLink Demo"
+                        fit="contain"
+                        v-motion="{
+                            initial: { y: 0 },
+                            enter: {
+                                y: [0, -15, 0],
+                                transition: {
+                                    duration: 4000,
+                                    repeat: Infinity,
+                                    ease: 'easeInOut',
+                                },
+                            },
+                        }"
+                    />
                 </div>
             </el-col>
         </el-row>
@@ -59,32 +153,10 @@
         color: var(--el-text-color-secondary);
     }
 
-    .supported-platforms {
-        display: flex;
-        gap: 20px;
-        color: var(--el-text-color-secondary);
-    }
-
     .hero-image {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-
-    .floating {
-        animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-        0% {
-            transform: translateY(0px);
-        }
-        50% {
-            transform: translateY(-15px);
-        }
-        100% {
-            transform: translateY(0px);
-        }
     }
 
     .primary {
@@ -98,19 +170,19 @@
     @media (max-width: 768px) {
         .hero-title {
             font-size: 2.2rem;
+            text-align: center;
         }
 
         .hero-section {
             padding: 40px 0;
-            text-align: center;
         }
 
         .hero-cta {
             justify-content: center;
         }
 
-        .supported-platforms {
-            justify-content: center;
+        .hero-subtitle {
+            text-align: center;
         }
     }
 </style>

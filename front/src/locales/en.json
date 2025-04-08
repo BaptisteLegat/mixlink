@@ -67,19 +67,19 @@
         },
         "tabs": {
             "one": {
-                "title": "1. Create a playlist",
+                "title": "Create a playlist",
                 "description": "Create a new mixlink session and configure your playlist settings."
             },
             "two": {
-                "title": "2. Share the link",
+                "title": "Share the link",
                 "description": "Send the link to your session to friends or colleagues so they can contribute."
             },
             "three": {
-                "title": "3. Enjoy the music",
+                "title": "Enjoy the music",
                 "description": "Listen to your collaborative playlist and enjoy the music together."
             },
             "four": {
-                "title": "4. Enjoy your playlist",
+                "title": "Enjoy your playlist",
                 "description": "Validate the songs and export the playlist to your favorite streaming platform."
             },
             "create": "Create",

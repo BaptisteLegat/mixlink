@@ -7,6 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddTracksSvg: typeof import('./src/components/svgs/AddTracksSvg.vue')['default']
+    CreatePlaylistSvg: typeof import('./src/components/svgs/CreatePlaylistSvg.vue')['default']
     CtaSection: typeof import('./src/components/home/CtaSection.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -26,12 +28,14 @@ declare module 'vue' {
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElRate: typeof import('element-plus/es')['ElRate']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElText: typeof import('element-plus/es')['ElText']
+    EnjoyMusicSvg: typeof import('./src/components/svgs/EnjoyMusicSvg.vue')['default']
     FeaturesSection: typeof import('./src/components/home/FeaturesSection.vue')['default']
     FooterItem: typeof import('./src/components/layout/FooterItem.vue')['default']
     HeaderItem: typeof import('./src/components/layout/HeaderItem.vue')['default']
@@ -41,6 +45,7 @@ declare module 'vue' {
     PricingSection: typeof import('./src/components/home/PricingSection.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SharePlaylistSvg: typeof import('./src/components/svgs/SharePlaylistSvg.vue')['default']
     WorkflowStep: typeof import('./src/components/home/WorkflowStep.vue')['default']
   }
 }

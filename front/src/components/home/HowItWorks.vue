@@ -1,643 +1,483 @@
 <script setup>
-    import { ref, computed } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import { isDark } from '@/composables/dark';
-    import { useIntersectionObserver } from '@vueuse/core';
+    import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue';
+    import EditIcon from 'vue-material-design-icons/Pencil.vue';
+    import ShareIcon from 'vue-material-design-icons/Share.vue';
+    import PlaylistAddIcon from 'vue-material-design-icons/PlaylistPlus.vue';
+    import MusicNoteIcon from 'vue-material-design-icons/Music.vue';
+    import CreatePlaylistSvg from '@/components/svgs/CreatePlaylistSvg.vue';
+    import SharePlaylistSvg from '@/components/svgs/SharePlaylistSvg.vue';
+    import AddTracksSvg from '@/components/svgs/AddTracksSvg.vue';
+    import EnjoyMusicSvg from '@/components/svgs/EnjoyMusicSvg.vue';
 
     const { t } = useI18n();
+    const activeStep = ref(0);
+    const isIntersecting = ref(false);
+    const stepsContainer = ref(null);
+    let observer = null;
+    let stepTimeout = null;
 
-    // Étapes du processus
+    const stepKeys = computed(() => ['create', 'share', 'add', 'enjoy']);
+
     const steps = computed(() => [
         {
-            id: 'create',
-            title: t('home.tabs.one.title'),
-            description: t('home.tabs.one.description'),
-            action: t('home.tabs.create'),
-            icon: 'create',
-            color: '#6C5CE7',
+            key: 'create',
+            title: 'home.tabs.one.title',
+            description: 'home.tabs.one.description',
+            icon: EditIcon,
+            color: '#6023c0',
+            svg: CreatePlaylistSvg,
         },
         {
-            id: 'share',
-            title: t('home.tabs.two.title'),
-            description: t('home.tabs.two.description'),
-            action: t('home.tabs.share'),
-            icon: 'share',
-            color: '#00B894',
+            key: 'share',
+            title: 'home.tabs.two.title',
+            description: 'home.tabs.two.description',
+            icon: ShareIcon,
+            color: '#6023c0',
+            svg: SharePlaylistSvg,
         },
         {
-            id: 'add',
-            title: t('home.tabs.three.title'),
-            description: t('home.tabs.three.description'),
-            action: t('home.tabs.add'),
-            icon: 'add',
-            color: '#FD79A8',
+            key: 'add',
+            title: 'home.tabs.three.title',
+            description: 'home.tabs.three.description',
+            icon: PlaylistAddIcon,
+            color: '#6023c0',
+            svg: AddTracksSvg,
         },
         {
-            id: 'enjoy',
-            title: t('home.tabs.four.title'),
-            description: t('home.tabs.four.description'),
-            action: t('home.tabs.enjoy'),
-            icon: 'enjoy',
-            color: '#FDCB6E',
+            key: 'enjoy',
+            title: 'home.tabs.four.title',
+            description: 'home.tabs.four.description',
+            icon: MusicNoteIcon,
+            color: '#6023c0',
+            svg: EnjoyMusicSvg,
         },
     ]);
 
-    const activeStep = ref(0);
-    const targetRef = ref(null);
-    const isVisible = ref(false);
+    const advanceStep = () => {
+        if (activeStep.value < steps.value.length - 1) {
+            activeStep.value++;
+        } else {
+            activeStep.value = 0;
+        }
 
-    // Observer pour déclencher les animations
-    const { stop } = useIntersectionObserver(
-        targetRef,
-        ([{ isIntersecting }]) => {
-            if (isIntersecting) {
-                isVisible.value = true;
-                stop();
-            }
-        },
-        { threshold: 0.1 }
-    );
+        if (isIntersecting.value) {
+            stepTimeout = setTimeout(advanceStep, 5000);
+        }
+    };
+
+    onMounted(() => {
+        nextTick(() => {
+            if (!stepsContainer.value) return;
+
+            observer = new IntersectionObserver(
+                (entries) => {
+                    const isVisible = entries[0]?.isIntersecting || false;
+                    isIntersecting.value = isVisible;
+
+                    if (stepTimeout) {
+                        clearTimeout(stepTimeout);
+                        stepTimeout = null;
+                    }
+
+                    if (isVisible) {
+                        activeStep.value = 0;
+                        stepTimeout = setTimeout(advanceStep, 3000);
+                    }
+                },
+                { threshold: 0.3 }
+            );
+
+            observer.observe(stepsContainer.value);
+        });
+    });
+
+    onBeforeUnmount(() => {
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        if (stepTimeout) {
+            clearTimeout(stepTimeout);
+            stepTimeout = null;
+        }
+    });
 
     const setActiveStep = (index) => {
+        if (stepTimeout) {
+            clearTimeout(stepTimeout);
+            stepTimeout = null;
+        }
+
         activeStep.value = index;
-    };
 
-    // Animation des icônes
-    const getIconPath = (icon) => {
-        const icons = {
-            create: `
-      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-      <path d="M0 0h24v24H0z" fill="none"/>
-    `,
-            share: `
-      <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-    `,
-            add: `
-      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-      <path d="M0 0h24v24H0z" fill="none"/>
-    `,
-            enjoy: `
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    `,
-        };
-        return icons[icon] || '';
-    };
-
-    // Animation du SVG
-    const drawPath = (index) => {
-        return {
-            '--path-length': 100 + index * 50,
-            '--animation-delay': `${index * 0.2}s`,
-        };
+        if (isIntersecting.value) {
+            stepTimeout = setTimeout(advanceStep, 5000);
+        }
     };
 </script>
 
 <template>
-    <section class="how-it-works" :class="{ 'dark-mode': isDark }" ref="targetRef">
-        <div class="container">
-            <div class="header">
-                <el-text tag="h2" class="title" size="xl">
+    <el-container class="how-it-works-container" id="how-it-works">
+        <div ref="stepsContainer" class="steps-wrapper">
+            <el-space direction="vertical" alignment="center" class="how-it-works-section" :fill="true" :size="30">
+                <el-text tag="h2" class="section-title">
                     {{ t('home.how_it_works') }}
                 </el-text>
-                <el-text tag="p" class="subtitle">
-                    {{ t('home.tabs.subtitle') }}
-                </el-text>
-            </div>
 
-            <div class="process-wrapper">
-                <!-- Timeline horizontale -->
-                <div class="timeline">
-                    <div
-                        v-for="(step, index) in steps"
-                        :key="step.id"
-                        class="step"
-                        :class="{
-                            active: activeStep === index,
-                            completed: activeStep > index,
-                            visible: isVisible,
-                        }"
-                        @click="setActiveStep(index)"
-                    >
-                        <div class="step-number" :style="{ '--step-color': step.color }">
-                            {{ index + 1 }}
-                        </div>
-                        <div class="step-label">
-                            {{ step.title }}
-                        </div>
-                        <div class="step-line" :style="{ '--step-color': step.color }"></div>
-                    </div>
-                </div>
-
-                <!-- Contenu des étapes -->
-                <div class="content-wrapper">
-                    <transition-group name="fade-slide" mode="out-in">
-                        <div v-for="(step, index) in steps" v-show="activeStep === index" :key="step.id" class="step-content">
-                            <div class="illustration">
-                                <svg width="300" height="300" viewBox="0 0 300 300" class="animated-svg">
-                                    <!-- Cercle de fond animé -->
-                                    <circle
-                                        cx="150"
-                                        cy="150"
-                                        r="120"
-                                        fill="none"
-                                        stroke="var(--step-color)"
-                                        stroke-width="2"
-                                        stroke-dasharray="var(--path-length)"
-                                        stroke-dashoffset="var(--path-length)"
-                                        style="opacity: 0.2"
-                                        :style="drawPath(index)"
-                                    />
-
-                                    <!-- Icône centrale -->
-                                    <g transform="translate(100, 100) scale(2)">
-                                        <path :d="getIconPath(step.icon)" fill="var(--step-color)" />
-                                    </g>
-
-                                    <!-- Éléments décoratifs -->
-                                    <circle
-                                        cx="80"
-                                        cy="80"
-                                        r="8"
-                                        fill="var(--step-color)"
-                                        class="floating-element"
-                                        style="animation-delay: 0.3s; opacity: 0.6"
-                                    />
-                                    <circle
-                                        cx="220"
-                                        cy="80"
-                                        r="6"
-                                        fill="var(--step-color)"
-                                        class="floating-element"
-                                        style="animation-delay: 0.5s; opacity: 0.6"
-                                    />
-                                    <rect
-                                        x="70"
-                                        y="220"
-                                        width="12"
-                                        height="12"
-                                        rx="3"
-                                        fill="var(--step-color)"
-                                        class="floating-element"
-                                        style="animation-delay: 0.7s; opacity: 0.6"
-                                    />
-                                </svg>
-                            </div>
-
-                            <div class="text-content">
-                                <el-text tag="h3" class="step-title">
-                                    {{ step.title }}
-                                </el-text>
-                                <el-text tag="p" class="step-description">
-                                    {{ step.description }}
-                                </el-text>
-
-                                <el-button
-                                    type="primary"
-                                    class="action-button"
-                                    :style="{
-                                        'background-color': step.color,
-                                        'border-color': step.color,
-                                    }"
-                                    @click="$router.push('/login')"
+                <el-card class="steps-card" shadow="hover">
+                    <div class="steps-content">
+                        <div class="steps-navigation">
+                            <div class="step-labels">
+                                <div
+                                    v-for="(step, index) in steps"
+                                    :key="step.key"
+                                    class="step-label"
+                                    :class="{ active: index === activeStep }"
+                                    @click="setActiveStep(index)"
                                 >
-                                    {{ step.action }}
-                                    <el-icon class="arrow-icon"><right /></el-icon>
-                                </el-button>
+                                    <div class="label-content">
+                                        <component :is="step.icon" :size="20" class="label-icon" />
+                                        <el-text>{{ t(`home.tabs.${stepKeys[index]}`) }}</el-text>
+                                    </div>
+                                    <div class="active-indicator" :style="{ backgroundColor: step.color }"></div>
+                                </div>
                             </div>
                         </div>
-                    </transition-group>
-                </div>
 
-                <!-- Navigation mobile -->
-                <div class="mobile-nav">
-                    <el-button circle :disabled="activeStep === 0" @click="setActiveStep(activeStep - 1)">
-                        <el-icon><arrow-left /></el-icon>
-                    </el-button>
+                        <div class="step-showcase">
+                            <transition name="fade-slide" mode="out-in">
+                                <div :key="activeStep" class="step-content">
+                                    <div class="step-info">
+                                        <el-text tag="h3" class="step-title">
+                                            <el-text class="step-number">0{{ activeStep + 1 }}</el-text>
+                                            {{ t(steps[activeStep].title) }}
+                                        </el-text>
+                                        <el-text tag="p" class="step-description">{{ t(steps[activeStep].description) }}</el-text>
+                                    </div>
 
-                    <div class="step-indicator">{{ activeStep + 1 }} / {{ steps.length }}</div>
+                                    <div class="step-visual">
+                                        <transition name="zoom-fade">
+                                            <component
+                                                :key="activeStep"
+                                                :is="steps[activeStep].svg"
+                                                class="visual-container"
+                                                :color="steps[activeStep].color"
+                                            />
+                                        </transition>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
 
-                    <el-button circle :disabled="activeStep === steps.length - 1" @click="setActiveStep(activeStep + 1)">
-                        <el-icon><arrow-right /></el-icon>
-                    </el-button>
-                </div>
-            </div>
+                        <div class="mobile-controls">
+                            <div
+                                v-for="(step, index) in steps"
+                                :key="step.key"
+                                class="control-dot"
+                                :class="{ active: index === activeStep }"
+                                :style="index === activeStep ? { backgroundColor: step.color } : {}"
+                                @click="setActiveStep(index)"
+                            ></div>
+                        </div>
+                    </div>
+                </el-card>
+            </el-space>
         </div>
-    </section>
+    </el-container>
 </template>
 
 <style lang="scss" scoped>
-    .how-it-works {
-        padding: 6rem 1rem;
-        background: linear-gradient(135deg, #f9f7ff 0%, #f0ebff 100%);
-        position: relative;
-        overflow: hidden;
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -10%;
-            width: 60%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
-            transform: rotate(30deg);
-            z-index: 0;
-        }
-
-        &.dark-mode {
-            background: linear-gradient(135deg, #1a1030 0%, #2a1b50 100%);
-
-            .title {
-                background-image: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            }
-
-            .subtitle {
-                color: rgba(255, 255, 255, 0.7);
-            }
-
-            .step-label {
-                color: rgba(255, 255, 255, 0.8);
-            }
-
-            .step-content {
-                background: rgba(30, 20, 60, 0.7);
-            }
-
-            .step-description {
-                color: rgba(255, 255, 255, 0.8);
-            }
-        }
-    }
-
-    .container {
-        max-width: 1200px;
+    .how-it-works-container {
+        padding: 100px 16px;
+        max-width: 1440px;
         margin: 0 auto;
         position: relative;
-        z-index: 1;
+        display: flex;
+        justify-content: center;
+        background: var(--el-bg-color);
     }
 
-    .header {
-        text-align: center;
-        margin-bottom: 4rem;
-
-        .title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background-image: linear-gradient(135deg, #6c5ce7 0%, #a18cd1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #666;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
+    .steps-wrapper {
+        width: 100%;
+        max-width: 1200px;
     }
 
-    .process-wrapper {
+    .how-it-works-section {
         position: relative;
+        z-index: 1;
+        width: 100%;
     }
 
-    .timeline {
+    .steps-card {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        border-radius: 16px;
+        overflow: hidden;
+        border: none;
+        background-color: var(--el-bg-color);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        text-align: center;
+        background: linear-gradient(135deg, #6023c0, #9067e5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+
+        &::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #6023c0, #9067e5);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+    }
+
+    .steps-navigation {
+        width: 100%;
+        display: none;
+
+        @media (min-width: 1024px) {
+            display: block;
+        }
+    }
+
+    .step-labels {
         display: flex;
         justify-content: space-between;
-        position: relative;
-        margin-bottom: 3rem;
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: 25px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: rgba(0, 0, 0, 0.1);
-            z-index: 1;
-
-            .dark-mode & {
-                background: rgba(255, 255, 255, 0.1);
-            }
-        }
-    }
-
-    .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 2;
-        cursor: pointer;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.5s ease;
-
-        &.visible {
-            opacity: 1;
-            transform: translateY(0);
-
-            @for $i from 0 through 3 {
-                &:nth-child(#{$i + 1}) {
-                    transition-delay: $i * 0.15s;
-                }
-            }
-        }
-
-        &:hover {
-            .step-number {
-                transform: scale(1.1);
-                box-shadow: 0 5px 15px rgba(var(--step-color), 0.3);
-            }
-        }
-
-        &.active {
-            .step-number {
-                background-color: var(--step-color);
-                color: white;
-                transform: scale(1.1);
-                box-shadow: 0 5px 20px rgba(var(--step-color), 0.4);
-            }
-
-            .step-label {
-                color: var(--step-color);
-                font-weight: 600;
-            }
-
-            .step-line {
-                background-color: var(--step-color);
-            }
-        }
-
-        &.completed {
-            .step-number {
-                background-color: var(--step-color);
-                color: white;
-            }
-
-            .step-line {
-                background-color: var(--step-color);
-            }
-        }
-    }
-
-    .step-number {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #666;
-        border: 3px solid #eee;
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 2;
-
-        .dark-mode & {
-            background: #2a1b50;
-            border-color: #3d2a6e;
-            color: rgba(255, 255, 255, 0.8);
-        }
+        gap: 8px;
     }
 
     .step-label {
-        margin-top: 1rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #666;
-        text-align: center;
+        flex: 1;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--el-text-color-secondary);
+        cursor: pointer;
         transition: all 0.3s ease;
-    }
+        padding: 12px 0;
+        position: relative;
 
-    .step-line {
-        position: absolute;
-        top: 25px;
-        height: 3px;
-        background: #ddd;
-        z-index: 1;
-        transition: all 0.5s ease;
+        .label-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-        &:first-child {
-            display: none;
+        .label-icon {
+            transition: all 0.3s ease;
+        }
+
+        .active-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 2px 2px 0 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        &.active {
+            color: var(--el-text-color-primary);
+
+            .label-icon {
+                color: v-bind('steps[activeStep].color');
+            }
+
+            .active-indicator {
+                opacity: 1;
+            }
+        }
+
+        &:hover:not(.active) {
+            color: var(--el-text-color-primary);
+
+            .label-icon {
+                color: v-bind('steps[activeStep].color');
+                opacity: 0.7;
+            }
         }
     }
 
-    .content-wrapper {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    .step-showcase {
         min-height: 400px;
-        position: relative;
+        height: 100%;
+        width: 100%;
+        border-radius: 12px;
         overflow: hidden;
 
-        .dark-mode & {
-            background: rgba(30, 20, 60, 0.7);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(var(--step-color), 0.05) 0%, transparent 50%);
-            z-index: 0;
+        @media (max-width: 768px) {
+            min-height: auto;
         }
     }
 
     .step-content {
-        display: flex;
-        align-items: center;
-        gap: 3rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        height: 100%;
+        min-height: 400px;
+        background: var(--el-bg-color);
+        border-radius: 12px;
+        overflow: hidden;
 
         @media (max-width: 768px) {
-            flex-direction: column;
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            min-height: auto;
         }
     }
 
-    .illustration {
-        flex: 1;
+    .step-info {
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        align-items: center;
-        position: relative;
+        align-items: flex-start;
 
-        .animated-svg {
-            max-width: 100%;
-            height: auto;
-
-            path,
-            circle,
-            rect {
-                animation: draw 1.5s ease forwards;
-                animation-delay: var(--animation-delay);
-            }
+        @media (max-width: 768px) {
+            padding: 30px 20px;
+            text-align: center;
+            align-items: center;
         }
     }
 
-    .text-content {
-        flex: 1;
-        position: relative;
-        z-index: 1;
-
-        @media (max-width: 768px) {
-            text-align: center;
-        }
+    .step-number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: v-bind('steps[activeStep].color');
+        margin-right: 8px;
+        display: inline;
     }
 
     .step-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--step-color);
+        margin-bottom: 20px;
+        color: var(--el-text-color-primary);
+        line-height: 1.3;
+        display: block;
+
+        @media (max-width: 768px) {
+            font-size: 1.7rem;
+        }
     }
 
     .step-description {
         font-size: 1.1rem;
         line-height: 1.7;
-        color: #555;
-        margin-bottom: 2rem;
+        color: var(--el-text-color-regular);
+        max-width: 400px;
+        margin-bottom: 30px;
+        display: block;
 
-        .dark-mode & {
-            color: rgba(255, 255, 255, 0.8);
+        @media (max-width: 768px) {
+            font-size: 1rem;
         }
     }
 
-    .action-button {
-        transition: all 0.3s ease;
+    .step-actions {
+        margin-top: 20px;
+    }
+
+    .step-visual {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
         overflow: hidden;
 
-        &:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(var(--step-color), 0.3);
-
-            .arrow-icon {
-                transform: translateX(5px);
-            }
-        }
-
-        .arrow-icon {
-            transition: transform 0.3s ease;
-            margin-left: 8px;
+        @media (max-width: 768px) {
+            padding: 20px;
         }
     }
 
-    .mobile-nav {
-        display: none;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 2rem;
+    .visual-container {
+        width: 100%;
+        max-width: 400px;
+        height: 100%;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto;
 
         @media (max-width: 768px) {
-            display: flex;
+            max-width: 100%;
+            padding: 15px;
         }
     }
 
-    .step-indicator {
-        font-weight: 600;
-        color: #666;
+    .mobile-controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 30px;
+        padding: 0 20px;
 
-        .dark-mode & {
-            color: rgba(255, 255, 255, 0.8);
+        @media (min-width: 1024px) {
+            display: none;
         }
     }
 
-    /* Animations */
-    @keyframes draw {
-        to {
-            stroke-dashoffset: 0;
+    .control-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: var(--el-border-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.active {
+            width: 30px;
+            border-radius: 6px;
+            background-color: v-bind('steps[activeStep].color');
+            box-shadow: 0 2px 8px v-bind('steps[activeStep].color + "80"');
         }
     }
 
-    @keyframes float {
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-10px);
-        }
+    /* Animations améliorées */
+    .fade-slide-enter-active {
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-
-    .floating-element {
-        animation: float 3s ease-in-out infinite;
-    }
-
-    .fade-slide-enter-active,
     .fade-slide-leave-active {
-        transition: all 0.5s ease;
+        transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
     }
-
     .fade-slide-enter-from {
         opacity: 0;
-        transform: translateX(30px);
+        transform: translateY(10px);
     }
-
     .fade-slide-leave-to {
         opacity: 0;
-        transform: translateX(-30px);
+        transform: translateY(-10px);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .how-it-works {
-            padding: 3rem 1rem;
-        }
-
-        .header {
-            margin-bottom: 2rem;
-
-            .title {
-                font-size: 2rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-        }
-
-        .timeline {
-            margin-bottom: 2rem;
-
-            &::before {
-                top: 20px;
-            }
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
-        }
-
-        .step-label {
-            font-size: 0.9rem;
-        }
-
-        .content-wrapper {
-            padding: 2rem 1rem;
-            min-height: auto;
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-        }
-
-        .step-description {
-            font-size: 1rem;
-        }
+    .zoom-fade-enter-active {
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+    .zoom-fade-leave-active {
+        transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    }
+    .zoom-fade-enter-from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    .zoom-fade-leave-to {
+        opacity: 0;
+        transform: scale(1.05);
     }
 </style>

@@ -67,19 +67,19 @@
         },
         "tabs": {
             "one": {
-                "title": "1. Créez une playlist",
+                "title": "Créez une playlist",
                 "description": "Créez une nouvelle session mixlink et configurez les paramètres de votre playlist."
             },
             "two": {
-                "title": "2. Partagez le lien",
+                "title": "Partagez le lien",
                 "description": "Envoyez le lien de votre session à vos amis ou collègues pour qu'ils puissent contribuer."
             },
             "three": {
-                "title": "3. Ajoutez des morceaux",
+                "title": "Ajoutez des morceaux",
                 "description": "Vous et vos invités ajoutez des morceaux via URL ou recherche, quelle que soit la plateforme."
             },
             "four": {
-                "title": "4. Profitez de votre playlist",
+                "title": "Profitez de votre playlist",
                 "description": "Validez les morceaux et exportez la playlist vers votre plateforme de streaming préférée."
             },
             "create": "Créer",

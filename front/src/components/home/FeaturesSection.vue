@@ -49,42 +49,40 @@
 
 <template>
     <el-container class="features-container">
-        <el-main>
-            <el-space direction="vertical" class="features-section" :fill="true" :size="30">
-                <el-row justify="center">
-                    <el-col :span="24" :lg="18" :xl="16">
-                        <el-text tag="h2" class="section-title">{{ t('home.features.title') }}</el-text>
-                        <el-text tag="p" size="large" class="section-subtitle">{{ t('home.features.subtitle') }}</el-text>
-                    </el-col>
-                </el-row>
+        <el-space direction="vertical" class="features-section" :fill="true" :size="30">
+            <el-row justify="center">
+                <el-col :span="24" :lg="18" :xl="16">
+                    <el-text tag="h2" class="section-title">{{ t('home.features.title') }}</el-text>
+                    <el-text tag="p" size="large" class="section-subtitle">{{ t('home.features.subtitle') }}</el-text>
+                </el-col>
+            </el-row>
 
-                <el-row :gutter="24" class="features-row">
-                    <el-col v-for="(feature, index) in features" :key="index" :xs="24" :sm="12" :md="12" :lg="6" :xl="6" class="feature-col">
-                        <el-card
-                            shadow="hover"
-                            class="feature-card"
-                            :class="[isDark ? 'feature-card-dark' : '', `feature-${index + 1}`]"
-                            :body-style="{ padding: '24px 20px', height: '100%', display: 'flex', flexDirection: 'column' }"
-                        >
-                            <el-space direction="vertical" alignment="center" :size="10" :fill="true">
-                                <div
-                                    class="feature-icon"
-                                    :class="isDark ? 'feature-icon-dark' : ''"
-                                    :style="{
-                                        backgroundColor: isDark ? feature.darkBgColor : feature.bgColor,
-                                        color: isDark ? feature.darkColor : feature.color,
-                                    }"
-                                >
-                                    <component :is="feature.icon" :size="24" />
-                                </div>
-                                <el-text tag="h3" class="feature-title">{{ t(feature.title) }}</el-text>
-                                <el-text tag="p" class="feature-description">{{ t(feature.description) }}</el-text>
-                            </el-space>
-                        </el-card>
-                    </el-col>
-                </el-row>
-            </el-space>
-        </el-main>
+            <el-row :gutter="24" class="features-row">
+                <el-col v-for="(feature, index) in features" :key="index" :xs="24" :sm="12" :md="12" :lg="6" :xl="6" class="feature-col">
+                    <el-card
+                        shadow="hover"
+                        class="feature-card"
+                        :class="[isDark ? 'feature-card-dark' : '', `feature-${index + 1}`]"
+                        :body-style="{ padding: '24px 20px', height: '100%', display: 'flex', flexDirection: 'column' }"
+                    >
+                        <el-space direction="vertical" alignment="center" :size="10" :fill="true">
+                            <div
+                                class="feature-icon"
+                                :class="isDark ? 'feature-icon-dark' : ''"
+                                :style="{
+                                    backgroundColor: isDark ? feature.darkBgColor : feature.bgColor,
+                                    color: isDark ? feature.darkColor : feature.color,
+                                }"
+                            >
+                                <component :is="feature.icon" :size="24" />
+                            </div>
+                            <el-text tag="h3" class="feature-title">{{ t(feature.title) }}</el-text>
+                            <el-text tag="p" class="feature-description">{{ t(feature.description) }}</el-text>
+                        </el-space>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-space>
     </el-container>
 </template>
 
@@ -126,10 +124,6 @@
         position: relative;
         z-index: 1;
         padding: 60px 16px;
-
-        @media (min-width: 768px) {
-            padding: 80px 24px;
-        }
     }
 
     .section-title {

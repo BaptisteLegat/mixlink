@@ -56,28 +56,27 @@
 
 <template>
     <el-container class="landing-page">
-        <el-main>
-            <div ref="heroRef">
-                <HeroSection />
-            </div>
-            <div ref="featuresRef">
-                <HowItWorks />
-                <FeaturesSection />
-            </div>
-            <div ref="pricingRef">
-                <PricingSection />
-            </div>
-            <div ref="ctaRef">
-                <CtaSection />
-            </div>
-        </el-main>
+        <div ref="heroRef">
+            <HeroSection />
+        </div>
+        <div ref="featuresRef">
+            <HowItWorks />
+            <FeaturesSection />
+        </div>
+        <div ref="pricingRef">
+            <PricingSection />
+        </div>
+        <div ref="ctaRef">
+            <CtaSection />
+        </div>
     </el-container>
 </template>
 
 <style lang="scss" scoped>
     .landing-page {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 0 20px;
+        display: block;
     }
 </style>

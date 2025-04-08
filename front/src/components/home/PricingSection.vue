@@ -3,6 +3,7 @@
     import { isDark } from '@/composables/dark';
     import CheckCircleIcon from 'vue-material-design-icons/CheckCircle.vue';
     import StarIcon from 'vue-material-design-icons/Star.vue';
+    import { Loading } from '@element-plus/icons-vue';
 
     const { t } = useI18n();
 
@@ -34,83 +35,81 @@
 
 <template>
     <el-container class="pricing-container">
-        <el-main>
-            <el-space direction="vertical" class="pricing-section" :fill="true" :size="30">
-                <el-row justify="center">
-                    <el-col :span="24" :lg="18" :xl="16">
-                        <el-text tag="h2" class="section-title">{{ t('home.plans.title') }}</el-text>
-                        <el-text tag="p" size="large" class="section-subtitle">{{ t('home.plans.subtitle') }}</el-text>
-                    </el-col>
-                </el-row>
+        <el-space direction="vertical" class="pricing-section" :fill="true" :size="30">
+            <el-row justify="center">
+                <el-col :span="24" :lg="18" :xl="16">
+                    <el-text tag="h2" class="section-title">{{ t('home.plans.title') }}</el-text>
+                    <el-text tag="p" size="large" class="section-subtitle">{{ t('home.plans.subtitle') }}</el-text>
+                </el-col>
+            </el-row>
 
-                <el-row :gutter="32" justify="center" class="pricing-row">
-                    <el-col v-for="(plan, index) in plans" :key="index" :xs="24" :sm="24" :md="8" :lg="8" :xl="8" class="pricing-col">
-                        <el-card
-                            class="pricing-card"
-                            :class="{
-                                'pricing-card-highlighted': plan.highlighted,
-                                'pricing-card-dark': isDark && !plan.highlighted,
-                                'pricing-card-highlighted-dark': isDark && plan.highlighted,
+            <el-row :gutter="32" justify="center" class="pricing-row">
+                <el-col v-for="(plan, index) in plans" :key="index" :xs="24" :sm="24" :md="8" :lg="8" :xl="8" class="pricing-col">
+                    <el-card
+                        class="pricing-card"
+                        :class="{
+                            'pricing-card-highlighted': plan.highlighted,
+                            'pricing-card-dark': isDark && !plan.highlighted,
+                            'pricing-card-highlighted-dark': isDark && plan.highlighted,
+                        }"
+                        shadow="hover"
+                        :body-style="{ padding: '32px 24px', height: '100%', display: 'flex', flexDirection: 'column' }"
+                    >
+                        <div v-if="plan.badge" class="plan-badge">
+                            <StarIcon :size="16" />
+                            <span>{{ t(plan.badge) }}</span>
+                        </div>
+
+                        <el-text tag="h3" class="plan-name">{{ t(plan.name) }}</el-text>
+
+                        <div class="plan-price">
+                            <el-text tag="span" class="currency" v-if="plan.price !== 'home.plans.enterprise.price'">€</el-text>
+                            <el-text tag="span" class="amount">{{
+                                plan.price === 'home.plans.enterprise.price' ? t(plan.price) : plan.price
+                            }}</el-text>
+                            <el-text v-if="plan.price !== 'home.plans.enterprise.price'" tag="span" class="period">
+                                {{ t('home.plans.per_month') }}
+                            </el-text>
+                        </div>
+
+                        <div
+                            class="divider"
+                            :style="{
+                                background: plan.highlighted
+                                    ? `linear-gradient(90deg, ${plan.color}, ${plan.darkColor})`
+                                    : isDark
+                                      ? 'rgba(255, 255, 255, 0.1)'
+                                      : 'rgba(0, 0, 0, 0.06)',
                             }"
-                            shadow="hover"
-                            :body-style="{ padding: '32px 24px', height: '100%', display: 'flex', flexDirection: 'column' }"
-                        >
-                            <div v-if="plan.badge" class="plan-badge">
-                                <StarIcon :size="16" />
-                                <span>{{ t(plan.badge) }}</span>
+                        ></div>
+
+                        <el-space direction="vertical" class="plan-features" :fill="true" :size="16">
+                            <div v-for="(feature, featureIndex) in plan.features" :key="featureIndex" class="feature-item">
+                                <CheckCircleIcon :size="18" :fill="plan.highlighted ? '#fff' : isDark ? plan.darkColor : plan.color" />
+                                <el-text class="feature-text">{{ t(feature) }}</el-text>
                             </div>
+                        </el-space>
 
-                            <el-text tag="h3" class="plan-name">{{ t(plan.name) }}</el-text>
-
-                            <div class="plan-price">
-                                <el-text tag="span" class="currency" v-if="plan.price !== 'home.plans.enterprise.price'">€</el-text>
-                                <el-text tag="span" class="amount">{{
-                                    plan.price === 'home.plans.enterprise.price' ? t(plan.price) : plan.price
-                                }}</el-text>
-                                <el-text v-if="plan.price !== 'home.plans.enterprise.price'" tag="span" class="period">
-                                    {{ t('home.plans.per_month') }}
-                                </el-text>
-                            </div>
-
-                            <div
-                                class="divider"
-                                :style="{
-                                    background: plan.highlighted
-                                        ? `linear-gradient(90deg, ${plan.color}, ${plan.darkColor})`
-                                        : isDark
-                                          ? 'rgba(255, 255, 255, 0.1)'
-                                          : 'rgba(0, 0, 0, 0.06)',
+                        <div class="cta-wrapper">
+                            <el-button
+                                :type="plan.highlighted ? 'primary' : 'default'"
+                                class="plan-cta"
+                                :class="{
+                                    'plan-cta-highlighted': plan.highlighted,
+                                    'plan-cta-secondary': !plan.highlighted,
                                 }"
-                            ></div>
-
-                            <el-space direction="vertical" class="plan-features" :fill="true" :size="16">
-                                <div v-for="(feature, featureIndex) in plan.features" :key="featureIndex" class="feature-item">
-                                    <CheckCircleIcon :size="18" :fill="plan.highlighted ? '#fff' : isDark ? plan.darkColor : plan.color" />
-                                    <el-text class="feature-text">{{ t(feature) }}</el-text>
-                                </div>
-                            </el-space>
-
-                            <div class="cta-wrapper">
-                                <el-button
-                                    :type="plan.highlighted ? 'primary' : 'default'"
-                                    class="plan-cta"
-                                    :class="{
-                                        'plan-cta-highlighted': plan.highlighted,
-                                        'plan-cta-secondary': !plan.highlighted,
-                                    }"
-                                    @click="$router.push('/login')"
-                                >
-                                    {{ t(plan.cta) }}
-                                    <template #loading>
-                                        <el-icon class="is-loading"><loading /></el-icon>
-                                    </template>
-                                </el-button>
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-            </el-space>
-        </el-main>
+                                @click="$router.push('/login')"
+                            >
+                                {{ t(plan.cta) }}
+                                <template #loading>
+                                    <el-icon class="is-loading"><Loading /></el-icon>
+                                </template>
+                            </el-button>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-space>
     </el-container>
 </template>
 
@@ -127,10 +126,6 @@
         z-index: 1;
         padding: 60px 16px;
         width: 100%;
-
-        @media (min-width: 768px) {
-            padding: 80px 24px;
-        }
     }
 
     .section-title {
