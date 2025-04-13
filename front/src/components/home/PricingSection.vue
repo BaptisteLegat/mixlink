@@ -4,8 +4,27 @@
     import CheckCircleIcon from 'vue-material-design-icons/CheckCircle.vue';
     import StarIcon from 'vue-material-design-icons/Star.vue';
     import { Loading } from '@element-plus/icons-vue';
+    import { useAuthStore } from '@/stores/authStore';
+    import router from '@/router';
 
     const { t } = useI18n();
+
+    const authStore = useAuthStore();
+
+    function handlePlanClick(plan) {
+       if (!authStore.isAuthenticated) {
+            router.push({ path: '/login' });
+            return;
+        }
+
+        if (plan.name === 'home.plans.free.title') {
+            console.log('Free plan selected');
+        } else if (plan.name === 'home.plans.premium.title') {
+            console.log('Premium plan selected');
+        } else if (plan.name === 'home.plans.enterprise.title') {
+            console.log('Enterprise plan selected');
+        }
+    }
 
     const plans = [
         {
@@ -43,7 +62,16 @@
                 </el-col>
             </el-row>
 
-            <el-row :gutter="32" justify="center" class="pricing-row">
+            <el-row v-if="authStore.subscription" justify="center">
+                <el-col :span="24" :lg="18" :xl="16">
+                    <el-text tag="h3" class="section-subtitle">
+                        {{ t('home.plans.active_subscription') }}:
+                        {{ authStore.subscription.plan }} ({{ authStore.subscription.startDate }} - {{ authStore.subscription.endDate }})
+                    </el-text>
+                </el-col>
+            </el-row>
+
+            <el-row v-else :gutter="32" justify="center" class="pricing-row">
                 <el-col v-for="(plan, index) in plans" :key="index" :xs="24" :sm="24" :md="8" :lg="8" :xl="8" class="pricing-col">
                     <el-card
                         class="pricing-card"
@@ -98,7 +126,7 @@
                                     'plan-cta-highlighted': plan.highlighted,
                                     'plan-cta-secondary': !plan.highlighted,
                                 }"
-                                @click="$router.push('/login')"
+                                @click="handlePlanClick(plan)"
                             >
                                 {{ t(plan.cta) }}
                                 <template #loading>

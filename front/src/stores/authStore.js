@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
     const isAuthenticated = ref(false);
+    const subscription = ref(null);
     const router = useRouter();
 
     async function fetchUser() {
@@ -13,9 +14,11 @@ export const useAuthStore = defineStore('auth', () => {
             const data = await fetchUserProfile();
             user.value = data.user;
             isAuthenticated.value = data.isAuthenticated;
+            subscription.value = data.subscription;
         } catch {
             user.value = null;
             isAuthenticated.value = false;
+            subscription.value = null;
         }
     }
 
@@ -29,6 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
 
             user.value = null;
             isAuthenticated.value = false;
+            subscription.value = null;
 
             router.push('/');
         }
@@ -37,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         user,
         isAuthenticated,
+        subscription,
         fetchUser,
         logout,
     };

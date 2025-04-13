@@ -5,6 +5,13 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     frontend_url: '%env(FRONTEND_URL)%'
+    stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+    stripePrices:
+        free: '%env(STRIPE_PRICE_FREE)%'
+        premium: '%env(STRIPE_PRICE_PREMIUM)%'
+    stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
+    stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+    stripe.webhook_secret: '%env(STRIPE_WEBHOOK_SECRET)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -30,6 +37,16 @@ services:
             - { name: doctrine.event_listener, event: 'loadClassMetadata' }
         calls:
             - [ setAnnotationReader, [ "@gedmo.mapping.driver.attribute" ] ]
+
+    App\Service\StripeService:
+        arguments:
+            $stripeSecretKey: '%stripeSecretKey%'
+            $stripePrices: '%stripePrices%'
+
+    App\Controller\WebhookController:
+        arguments:
+            $stripeSecretKey: '%stripe.secret_key%'
+            $stripeWebhookSecret: '%stripe.webhook_secret%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

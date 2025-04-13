@@ -70,6 +70,7 @@ class AuthenticationController extends AbstractController
             return new JsonResponse([
                 'isAuthenticated' => false,
                 'user' => null,
+                'subscription' => null,
             ]);
         }
 
@@ -79,17 +80,32 @@ class AuthenticationController extends AbstractController
             return new JsonResponse([
                 'isAuthenticated' => false,
                 'user' => null,
+                'subscription' => null,
             ]);
         }
 
-        $response = new JsonResponse([
+        $subscription = $user->getSubscription();
+        $activeSubscription = null;
+
+        if ($subscription) {
+            $plan = $subscription->getPlan();
+            $startDate = $subscription->getStartDate();
+            $endDate = $subscription->getEndDate();
+
+            $activeSubscription = [
+                'plan' => null !== $plan ? $plan->getName() : null,
+                'startDate' => null !== $startDate ? $startDate->format('Y-m-d') : null,
+                'endDate' => null !== $endDate ? $endDate->format('Y-m-d') : null,
+            ];
+        }
+
+        return new JsonResponse([
             'isAuthenticated' => true,
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'providers' => array_map(fn (Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
+            'subscription' => $activeSubscription,
         ]);
-
-        return $response;
     }
 
     #[Route('/api/logout', name: 'api_logout')]

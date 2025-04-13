@@ -53,6 +53,9 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $deletedBy = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Subscription::class, cascade: ['persist', 'remove'])]
+    private ?Subscription $subscription = null;
+
     public function __construct()
     {
         $this->providers = new ArrayCollection();
@@ -160,5 +163,22 @@ class User implements BlameableInterface, TimestampableInterface
         $criteria = $this->providers->filter(fn (Provider $p) => $p->getName() === $name);
 
         return $criteria->isEmpty() ? null : $criteria->first();
+    }
+
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): self
+    {
+        // set the owning side of the relation if necessary
+        if ($subscription && $subscription->getUser() !== $this) {
+            $subscription->setUser($this);
+        }
+
+        $this->subscription = $subscription;
+
+        return $this;
     }
 }
