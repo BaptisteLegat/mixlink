@@ -11,18 +11,24 @@
 
     const authStore = useAuthStore();
 
-    function handlePlanClick(plan) {
-       if (!authStore.isAuthenticated) {
+    async function handlePlanClick(plan) {
+        if (!authStore.isAuthenticated) {
             router.push({ path: '/login' });
             return;
         }
+        try {
+            let planName;
+            if (plan.name === 'home.plans.free.title') {
+                planName = 'free';
+            } else if (plan.name === 'home.plans.premium.title') {
+                planName = 'premium';
+            } else if (plan.name === 'home.plans.enterprise.title') {
+                planName = 'enterprise';
+            }
 
-        if (plan.name === 'home.plans.free.title') {
-            console.log('Free plan selected');
-        } else if (plan.name === 'home.plans.premium.title') {
-            console.log('Premium plan selected');
-        } else if (plan.name === 'home.plans.enterprise.title') {
-            console.log('Enterprise plan selected');
+            await authStore.subscribe(planName);
+        } catch (error) {
+            console.error('Subscription error:', error);
         }
     }
 
@@ -65,8 +71,8 @@
             <el-row v-if="authStore.subscription" justify="center">
                 <el-col :span="24" :lg="18" :xl="16">
                     <el-text tag="h3" class="section-subtitle">
-                        {{ t('home.plans.active_subscription') }}:
-                        {{ authStore.subscription.plan }} ({{ authStore.subscription.startDate }} - {{ authStore.subscription.endDate }})
+                        {{ t('home.plans.active_subscription') }}: {{ authStore.subscription.plan }} ({{ authStore.subscription.startDate }} -
+                        {{ authStore.subscription.endDate }})
                     </el-text>
                 </el-col>
             </el-row>

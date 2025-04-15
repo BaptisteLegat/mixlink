@@ -1,0 +1,9 @@
+App\Entity\Subscription:
+  subscription (template):
+    startDate: <(new DateTimeImmutable('364 days ago'))>
+    endDate: <(new DateTimeImmutable('364 days ago'))>
+    createdBy: "system"
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "system"
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+

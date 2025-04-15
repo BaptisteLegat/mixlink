@@ -7,7 +7,6 @@ use App\Repository\PlanRepository;
 use App\Service\StripeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,7 +23,7 @@ class SubscriptionController extends AbstractController
         string $planName,
         PlanRepository $planRepository,
         Request $request,
-    ): RedirectResponse|JsonResponse {
+    ): JsonResponse {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
         if (null === $accessToken) {
             return new JsonResponse(['error' => 'Unauthorized.'], 401);
@@ -41,11 +40,13 @@ class SubscriptionController extends AbstractController
         }
 
         $priceId = $this->stripeService->getPriceIdForPlan($plan->getName());
+
         if (null === $priceId) {
             return new JsonResponse(['error' => 'Stripe price ID not configured for this plan.'], 400);
         }
 
-        $frontendUrl = $_ENV['FRONTEND_URL'] ?? 'http://localhost:5173';
+        /** @var string $frontendUrl */
+        $frontendUrl = $_ENV['FRONTEND_URL'];
         $successUrl = $frontendUrl.'/abonnement/success';
         $cancelUrl = $frontendUrl.'/abonnement/cancel';
 
@@ -61,6 +62,8 @@ class SubscriptionController extends AbstractController
             return new JsonResponse(['error' => 'Unable to create checkout session.'], 500);
         }
 
-        return $this->redirect($checkoutUrl);
+        return new JsonResponse([
+            'url' => $checkoutUrl,
+        ]);
     }
 }

@@ -85,7 +85,7 @@ class Plan implements BlameableInterface, TimestampableInterface
         return $this->isCustom;
     }
 
-    public function setCustom(bool $isCustom): self
+    public function setIsCustom(bool $isCustom): self
     {
         $this->isCustom = $isCustom;
 

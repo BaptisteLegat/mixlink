@@ -1,12 +1,14 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { fetchUserProfile, apiLogout } from '@/api';
+import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
     const isAuthenticated = ref(false);
     const subscription = ref(null);
+    const isLoading = ref(false);
     const router = useRouter();
 
     async function fetchUser() {
@@ -19,6 +21,21 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = null;
             isAuthenticated.value = false;
             subscription.value = null;
+        }
+    }
+
+    async function subscribe(planName) {
+        isLoading.value = true;
+        try {
+            const result = await subscribeToPlan(planName);
+            if (result.url) {
+                window.location.href = result.url;
+            } else {
+                await this.fetchUser();
+            }
+            return result;
+        } finally {
+            isLoading.value = false;
         }
     }
 
@@ -42,6 +59,8 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         isAuthenticated,
         subscription,
+        isLoading,
+        subscribe,
         fetchUser,
         logout,
     };

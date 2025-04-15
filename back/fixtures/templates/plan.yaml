@@ -1,0 +1,27 @@
+App\Entity\Plan:
+  plan_free (template) :
+    name: 'free'
+    isCustom: false
+    price: <(new App\Entity\Embeddable\Money('0', 'EUR'))>
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  plan_premium (template):
+    name: 'premium'
+    isCustom: false
+    price: <(new App\Entity\Embeddable\Money('399', 'EUR'))>
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
+  plan_custom (template):
+    name: 'custom'
+    isCustom: true
+    price: <(new App\Entity\Embeddable\Money(null, 'EUR'))>
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>

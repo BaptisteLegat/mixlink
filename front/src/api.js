@@ -28,3 +28,21 @@ export async function apiLogout() {
 
     return response.json();
 }
+
+export async function fetchWithAuth(path, options = {}) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${path}`, {
+        ...options,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
+    });
+
+    if (!response.ok && !response.redirected) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Request failed');
+    }
+
+    return response;
+}
