@@ -142,14 +142,20 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $expectedJson = json_encode([
-            'isAuthenticated' => true,
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'providers' => array_map(fn(Provider $p) => $p->getName(), $user->getProviders()->toArray()),
-        ]);
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseData = json_decode($responseContent, true);
 
-        $this->assertJsonStringEqualsJsonString($expectedJson, $this->client->getResponse()->getContent());
+        $this->assertTrue($responseData['isAuthenticated']);
+        $this->assertEquals($user->getId(), $responseData['id']);
+        $this->assertEquals($user->getEmail(), $responseData['email']);
+        $this->assertEquals(
+            array_map(fn(Provider $p) => $p->getName(), $user->getProviders()->toArray()),
+            $responseData['providers']
+        );
+        $this->assertArrayHasKey('subscription', $responseData);
+        $this->assertArrayHasKey('endDate', $responseData['subscription']);
+        $this->assertArrayHasKey('startDate', $responseData['subscription']);
+        $this->assertArrayHasKey('plan', $responseData['subscription']);
     }
 
     public function testGetUserProfileWithoutToken(): void
@@ -159,7 +165,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null]),
+            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
             $this->client->getResponse()->getContent()
         );
     }
@@ -178,7 +184,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null]),
+            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
             $this->client->getResponse()->getContent()
         );
     }
@@ -193,7 +199,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null]),
+            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
             $this->client->getResponse()->getContent()
         );
 

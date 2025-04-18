@@ -114,6 +114,7 @@ class AuthenticationController extends AbstractController
         $response = new JsonResponse([
             'isAuthenticated' => false,
             'user' => null,
+            'subscription' => null,
         ]);
 
         $response->headers->clearCookie('AUTH_TOKEN');

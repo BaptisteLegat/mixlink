@@ -19,7 +19,9 @@ services:
     restart: always
     volumes:
       - ./.git:/var/www/html/.git
-      - ./back:/var/www/html
+      - ./back:/var/www/html:cached
+      - ./back/public:/var/www/html/public
+      - ./back/var:/var/www/html/var
     depends_on:
       - database
 
@@ -57,7 +59,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./front:/app
+      - ./front/src:/app/src
       - /app/node_modules
     stdin_open: true
     tty: true
