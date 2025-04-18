@@ -59,6 +59,7 @@ class StripeService
     /**
      * Construct a webhook event from payload and signature.
      *
+     * @SuppressWarnings("PHPMD.StaticAccess")
      * @throws SignatureVerificationException If the signature verification fails
      */
     public function constructWebhookEvent(string $payload, string $signature): Event
