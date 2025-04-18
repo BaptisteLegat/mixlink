@@ -42,10 +42,6 @@ services:
         arguments:
             $stripeSecretKey: '%stripeSecretKey%'
             $stripePrices: '%stripePrices%'
-
-    App\Controller\WebhookController:
-        arguments:
-            $stripeSecretKey: '%stripe.secret_key%'
             $stripeWebhookSecret: '%stripe.webhook_secret%'
 
     # add more service definitions when explicit configuration is needed
