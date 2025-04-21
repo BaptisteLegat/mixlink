@@ -1,6 +1,5 @@
 FROM php:8.4-fpm
 
-# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -18,8 +17,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://get.symfony.com/cli/installer | bash && \
     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock symfony.lock ./
@@ -28,7 +25,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 
 COPY . .
 
-RUN composer run-script post-install-cmd
+RUN composer run-script --no-dev post-install-cmd
+
+RUN rm -rf var/cache/* var/log/*
 
 RUN chown -R www-data:www-data /var/www/html/var
 
