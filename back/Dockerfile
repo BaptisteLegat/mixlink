@@ -17,18 +17,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://get.symfony.com/cli/installer | bash && \
     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock symfony.lock ./
-
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-
-COPY . .
-
-RUN composer run-script --no-dev post-install-cmd
-
-RUN rm -rf var/cache/* var/log/*
-
-RUN chown -R www-data:www-data /var/www/html/var
+COPY . /var/www/html
 
 CMD ["php-fpm"]

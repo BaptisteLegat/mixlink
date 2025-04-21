@@ -1,12 +1,12 @@
 services:
   nginx:
     image: nginx:latest
-    container_name: symfony_nginx
+    container_name: nginx
     ports:
       - "80:80"
     volumes:
-      - ./back:/var/www/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./back:/var/www/html:ro
     depends_on:
       - php
       - database
@@ -15,19 +15,17 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
-    container_name: symfony_php
+    container_name: php
     restart: always
     volumes:
       - ./.git:/var/www/html/.git
-      - ./back:/var/www/html:cached
-      - ./back/public:/var/www/html/public
-      - ./back/var:/var/www/html/var
+      - ./back:/var/www/html
     depends_on:
       - database
 
   database:
     image: mysql:latest
-    container_name: symfony_mysql
+    container_name: mysql
     restart: always
     ports:
       - "3306:3306"
@@ -51,7 +49,7 @@ services:
     environment:
       PMA_HOST: database
 
-  front:
+  frontend:
     build:
       context: ./front
       dockerfile: Dockerfile
