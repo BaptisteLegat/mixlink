@@ -1,5 +1,6 @@
 FROM php:8.4-fpm
 
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -20,5 +21,15 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash && \
 COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 WORKDIR /var/www/html
+
+COPY composer.json composer.lock symfony.lock ./
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+COPY . .
+
+RUN composer run-script post-install-cmd
+
+RUN chown -R www-data:www-data /var/www/html/var
 
 CMD ["php-fpm"]
