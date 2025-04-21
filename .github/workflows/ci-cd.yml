@@ -105,13 +105,6 @@ jobs:
         run: |
           echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
-      - name: Prepare backend for production
-        run: |
-          # Installer d'abord les dépendances dev pour les fixtures
-          composer install --optimize-autoloader --no-interaction
-          composer install --no-dev --optimize-autoloader --no-interaction
-          rm -rf var/cache/* var/log/*
-
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v4
         with:
