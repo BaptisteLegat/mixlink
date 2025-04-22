@@ -36,10 +36,10 @@ class ProviderManagerTest extends TestCase
         $user = (new User())->setEmail('test@gmail.com');
 
         $oauthUserData = new OAuthUserData(new GoogleUser([
-                'sub' => '1234567890',
-                'name' => 'John Doe',
-                'email' => 'test@gmail.com',
-            ]), 'access_token')
+            'sub' => '1234567890',
+            'name' => 'John Doe',
+            'email' => 'test@gmail.com',
+        ]), 'access_token')
         ;
 
         $existingProvider = null;
@@ -76,10 +76,10 @@ class ProviderManagerTest extends TestCase
         $user = (new User())->setEmail('test@gmail.com');
 
         $oauthUserData = new OAuthUserData(new GoogleUser([
-                'sub' => '1234567890',
-                'name' => 'John Doe',
-                'email' => 'test@gmail.com',
-            ]), 'access_token')
+            'sub' => '1234567890',
+            'name' => 'John Doe',
+            'email' => 'test@gmail.com',
+        ]), 'access_token')
         ;
 
         $existingProvider = null;
@@ -116,10 +116,10 @@ class ProviderManagerTest extends TestCase
         $user = (new User())->setEmail('test@gmail.com');
 
         $oauthUserData = new OAuthUserData(new GoogleUser([
-                'sub' => '1234567890',
-                'name' => 'John Doe',
-                'email' => 'test@gmail.com',
-            ]), 'access_token')
+            'sub' => '1234567890',
+            'name' => 'John Doe',
+            'email' => 'test@gmail.com',
+        ]), 'access_token')
         ;
 
         $existingProvider = new Provider();
@@ -156,10 +156,10 @@ class ProviderManagerTest extends TestCase
         $user = (new User())->setEmail('test@gmail.com');
 
         $oauthUserData = new OAuthUserData(new GoogleUser([
-                'sub' => '1234567890',
-                'name' => 'John Doe',
-                'email' => 'test@gmail.com',
-            ]), 'access_token')
+            'sub' => '1234567890',
+            'name' => 'John Doe',
+            'email' => 'test@gmail.com',
+        ]), 'access_token')
         ;
 
         $existingProvider = new Provider();

@@ -6,8 +6,8 @@ use App\ApiResource\ApiReference;
 use App\Entity\User;
 use App\User\UserMapper;
 use InvalidArgumentException;
-use League\OAuth2\Client\Provider\GoogleUser;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
+use League\OAuth2\Client\Provider\GoogleUser;
 use PHPUnit\Framework\TestCase;
 
 class UserMapperTest extends TestCase
@@ -48,7 +48,7 @@ class UserMapperTest extends TestCase
         $spotifyUser->method('getDisplayName')->willReturn('Spotify User');
         $spotifyUser->method('getEmail')->willReturn('spotify@test.com');
         $spotifyUser->method('getImages')->willReturn([
-            ['url' => 'http://example.com/spotify_pic.jpg']
+            ['url' => 'http://example.com/spotify_pic.jpg'],
         ]);
 
         $user = $this->userMapper->mapEntity($spotifyUser, ApiReference::SPOTIFY, null);
@@ -101,7 +101,7 @@ class UserMapperTest extends TestCase
         $googleUser = new GoogleUser($googleData);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Provider unknown not supported");
+        $this->expectExceptionMessage('Provider unknown not supported');
 
         $this->userMapper->mapEntity($googleUser, 'unknown', null);
     }

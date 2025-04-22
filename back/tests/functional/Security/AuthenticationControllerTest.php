@@ -54,7 +54,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertStringContainsString(self::SPOTIFY_URL, $location);
     }
 
-    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
     public function testConnectCheckGoogle(): void
     {
         $this->providerManagerMock
@@ -71,7 +71,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
     }
 
-    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
     public function testConnectCheckSpotify(): void
     {
         $this->providerManagerMock
@@ -88,7 +88,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
     }
 
-    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
     public function testConnectCheckGoogleWithExistingUser(): void
     {
         $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
@@ -107,7 +107,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
     }
 
-    # CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
     public function testConnectCheckSpotifyWithExistingUser(): void
     {
         $user = $this->userRepository->findOneBy(['email' => 'jane.smith@test.fr']);
@@ -149,7 +149,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertEquals($user->getId(), $responseData['id']);
         $this->assertEquals($user->getEmail(), $responseData['email']);
         $this->assertEquals(
-            array_map(fn(Provider $p) => $p->getName(), $user->getProviders()->toArray()),
+            array_map(fn (Provider $p) => $p->getName(), $user->getProviders()->toArray()),
             $responseData['providers']
         );
         $this->assertArrayHasKey('subscription', $responseData);
@@ -204,7 +204,7 @@ class AuthenticationControllerTest extends WebTestCase
         );
 
         $cookieHeader = $this->client->getResponse()->headers->getCookies();
-        $deletedCookie = array_filter($cookieHeader, fn($cookie) => 'AUTH_TOKEN' === $cookie->getName() && 0 !== $cookie->getExpiresTime());
+        $deletedCookie = array_filter($cookieHeader, fn ($cookie) => 'AUTH_TOKEN' === $cookie->getName() && 0 !== $cookie->getExpiresTime());
         $this->assertNotEmpty($deletedCookie);
     }
 }

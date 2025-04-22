@@ -2,13 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\PlanRepository;
 use App\Service\StripeService;
+use App\Voter\AuthenticationVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class SubscriptionController extends AbstractController
 {
@@ -18,24 +21,20 @@ class SubscriptionController extends AbstractController
     ) {
     }
 
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/api/subscribe/{planName}', name: 'api_subscription_start', methods: ['GET'])]
     public function subscribe(
         string $planName,
         PlanRepository $planRepository,
         Request $request,
     ): JsonResponse {
+        /** @var string $accessToken */
         $accessToken = $request->cookies->get('AUTH_TOKEN');
-        if (null === $accessToken) {
-            return new JsonResponse(['error' => 'Unauthorized.'], 401);
-        }
-
+        /** @var User $user */
         $user = $this->providerManager->findByAccessToken($accessToken);
-        if (null === $user) {
-            return new JsonResponse(['error' => 'Invalid or expired token.'], 401);
-        }
 
         $plan = $planRepository->findOneBy(['name' => $planName]);
-        if (!$plan) {
+        if (null === $plan) {
             return new JsonResponse(['error' => 'Plan not found.'], 404);
         }
 

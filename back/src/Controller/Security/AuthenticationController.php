@@ -65,7 +65,6 @@ class AuthenticationController extends AbstractController
     public function getUserProfile(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
-
         if (null === $accessToken) {
             return new JsonResponse([
                 'isAuthenticated' => false,
@@ -75,7 +74,6 @@ class AuthenticationController extends AbstractController
         }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
-
         if (null === $user) {
             return new JsonResponse([
                 'isAuthenticated' => false,

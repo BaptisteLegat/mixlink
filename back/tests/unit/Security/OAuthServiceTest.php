@@ -81,7 +81,7 @@ class OAuthServiceTest extends TestCase
     public function testGetRedirectResponseWithUnknownProvider(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Provider unknown_provider not supported");
+        $this->expectExceptionMessage('Provider unknown_provider not supported');
 
         $this->oAuthService->getRedirectResponse('unknown_provider');
     }
