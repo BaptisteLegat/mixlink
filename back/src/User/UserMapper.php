@@ -12,21 +12,23 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 class UserMapper
 {
     private const array PROVIDER_MAPPERS = [
-        ApiReference::GOOGLE => 'mapGoogleUser',
-        ApiReference::SPOTIFY => 'mapSpotifyUser',
+        ApiReference::GOOGLE,
+        ApiReference::SPOTIFY,
     ];
 
     public function mapEntity(ResourceOwnerInterface $resourceOwner, string $providerName, ?User $user): User
     {
         $user ??= new User();
 
-        if (!isset(self::PROVIDER_MAPPERS[$providerName])) {
+        if (!in_array($providerName, self::PROVIDER_MAPPERS, true)) {
             throw new InvalidArgumentException("Provider $providerName not supported");
         }
 
-        $method = self::PROVIDER_MAPPERS[$providerName];
-
-        $this->$method($resourceOwner, $user);
+        if ($resourceOwner instanceof GoogleUser) {
+            $this->mapGoogleUser($resourceOwner, $user);
+        } elseif ($resourceOwner instanceof SpotifyResourceOwner) {
+            $this->mapSpotifyUser($resourceOwner, $user);
+        }
 
         $user->setRoles(['ROLE_USER']);
 

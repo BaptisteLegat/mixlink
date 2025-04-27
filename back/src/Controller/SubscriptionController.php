@@ -47,12 +47,11 @@ class SubscriptionController extends AbstractController
         /** @var string $frontendUrl */
         $frontendUrl = $_ENV['FRONTEND_URL'];
         $successUrl = $frontendUrl.'/abonnement/success';
-        $cancelUrl = $frontendUrl.'/abonnement/cancel';
 
         $checkoutSession = $this->stripeService->createCheckoutSession(
             $priceId,
             $successUrl,
-            $cancelUrl,
+            $frontendUrl,
             $user->getEmail()
         );
 

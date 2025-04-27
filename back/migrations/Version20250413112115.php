@@ -26,11 +26,11 @@ final class Version20250413112115 extends AbstractMigration
         $this->addSql('ALTER TABLE subscription ADD CONSTRAINT FK_A3C664D3E899029B FOREIGN KEY (plan_id) REFERENCES plan (id)');
 
         $this->addSql("
-            INSERT INTO plan (id, name, is_custom, price_amount, price_currency, created_by, updated_by, created_at, updated_at)
+            INSERT INTO plan (id, name, is_custom, price_amount, price_currency, stripe_price_id, created_by, updated_by, created_at, updated_at)
             VALUES
-                (UNHEX(REPLACE(UUID(), '-', '')), 'free', 0, 0, 'EUR', NULL, NULL, NOW(), NOW()),
-                (UNHEX(REPLACE(UUID(), '-', '')), 'premium', 0, 399, 'EUR', NULL, NULL, NOW(), NOW()),
-                (UNHEX(REPLACE(UUID(), '-', '')), 'custom', 1, NULL, 'EUR', NULL, NULL, NOW(), NOW())
+                (UNHEX(REPLACE(UUID(), '-', '')), 'free', 0, 0, 'EUR', 'price_1RDO1MFR9LUheRIcMWMqLKmk', NULL, NULL, NOW(), NOW()),
+                (UNHEX(REPLACE(UUID(), '-', '')), 'premium', 0, 399, 'EUR', 'price_1RIUF7FR9LUheRIcPKatNzhA', NULL, NULL, NOW(), NOW()),
+                (UNHEX(REPLACE(UUID(), '-', '')), 'custom', 1, NULL, 'EUR', NULL, NULL, NULL, NOW(), NOW())
         ");
     }
 

@@ -49,7 +49,7 @@ class SubscriptionControllerTest extends WebTestCase
 
     public function testSubscribeWithInvalidPlan(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
 
         $this->providerManagerMock
             ->method('findByAccessToken')
@@ -67,7 +67,7 @@ class SubscriptionControllerTest extends WebTestCase
 
     public function testSubscribeWithValidPlanButNoPriceId(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
 
         $this->providerManagerMock
             ->method('findByAccessToken')
@@ -90,7 +90,7 @@ class SubscriptionControllerTest extends WebTestCase
 
     public function testSubscribeSuccess(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
 
         $checkoutSessionMock = new class extends Session {
             public string $url = 'https://checkout.stripe.com/test_checkout_session_url';
@@ -125,7 +125,7 @@ class SubscriptionControllerTest extends WebTestCase
 
     public function testSubscribeWithNullCheckoutUrl(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
 
         $checkoutSessionMock = new class extends Session {
             public ?string $url = null;

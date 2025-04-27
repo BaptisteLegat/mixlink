@@ -3,6 +3,7 @@ App\Entity\Plan:
     name: 'free'
     isCustom: false
     price: <(new App\Entity\Embeddable\Money('0', 'EUR'))>
+    stripePriceId: 'price_1RDO1MFR9LUheRIcMWMqLKmk'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
@@ -12,6 +13,7 @@ App\Entity\Plan:
     name: 'premium'
     isCustom: false
     price: <(new App\Entity\Embeddable\Money('399', 'EUR'))>
+    stripePriceId: 'price_1RIUF7FR9LUheRIcPKatNzhA'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
