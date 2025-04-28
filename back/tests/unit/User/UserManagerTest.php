@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use App\Security\OAuthUserData;
 use App\User\UserManager;
 use App\User\UserMapper;
+use App\User\UserModel;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -121,5 +122,22 @@ class UserManagerTest extends TestCase
         $result = $this->userManager->create($oAuthUserData, ApiReference::GOOGLE);
 
         $this->assertSame($user, $result);
+    }
+
+    public function testGetUserModel(): void
+    {
+        $user = new User();
+        $userModel = new UserModel();
+
+        $this->userMapperMocked
+            ->expects($this->once())
+            ->method('mapModel')
+            ->with($userModel, $user)
+            ->willReturn($userModel)
+        ;
+
+        $result = $this->userManager->getUserModel($user);
+
+        $this->assertSame($userModel, $result);
     }
 }

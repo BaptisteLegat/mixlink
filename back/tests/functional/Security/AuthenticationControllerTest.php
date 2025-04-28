@@ -145,17 +145,43 @@ class AuthenticationControllerTest extends WebTestCase
         $responseContent = $this->client->getResponse()->getContent();
         $responseData = json_decode($responseContent, true);
 
-        $this->assertTrue($responseData['isAuthenticated']);
         $this->assertEquals($user->getId(), $responseData['id']);
         $this->assertEquals($user->getEmail(), $responseData['email']);
-        $this->assertEquals(
-            array_map(fn (Provider $p) => $p->getName(), $user->getProviders()->toArray()),
-            $responseData['providers']
-        );
+        $this->assertEquals('John', $responseData['firstName']);
+        $this->assertEquals('Doe', $responseData['lastName']);
+        $this->assertEquals('https://test.fr/profile1.jpg', $responseData['profilePicture']);
+
+        $this->assertArrayHasKey('roles', $responseData);
+        $this->assertContains('ROLE_USER', $responseData['roles']);
+
+        $this->assertArrayHasKey('providers', $responseData);
+        $this->assertIsArray($responseData['providers']);
+        $this->assertCount(1, $responseData['providers']);
+
+        $provider = $responseData['providers'][0];
+        $this->assertArrayHasKey('id', $provider);
+        $this->assertArrayHasKey('name', $provider);
+        $this->assertEquals('google', $provider['name']);
+        $this->assertArrayHasKey('accessToken', $provider);
+        $this->assertArrayHasKey('refreshToken', $provider);
+
         $this->assertArrayHasKey('subscription', $responseData);
+        $this->assertArrayHasKey('id', $responseData['subscription']);
+        $this->assertArrayHasKey('stripeSubscriptionId', $responseData['subscription']);
         $this->assertArrayHasKey('endDate', $responseData['subscription']);
         $this->assertArrayHasKey('startDate', $responseData['subscription']);
+        $this->assertArrayHasKey('isActive', $responseData['subscription']);
         $this->assertArrayHasKey('plan', $responseData['subscription']);
+
+        $plan = $responseData['subscription']['plan'];
+        $this->assertArrayHasKey('id', $plan);
+        $this->assertArrayHasKey('name', $plan);
+        $this->assertEquals('premium', $plan['name']);
+        $this->assertArrayHasKey('price', $plan);
+        $this->assertEquals(3.99, $plan['price']);
+        $this->assertArrayHasKey('currency', $plan);
+        $this->assertEquals('EUR', $plan['currency']);
+        $this->assertArrayHasKey('stripePriceId', $plan);
     }
 
     public function testGetUserProfileWithoutToken(): void
@@ -164,8 +190,9 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
+
+        $this->assertEquals(
+            '{}',
             $this->client->getResponse()->getContent()
         );
     }
@@ -183,8 +210,9 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
+
+        $this->assertEquals(
+            '{}',
             $this->client->getResponse()->getContent()
         );
     }
@@ -198,8 +226,9 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertJsonStringEqualsJsonString(
-            json_encode(['isAuthenticated' => false, 'user' => null, 'subscription' => null]),
+
+        $this->assertEquals(
+            '{}',
             $this->client->getResponse()->getContent()
         );
 

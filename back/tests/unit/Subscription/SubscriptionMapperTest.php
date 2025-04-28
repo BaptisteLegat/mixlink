@@ -6,17 +6,25 @@ use App\Entity\Embeddable\Money;
 use App\Entity\Plan;
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Plan\PlanMapper;
+use App\Plan\PlanModel;
 use App\Subscription\SubscriptionMapper;
+use App\Subscription\SubscriptionModel;
 use DateTimeImmutable;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriptionMapperTest extends TestCase
 {
+    private PlanMapper|MockObject $planMapper;
     private SubscriptionMapper $subscriptionMapper;
 
     protected function setUp(): void
     {
-        $this->subscriptionMapper = new SubscriptionMapper();
+        $this->planMapper = $this->createMock(PlanMapper::class);
+        $this->subscriptionMapper = new SubscriptionMapper(
+            $this->planMapper,
+        );
     }
 
     public function testMapEntityCreateNewSubscription(): void
@@ -90,5 +98,36 @@ class SubscriptionMapperTest extends TestCase
         $this->assertEquals($newStartDate, $updatedSubscription->getStartDate());
         $this->assertEquals($newEndDate, $updatedSubscription->getEndDate());
         $this->assertEquals($newPlan->getPrice(), $updatedSubscription->getPlan()->getPrice());
+    }
+
+    public function testMapModel(): void
+    {
+        $plan = new Plan()
+            ->setName('Premium')
+            ->setPrice(new Money(9.99, 'EUR'))
+            ->setStripePriceId('price_123456789')
+        ;
+
+        $subscription = new Subscription()
+            ->setStripeSubscriptionId('sub_123456789')
+            ->setStartDate(new DateTimeImmutable('2023-01-01'))
+            ->setEndDate(new DateTimeImmutable(' + 1 month'))
+            ->setPlan($plan)
+        ;
+
+        $this->planMapper
+            ->expects($this->once())
+            ->method('mapModel')
+            ->with($this->identicalTo($plan))
+            ->willReturn(new PlanModel())
+        ;
+
+        $subscriptionModel = $this->subscriptionMapper->mapModel($subscription);
+
+        $this->assertInstanceOf(SubscriptionModel::class, $subscriptionModel);
+        $this->assertEquals('sub_123456789', $subscriptionModel->getStripeSubscriptionId());
+        $this->assertEquals(new DateTimeImmutable('2023-01-01'), $subscriptionModel->getStartDate());
+        $this->assertEquals(new DateTimeImmutable(' + 1 month')->format('Y-m-d'), $subscriptionModel->getEndDate()->format('Y-m-d'));
+        $this->assertTrue($subscriptionModel->isActive());
     }
 }

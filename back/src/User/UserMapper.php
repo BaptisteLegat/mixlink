@@ -4,6 +4,8 @@ namespace App\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\User;
+use App\Provider\ProviderMapper;
+use App\Subscription\SubscriptionMapper;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
@@ -11,6 +13,12 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
+    public function __construct(
+        private ProviderMapper $providerMapper,
+        private SubscriptionMapper $subscriptionMapper,
+    ) {
+    }
+
     private const array PROVIDER_MAPPERS = [
         ApiReference::GOOGLE,
         ApiReference::SPOTIFY,
@@ -54,5 +62,31 @@ class UserMapper
         if (!empty($images) && isset($images[0]['url'])) {
             $user->setProfilePicture($images[0]['url']);
         }
+    }
+
+    public function mapModel(UserModel $userModel, User $user): UserModel
+    {
+        $userModel = $userModel->setId((string) $user->getId())
+            ->setFirstName($user->getFirstName())
+            ->setLastName($user->getLastName())
+            ->setEmail($user->getEmail())
+            ->setProfilePicture($user->getProfilePicture())
+            ->setRoles($user->getRoles())
+        ;
+
+        $providers = [];
+        foreach ($user->getProviders() as $provider) {
+            $providers[] = $this->providerMapper->mapModel($provider);
+        }
+
+        $userModel->setProviders($providers);
+
+        $subscription = $user->getSubscription();
+        if (null !== $subscription) {
+            $subscriptionModel = $this->subscriptionMapper->mapModel($subscription);
+            $userModel->setSubscription($subscriptionModel);
+        }
+
+        return $userModel;
     }
 }

@@ -1,9 +1,23 @@
 {
     "header": {
-        "login": "Se connecter",
-        "logout": "Se déconnecter",
-        "light_mode": "Mode clair",
-        "dark_mode": "Mode sombre"
+        "profile": "Profil",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "dark_mode": "Mode sombre",
+        "light_mode": "Mode clair"
+    },
+    "profile": {
+        "title": "Mon Profil",
+        "unknown_user": "Utilisateur Inconnu",
+        "account_info": "Informations du compte",
+        "id": "Identifiant",
+        "role": "Rôle",
+        "subscription": "Abonnement",
+        "plan": "Formule",
+        "start_date": "Date de début",
+        "no_subscription": "Aucun abonnement actif",
+        "back_to_home": "Retour à l'accueil",
+        "not_authenticated": "Veuillez vous connecter pour voir votre profil"
     },
     "footer": {
         "about": "À propos",
@@ -44,6 +58,10 @@
             "subtitle": "Choisissez le plan qui correspond le mieux à vos besoins",
             "per_month": "/mois",
             "popular": "Populaire",
+            "current_plan": "Vous êtes actuellement sur le plan",
+            "since": "depuis le ",
+            "change_plan": "Vous souhaitez changer de plan ? Cliquez sur le bouton ci-dessous.",
+            "change_plan_cta": "Changer de plan",
             "free": {
                 "title": "Gratuit",
                 "feature1": "Créez jusqu'à 5 playlists",

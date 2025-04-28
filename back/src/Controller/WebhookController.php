@@ -39,10 +39,8 @@ class WebhookController extends AbstractController
             return new Response('Invalid signature: '.$e->getMessage(), 400);
         }
 
-
         if ('checkout.session.completed' === $event->type) {
             $session = $event->data->object;
-
 
             if (!$session instanceof Session) {
                 $this->logger->error('Invalid session object');

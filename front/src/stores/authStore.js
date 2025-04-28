@@ -8,20 +8,39 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
     const isAuthenticated = ref(false);
     const subscription = ref(null);
+    const providers = ref([]);
     const isLoading = ref(false);
     const router = useRouter();
 
     async function fetchUser() {
         try {
-            const data = await fetchUserProfile();
-            user.value = data.user;
-            isAuthenticated.value = data.isAuthenticated;
-            subscription.value = data.subscription;
+            const response = await fetchUserProfile();
+
+            if (response && Object.keys(response).length > 0) {
+                user.value = {
+                    id: response.id,
+                    email: response.email,
+                    firstName: response.firstName,
+                    lastName: response.lastName,
+                    profilePicture: response.profilePicture,
+                    roles: response.roles,
+                };
+                isAuthenticated.value = true;
+                subscription.value = response.subscription || null;
+                providers.value = response.providers || [];
+            } else {
+                resetUserState();
+            }
         } catch {
-            user.value = null;
-            isAuthenticated.value = false;
-            subscription.value = null;
+            resetUserState();
         }
+    }
+
+    function resetUserState() {
+        user.value = null;
+        isAuthenticated.value = false;
+        subscription.value = null;
+        providers.value = [];
     }
 
     async function subscribe(planName) {
@@ -31,7 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
             if (result.url) {
                 window.location.href = result.url;
             } else {
-                await this.fetchUser();
+                await fetchUser();
             }
             return result;
         } finally {
@@ -46,11 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
             console.error('Erreur lors de la déconnexion :', error);
         } finally {
             document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-
-            user.value = null;
-            isAuthenticated.value = false;
-            subscription.value = null;
-
+            resetUserState();
             router.push('/');
         }
     }
@@ -59,6 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         isAuthenticated,
         subscription,
+        providers,
         isLoading,
         subscribe,
         fetchUser,

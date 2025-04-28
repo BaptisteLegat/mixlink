@@ -129,4 +129,35 @@ class WebhookControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('Webhook handled', $this->client->getResponse()->getContent());
     }
+
+    public function testHandleStripeWebhookWithInvalidSessionObject(): void
+    {
+        $eventMock = new Event();
+        $eventMock->type = 'checkout.session.completed';
+        $eventMock->data = new stdClass();
+        $eventMock->data->object = new stdClass(); // Pas une instance de Session
+
+        $this->stripeServiceMock
+            ->expects($this->once())
+            ->method('constructWebhookEvent')
+            ->willReturn($eventMock)
+        ;
+
+        $this->webhookManagerMock
+            ->expects($this->never())
+            ->method('handleCheckoutSessionCompleted')
+        ;
+
+        $this->client->request(
+            'POST',
+            '/api/webhook/stripe',
+            [],
+            [],
+            ['HTTP_STRIPE_SIGNATURE' => 'test_signature'],
+            json_encode(['payload' => 'test'])
+        );
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('Invalid session object', $this->client->getResponse()->getContent());
+    }
 }

@@ -42,4 +42,9 @@ class UserManager
 
         return $user;
     }
+
+    public function getUserModel(User $user): UserModel
+    {
+        return $this->userMapper->mapModel(new UserModel(), $user);
+    }
 }

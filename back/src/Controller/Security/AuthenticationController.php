@@ -2,7 +2,6 @@
 
 namespace App\Controller\Security;
 
-use App\Entity\Provider;
 use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
@@ -66,55 +65,23 @@ class AuthenticationController extends AbstractController
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
         if (null === $accessToken) {
-            return new JsonResponse([
-                'isAuthenticated' => false,
-                'user' => null,
-                'subscription' => null,
-            ]);
+            return new JsonResponse(null);
         }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
         if (null === $user) {
-            return new JsonResponse([
-                'isAuthenticated' => false,
-                'user' => null,
-                'subscription' => null,
-            ]);
+            return new JsonResponse(null);
         }
 
-        $subscription = $user->getSubscription();
-        $activeSubscription = null;
+        $userModel = $this->userManager->getUserModel($user);
 
-        if ($subscription) {
-            $plan = $subscription->getPlan();
-            $startDate = $subscription->getStartDate();
-            $endDate = $subscription->getEndDate();
-
-            $activeSubscription = [
-                'plan' => null !== $plan ? $plan->getName() : null,
-                'startDate' => null !== $startDate ? $startDate->format('Y-m-d') : null,
-                'endDate' => null !== $endDate ? $endDate->format('Y-m-d') : null,
-            ];
-        }
-
-        return new JsonResponse([
-            'isAuthenticated' => true,
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'providers' => array_map(fn (Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
-            'subscription' => $activeSubscription,
-        ]);
+        return new JsonResponse($userModel->toArray());
     }
 
     #[Route('/api/logout', name: 'api_logout')]
     public function logout(): JsonResponse
     {
-        $response = new JsonResponse([
-            'isAuthenticated' => false,
-            'user' => null,
-            'subscription' => null,
-        ]);
-
+        $response = new JsonResponse(null);
         $response->headers->clearCookie('AUTH_TOKEN');
 
         return $response;

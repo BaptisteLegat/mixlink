@@ -153,6 +153,9 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Provider>
+     */
     public function getProviders(): Collection
     {
         return $this->providers;

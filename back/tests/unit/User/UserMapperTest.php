@@ -3,20 +3,35 @@
 namespace App\Tests\Unit\User;
 
 use App\ApiResource\ApiReference;
+use App\Entity\Provider;
+use App\Entity\Subscription;
 use App\Entity\User;
+use App\Provider\ProviderMapper;
+use App\Provider\ProviderModel;
+use App\Subscription\SubscriptionMapper;
+use App\Subscription\SubscriptionModel;
 use App\User\UserMapper;
+use App\User\UserModel;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class UserMapperTest extends TestCase
 {
+    private ProviderMapper|MockObject $providerMapper;
+    private SubscriptionMapper|MockObject $subscriptionMapper;
     private UserMapper $userMapper;
 
     protected function setUp(): void
     {
-        $this->userMapper = new UserMapper();
+        $this->providerMapper = $this->createMock(ProviderMapper::class);
+        $this->subscriptionMapper = $this->createMock(SubscriptionMapper::class);
+        $this->userMapper = new UserMapper(
+            $this->providerMapper,
+            $this->subscriptionMapper
+        );
     }
 
     public function testMapEntityGoogleUser(): void
@@ -104,5 +119,100 @@ class UserMapperTest extends TestCase
         $this->expectExceptionMessage('Provider unknown not supported');
 
         $this->userMapper->mapEntity($googleUser, 'unknown', null);
+    }
+
+    public function testMapModelWithEmptyUser(): void
+    {
+        $user = new User()
+            ->setFirstName('')
+            ->setLastName('')
+            ->setEmail('')
+            ->setProfilePicture('')
+        ;
+
+        $userModel = new UserModel();
+
+        $result = $this->userMapper->mapModel($userModel, $user);
+        $this->assertInstanceOf(UserModel::class, $result);
+        $this->assertEquals('', $result->getFirstName());
+        $this->assertEquals('', $result->getLastName());
+        $this->assertEquals('', $result->getEmail());
+        $this->assertEquals('', $result->getProfilePicture());
+        $this->assertEquals(['ROLE_USER'], $result->getRoles());
+    }
+
+    public function testMapModelWithUserAndProviders(): void
+    {
+        $user = new User();
+        $user->setFirstName('John')
+            ->setLastName('Doe')
+            ->setEmail('test@test.fr')
+            ->setProfilePicture('test')
+            ->setRoles(['ROLE_USER'])
+            ->addProvider(new Provider())
+            ->addProvider(new Provider())
+        ;
+        $userModel = new UserModel();
+
+        $this->providerMapper
+            ->expects($this->exactly(2))
+            ->method('mapModel')
+            ->willReturn(new ProviderModel())
+        ;
+
+        $this->subscriptionMapper
+            ->expects($this->never())
+            ->method('mapModel')
+        ;
+
+        $this->subscriptionMapper
+            ->expects($this->never())
+            ->method('mapModel')
+        ;
+
+        $result = $this->userMapper->mapModel($userModel, $user);
+        $this->assertInstanceOf(UserModel::class, $result);
+        $this->assertEquals('John', $result->getFirstName());
+        $this->assertEquals('Doe', $result->getLastName());
+        $this->assertEquals('test@test.fr', $result->getEmail());
+        $this->assertEquals('test', $result->getProfilePicture());
+        $this->assertEquals(['ROLE_USER'], $result->getRoles());
+        $this->assertCount(2, $result->getProviders());
+        $this->assertNull($result->getSubscription());
+    }
+
+    public function testMapModelWithUserAndSubscription(): void
+    {
+        $user = new User();
+        $user->setFirstName('John')
+            ->setLastName('Doe')
+            ->setEmail('test@test.fr')
+            ->setProfilePicture('test')
+            ->setRoles(['ROLE_USER'])
+            ->setSubscription(new Subscription())
+        ;
+
+        $userModel = new UserModel();
+        $this->providerMapper
+            ->expects($this->never())
+            ->method('mapModel')
+        ;
+
+        $this->subscriptionMapper
+            ->expects($this->once())
+            ->method('mapModel')
+            ->willReturn(new SubscriptionModel())
+        ;
+
+        $result = $this->userMapper->mapModel($userModel, $user);
+        $this->assertInstanceOf(UserModel::class, $result);
+        $this->assertEquals('John', $result->getFirstName());
+        $this->assertEquals('Doe', $result->getLastName());
+        $this->assertEquals('test@test.fr', $result->getEmail());
+        $this->assertEquals('test', $result->getProfilePicture());
+        $this->assertEquals(['ROLE_USER'], $result->getRoles());
+        $this->assertCount(0, $result->getProviders());
+        $this->assertInstanceOf(SubscriptionModel::class, $result->getSubscription());
+        $this->assertEquals($user->getSubscription()->getId(), $result->getSubscription()->getId());
     }
 }

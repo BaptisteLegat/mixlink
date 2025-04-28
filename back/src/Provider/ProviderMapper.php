@@ -25,4 +25,18 @@ class ProviderMapper
 
         return $provider;
     }
+
+    public function mapModel(Provider $provider): ProviderModel
+    {
+        $providerModel = new ProviderModel();
+
+        $providerModel
+            ->setId((string) $provider->getId())
+            ->setName($provider->getName())
+            ->setAccessToken($provider->getAccessToken())
+            ->setRefreshToken($provider->getRefreshToken())
+        ;
+
+        return $providerModel;
+    }
 }

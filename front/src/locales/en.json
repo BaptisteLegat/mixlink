@@ -1,9 +1,23 @@
 {
     "header": {
-        "login": "Sign in",
-        "logout": "Sign out",
-        "light_mode": "Light Mode",
-        "dark_mode": "Dark Mode"
+        "profile": "Profile",
+        "login": "Login",
+        "logout": "Logout",
+        "dark_mode": "Dark mode",
+        "light_mode": "Light mode"
+    },
+    "profile": {
+        "title": "My Profile",
+        "unknown_user": "Unknown User",
+        "account_info": "Account Information",
+        "id": "ID",
+        "role": "Role",
+        "subscription": "Subscription",
+        "plan": "Plan",
+        "start_date": "Start Date",
+        "no_subscription": "No active subscription",
+        "back_to_home": "Back to Home",
+        "not_authenticated": "Please login to view your profile"
     },
     "footer": {
         "about": "About",
@@ -44,6 +58,10 @@
             "subtitle": "Choose the plan that best suits your needs",
             "per_month": "/month",
             "popular": "Popular",
+            "current_plan": "You are currently on the plan",
+            "since": "since",
+            "change_plan": "Want to change your plan? Click the button below.",
+            "change_plan_cta": "Change Plan",
             "free": {
                 "title": "Free",
                 "feature1": "Create up to 5 playlists",

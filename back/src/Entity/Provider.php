@@ -37,7 +37,7 @@ class Provider implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $refreshToken = null;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

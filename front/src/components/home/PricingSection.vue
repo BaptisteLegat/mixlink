@@ -71,9 +71,17 @@
             <el-row v-if="authStore.subscription" justify="center">
                 <el-col :span="24" :lg="18" :xl="16">
                     <el-text tag="h3" class="section-subtitle">
-                        {{ t('home.plans.active_subscription') }}: {{ authStore.subscription.plan }} ({{ authStore.subscription.startDate }} -
-                        {{ authStore.subscription.endDate }})
+                        {{ t('home.plans.current_plan') }}: {{ t('home.plans.' + authStore.subscription.plan.name + '.title') }}
+                        {{ t('home.plans.since') }} {{ authStore.subscription.startDate }}
                     </el-text>
+                    <el-text tag="p" class="section-subtitle">
+                        {{ t('home.plans.change_plan') }}
+                    </el-text>
+                    <div class="button-center">
+                        <el-button type="primary" size="large" round @click="handlePlanClick(authStore.subscription.plan)">
+                            {{ t('home.plans.change_plan_cta') }}
+                        </el-button>
+                    </div>
                 </el-col>
             </el-row>
 
@@ -146,7 +154,6 @@
         </el-space>
     </el-container>
 </template>
-
 <style lang="scss" scoped>
     .pricing-container {
         overflow: hidden;
@@ -183,6 +190,11 @@
         max-width: 600px;
         margin: 0 auto 20px;
         font-size: 1.1rem;
+    }
+
+    .button-center {
+        display: flex;
+        justify-content: center;
     }
 
     .pricing-row {

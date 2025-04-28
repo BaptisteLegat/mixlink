@@ -9,10 +9,12 @@ use App\Repository\UserRepository;
 use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
 use App\Webhook\WebhookManager;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Stripe\Checkout\Session;
 use Stripe\StripeObject;
+use Symfony\Component\HttpFoundation\Response;
 
 class WebhookManagerTest extends TestCase
 {
@@ -43,7 +45,7 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Missing required data: email or subscription ID', $response->getContent());
     }
 
@@ -53,7 +55,7 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Missing required data: email or subscription ID', $response->getContent());
     }
 
@@ -69,7 +71,7 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
         $this->assertEquals('User not found', $response->getContent());
     }
 
@@ -92,7 +94,7 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Price ID not found', $response->getContent());
     }
 
@@ -104,6 +106,7 @@ class WebhookManagerTest extends TestCase
 
         $this->userRepository->expects($this->once())
             ->method('findOneBy')
+            ->with(['email' => 'user@example.com'])
             ->willReturn($user)
         ;
 
@@ -117,7 +120,7 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
         $this->assertEquals('Plan not found', $response->getContent());
     }
 
@@ -130,6 +133,7 @@ class WebhookManagerTest extends TestCase
 
         $this->userRepository->expects($this->once())
             ->method('findOneBy')
+            ->with(['email' => 'user@example.com'])
             ->willReturn($user)
         ;
 
@@ -148,8 +152,31 @@ class WebhookManagerTest extends TestCase
 
         $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertEquals('Webhook handled', $response->getContent());
+    }
+
+    public function testHandleCheckoutSessionCompletedWithException(): void
+    {
+        $session = $this->createSessionMock('user@example.com', 'sub_123', 'cs_123');
+        $user = new User();
+
+        $this->userRepository->expects($this->once())
+            ->method('findOneBy')
+            ->with(['email' => 'user@example.com'])
+            ->willReturn($user)
+        ;
+
+        $this->stripeService->expects($this->once())
+            ->method('getSessionLineItems')
+            ->with('cs_123')
+            ->willThrowException(new Exception('Test exception'))
+        ;
+
+        $response = $this->webhookManager->handleCheckoutSessionCompleted($session);
+
+        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertEquals('Server error: Test exception', $response->getContent());
     }
 
     public function testGetPriceIdFromSessionEmptyLineItems(): void
@@ -165,11 +192,10 @@ class WebhookManagerTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testGetPriceIdFromSessionSuccess(): void
+    public function testGetPriceIdFromSessionNullLineItem(): void
     {
-        $price = new StripeObject(['id' => 'price_123']);
-        $lineItem = new StripeObject(['price' => $price]);
-        $lineItems = new StripeObject(['data' => [$lineItem]]);
+        $lineItemsData = ['data' => [null]];
+        $lineItems = StripeObject::constructFrom($lineItemsData);
 
         $this->stripeService->expects($this->once())
             ->method('getSessionLineItems')
@@ -178,25 +204,57 @@ class WebhookManagerTest extends TestCase
         ;
 
         $result = $this->webhookManager->getPriceIdFromSession('cs_123');
-        $this->assertEquals('price_123', $result);
+        $this->assertNull($result);
+    }
+
+    public function testGetPriceIdFromSessionMissingPrice(): void
+    {
+        $lineItemData = ['some_other_field' => 'value'];
+        $lineItemsData = ['data' => [$lineItemData]];
+        $lineItems = StripeObject::constructFrom($lineItemsData);
+
+        $this->stripeService->expects($this->once())
+            ->method('getSessionLineItems')
+            ->with('cs_123')
+            ->willReturn($lineItems)
+        ;
+
+        $result = $this->webhookManager->getPriceIdFromSession('cs_123');
+        $this->assertNull($result);
     }
 
     private function createSessionMock(?string $email, ?string $subscriptionId, string $sessionId): Session
     {
         $session = $this->createMock(Session::class);
 
-        $session->customer_email = $email;
-        $session->subscription = $subscriptionId;
-        $session->id = $sessionId;
+        $sessionData = [
+            'customer_email' => $email,
+            'subscription' => $subscriptionId,
+            'id' => $sessionId
+        ];
+
+        $session->method('__get')
+            ->willReturnCallback(function ($name) use ($sessionData) {
+                return $sessionData[$name] ?? null;
+            })
+        ;
+
+        $session->method('__isset')
+            ->willReturnCallback(function ($name) use ($sessionData) {
+                return isset($sessionData[$name]);
+            })
+        ;
 
         return $session;
     }
 
     private function mockGetPriceIdFromSession(string $sessionId, string $priceId): void
     {
-        $price = new StripeObject(['id' => $priceId]);
-        $lineItem = new StripeObject(['price' => $price]);
-        $lineItems = new StripeObject(['data' => [$lineItem]]);
+        $priceData = ['id' => $priceId];
+        $lineItemData = ['price' => $priceData];
+        $lineItemsData = ['data' => [$lineItemData]];
+
+        $lineItems = StripeObject::constructFrom($lineItemsData);
 
         $this->stripeService->expects($this->once())
             ->method('getSessionLineItems')

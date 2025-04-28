@@ -6,6 +6,7 @@ use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
 use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
+use Exception;
 use Stripe\Checkout\Session;
 use Stripe\StripeObject;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,35 +28,36 @@ class WebhookManager
     {
         /** @var string|null $email */
         $email = $session->customer_email ?? null;
-
         /** @var string|null $stripeSubscriptionId */
         $stripeSubscriptionId = $session->subscription ?? null;
-
-        // Session id is never null when working with a valid Session object
         $sessionId = $session->id;
 
         if (null === $email || null === $stripeSubscriptionId) {
-            return new Response('Missing required data: email or subscription ID', 400);
+            return new Response('Missing required data: email or subscription ID', Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-        if (!$user) {
-            return new Response('User not found', 404);
+        try {
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+            if (!$user) {
+                return new Response('User not found', Response::HTTP_NOT_FOUND);
+            }
+
+            $priceId = $this->getPriceIdFromSession($sessionId);
+            if (null === $priceId) {
+                return new Response('Price ID not found', Response::HTTP_BAD_REQUEST);
+            }
+
+            $plan = $this->planRepository->findOneBy(['stripePriceId' => $priceId]);
+            if (!$plan) {
+                return new Response('Plan not found', Response::HTTP_NOT_FOUND);
+            }
+
+            $this->subscriptionManager->create($user, $plan, $stripeSubscriptionId);
+
+            return new Response('Webhook handled', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return new Response('Server error: '.$e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $priceId = $this->getPriceIdFromSession($sessionId);
-        if (null === $priceId) {
-            return new Response('Price ID not found', 400);
-        }
-
-        $plan = $this->planRepository->findOneBy(['stripePriceId' => $priceId]);
-        if (!$plan) {
-            return new Response('Plan not found', 404);
-        }
-
-        $this->subscriptionManager->create($user, $plan, $stripeSubscriptionId);
-
-        return new Response('Webhook handled', 200);
     }
 
     /**
@@ -68,7 +70,6 @@ class WebhookManager
 
         /** @var array<int, StripeObject> $lineItemsData */
         $lineItemsData = $lineItems->data ?? [];
-
         if (empty($lineItemsData)) {
             return null;
         }
