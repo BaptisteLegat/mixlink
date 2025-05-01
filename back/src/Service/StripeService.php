@@ -79,4 +79,35 @@ class StripeService
     {
         return $this->stripeClient->checkout->sessions->allLineItems($sessionId);
     }
+
+    public function cancelSubscription(string $subscriptionId): StripeObject
+    {
+        return $this->stripeClient->subscriptions->cancel($subscriptionId, [
+            'prorate' => true,
+        ]);
+    }
+
+    public function changeSubscriptionPlan(string $subscriptionId, string $newPriceId): StripeObject
+    {
+        return $this->stripeClient->subscriptions->update($subscriptionId, [
+            'cancel_at_period_end' => false,
+            'proration_behavior' => 'create_prorations',
+            'items' => [
+                [
+                    'id' => $this->getSubscriptionItemId($subscriptionId),
+                    'price' => $newPriceId,
+                ],
+            ],
+        ]);
+    }
+
+    private function getSubscriptionItemId(string $subscriptionId): string
+    {
+        $subscription = $this->stripeClient->subscriptions->retrieve($subscriptionId, [
+            'expand' => ['items'],
+        ]);
+
+        // Assume the first item is the one we want to modify (most subscriptions have only one item)
+        return $subscription->items->data[0]->id;
+    }
 }

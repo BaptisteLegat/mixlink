@@ -1,11 +1,47 @@
 <script setup>
     import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
-    import { computed } from 'vue';
+    import { computed, ref } from 'vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
+    import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
+    import GoogleIcon from 'vue-material-design-icons/Google.vue';
+    import AppleIcon from 'vue-material-design-icons/Apple.vue';
+    import EmailIcon from 'vue-material-design-icons/Email.vue';
+    import PlanSelector from '@/components/subscription/PlanSelector.vue';
+    import UnsubscribeModal from '@/components/subscription/UnsubscribeModal.vue';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
+    const unsubscribeModal = ref(null);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
+    };
+
+    const getProviderIcon = (providerName) => {
+        switch (providerName.toLowerCase()) {
+            case 'spotify':
+                return SpotifyIcon;
+            case 'google':
+                return GoogleIcon;
+            case 'apple':
+                return AppleIcon;
+            default:
+                return EmailIcon;
+        }
+    };
+
+    const getProviderDisplayName = (providerName) => {
+        return providerName.charAt(0).toUpperCase() + providerName.slice(1);
+    };
 
     const userInitials = computed(() => {
         if (!authStore.user) return '';
@@ -40,6 +76,24 @@
 
         return t('profile.unknown_user');
     });
+
+    function openUnsubscribeModal() {
+        unsubscribeModal.value.showDialog();
+    }
+
+    const getSubscriptionTagType = (subscription) => {
+        if (subscription.isCanceled) {
+            return 'warning';
+        }
+        return subscription.isActive ? 'success' : 'danger';
+    };
+
+    const getSubscriptionStatusLabel = (subscription) => {
+        if (subscription.isCanceled) {
+            return t('profile.canceled', { endDate: formatDate(subscription.endDate) });
+        }
+        return subscription.isActive ? t('profile.active') : t('profile.inactive');
+    };
 </script>
 
 <template>
@@ -77,17 +131,43 @@
                                         <b>{{ t('profile.id') }}:</b> {{ authStore.user?.id }}
                                     </el-text>
                                     <el-text tag="p">
-                                        <b>{{ t('profile.role') }}:</b> {{ authStore.user?.roles.join(', ') }}
+                                        <b>{{ t('profile.email') }}:</b> {{ authStore.user?.email }}
+                                    </el-text>
+                                    <el-text tag="p">
+                                        <b>{{ t('profile.first_name') }}:</b> {{ authStore.user?.firstName ?? t('profile.unknown') }}
+                                    </el-text>
+                                    <el-text tag="p">
+                                        <b>{{ t('profile.last_name') }}:</b> {{ authStore.user?.lastName ?? t('profile.unknown') }}
                                     </el-text>
                                 </el-col>
                                 <el-col :span="24" :md="12">
                                     <el-text tag="p" class="info-label">{{ t('profile.subscription') }}</el-text>
-                                    <el-text tag="p" v-if="authStore.subscription">
-                                        <b>{{ t('profile.plan') }}:</b> {{ t('home.plans.' + authStore.subscription.plan.name + '.title') }}
-                                    </el-text>
-                                    <el-text tag="p" v-if="authStore.subscription">
-                                        <b>{{ t('profile.start_date') }}:</b> {{ authStore.subscription.startDate }}
-                                    </el-text>
+                                    <template v-if="authStore.subscription">
+                                        <el-text tag="p">
+                                            <b>{{ t('profile.plan') }}:</b> {{ t('home.plans.' + authStore.subscription.plan.name + '.title') }}
+                                        </el-text>
+                                        <el-text tag="p">
+                                            <b>{{ t('profile.status') }}:</b>
+                                            <el-tag :type="getSubscriptionTagType(authStore.subscription)">
+                                                {{ getSubscriptionStatusLabel(authStore.subscription) }}
+                                            </el-tag>
+                                        </el-text>
+                                        <el-text tag="p">
+                                            <b>{{ t('profile.start_date') }}:</b> {{ formatDate(authStore.subscription.startDate) }}
+                                        </el-text>
+                                        <el-text tag="p">
+                                            <b>{{ t('profile.end_date') }}:</b> {{ formatDate(authStore.subscription.endDate) }}
+                                        </el-text>
+                                        <el-text tag="p" v-if="authStore.subscription.stripeSubscriptionId">
+                                            <b>{{ t('profile.subscription_id') }}:</b> {{ authStore.subscription.stripeSubscriptionId }}
+                                        </el-text>
+
+                                        <div class="subscription-actions">
+                                            <el-button type="danger" plain @click="openUnsubscribeModal">{{
+                                                t('profile.unsubscribe.button')
+                                            }}</el-button>
+                                        </div>
+                                    </template>
                                     <el-text tag="p" v-else>
                                         {{ t('profile.no_subscription') }}
                                     </el-text>
@@ -96,6 +176,30 @@
                         </div>
 
                         <el-divider />
+
+                        <!-- Subscription Management Section -->
+                        <el-text tag="h3" class="subscription-section-title">
+                            {{ authStore.subscription ? t('profile.change_subscription') : t('profile.choose_subscription') }}
+                        </el-text>
+                        <PlanSelector :compact="true" />
+
+                        <el-divider v-if="authStore.providers && authStore.providers.length > 0" />
+
+                        <div class="connected-services" v-if="authStore.providers && authStore.providers.length > 0">
+                            <el-text tag="p" class="info-label">{{ t('profile.connected_services') }}</el-text>
+
+                            <div class="providers-grid">
+                                <div v-for="provider in authStore.providers" :key="provider.id" class="provider-card">
+                                    <component :is="getProviderIcon(provider.name)" :size="32" class="provider-icon" />
+                                    <div class="provider-details">
+                                        <h4 class="provider-name">{{ getProviderDisplayName(provider.name) }}</h4>
+                                        <span class="provider-status">{{ t('profile.connected') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <el-divider v-if="authStore.providers && authStore.providers.length > 0" />
 
                         <div class="profile-actions">
                             <el-button type="primary" @click="$router.push('/')">
@@ -109,6 +213,7 @@
                 </el-col>
             </el-row>
         </el-space>
+        <UnsubscribeModal ref="unsubscribeModal" />
     </el-container>
     <el-container v-else>
         <el-row justify="center">
@@ -193,6 +298,21 @@
         color: #6023c0;
     }
 
+    .subscription-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: block;
+        color: #6023c0;
+        text-align: center;
+    }
+
+    .subscription-actions {
+        margin-top: 16px;
+        display: flex;
+        justify-content: flex-start;
+    }
+
     .profile-actions {
         display: flex;
         justify-content: center;
@@ -204,5 +324,45 @@
         .profile-actions {
             flex-direction: column;
         }
+    }
+    .connected-services {
+        margin: 20px 0;
+    }
+
+    .providers-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .provider-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background-color: var(--el-color-info-light-9);
+        border-radius: 8px;
+        padding: 12px 16px;
+        min-width: 180px;
+    }
+
+    .provider-icon {
+        color: var(--el-color-primary);
+    }
+
+    .provider-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .provider-name {
+        font-weight: 600;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .provider-status {
+        font-size: 0.85rem;
+        color: #67c23a;
     }
 </style>

@@ -36,5 +36,5 @@ App\Entity\User:
     email: 'jane-smith-without-subscription@test.fr'
 
   user-with-premium (extends alice-johnson):
-    email: 'john-doe-subscription-prenium@test.fr'
+    email: 'john-doe-subscription-premium@test.fr'
     subscription: '@subscription-premium'

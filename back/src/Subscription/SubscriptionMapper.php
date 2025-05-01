@@ -30,6 +30,9 @@ class SubscriptionMapper
         $subscription->setStripeSubscriptionId($stripeSubscriptionId);
         $subscription->setStartDate($startDate);
         $subscription->setEndDate($endDate);
+        // Réinitialiser les valeurs d'annulation lors d'une nouvelle souscription ou d'un changement
+        $subscription->setCanceledAt(null);
+        $subscription->setStatus('active');
 
         return $subscription;
     }
@@ -43,6 +46,8 @@ class SubscriptionMapper
             ->setStripeSubscriptionId($subscription->getStripeSubscriptionId())
             ->setStartDate($subscription->getStartDate())
             ->setEndDate($subscription->getEndDate())
+            ->setCanceledAt($subscription->getCanceledAt())
+            ->setStatus($subscription->getStatus())
             ->setIsActive($subscription->isActive())
         ;
 

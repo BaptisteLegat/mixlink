@@ -34,7 +34,7 @@ class SubscriptionMapperTest extends TestCase
 
         $plan = new Plan();
         $plan->setName('Premium');
-        $plan->setPrice(new Money(9.99, 'EUR'));
+        $plan->setPrice(new Money(999, 'EUR'));
 
         $stripeSubscriptionId = 'sub_123456789';
         $startDate = new DateTimeImmutable('2023-01-01');
@@ -65,11 +65,11 @@ class SubscriptionMapperTest extends TestCase
 
         $oldPlan = new Plan();
         $oldPlan->setName('Basic');
-        $oldPlan->setPrice(new Money(4.99, 'EUR'));
+        $oldPlan->setPrice(new Money(499, 'EUR'));
 
         $newPlan = new Plan();
         $newPlan->setName('Premium');
-        $newPlan->setPrice(new Money(9.99, 'EUR'));
+        $newPlan->setPrice(new Money(999, 'EUR'));
 
         $existingSubscription = new Subscription();
         $existingSubscription->setUser($user);
@@ -104,7 +104,7 @@ class SubscriptionMapperTest extends TestCase
     {
         $plan = new Plan()
             ->setName('Premium')
-            ->setPrice(new Money(9.99, 'EUR'))
+            ->setPrice(new Money(999, 'EUR'))
             ->setStripePriceId('price_123456789')
         ;
 

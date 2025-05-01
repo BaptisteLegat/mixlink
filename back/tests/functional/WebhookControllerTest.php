@@ -135,7 +135,7 @@ class WebhookControllerTest extends WebTestCase
         $eventMock = new Event();
         $eventMock->type = 'checkout.session.completed';
         $eventMock->data = new stdClass();
-        $eventMock->data->object = new stdClass(); // Pas une instance de Session
+        $eventMock->data->object = new stdClass();
 
         $this->stripeServiceMock
             ->expects($this->once())

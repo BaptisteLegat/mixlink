@@ -1,0 +1,81 @@
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
+import { subscribeToPlan, cancelSubscription, changeSubscription } from '@/services/subscriptionService';
+import { useAuthStore } from '@/stores/authStore';
+
+export const useSubscriptionStore = defineStore('subscription', () => {
+    const isLoading = ref(false);
+    const plans = ref([
+        {
+            name: 'free',
+            displayName: 'home.plans.free.title',
+            price: '0',
+            features: ['home.plans.free.feature1', 'home.plans.free.feature2'],
+            cta: 'home.plans.free.cta',
+            highlighted: false,
+        },
+        {
+            name: 'premium',
+            displayName: 'home.plans.premium.title',
+            price: '3,99',
+            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3'],
+            cta: 'home.plans.premium.cta',
+            highlighted: true,
+            badge: 'home.plans.popular',
+        },
+        {
+            name: 'enterprise',
+            displayName: 'home.plans.enterprise.title',
+            price: 'home.plans.enterprise.price',
+            features: ['home.plans.enterprise.feature1', 'home.plans.enterprise.feature2'],
+            cta: 'home.plans.enterprise.cta',
+            highlighted: false,
+        },
+    ]);
+
+    async function subscribe(planName) {
+        isLoading.value = true;
+        try {
+            const authStore = useAuthStore();
+
+            if (authStore.subscription?.stripeSubscriptionId) {
+                await changeSubscription(planName);
+                await authStore.fetchUser();
+
+                return { success: true };
+            } else {
+                const result = await subscribeToPlan(planName);
+
+                if (result.url) {
+                    window.location.href = result.url;
+                } else {
+                    await authStore.fetchUser();
+                }
+
+                return result;
+            }
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
+    async function unsubscribe() {
+        isLoading.value = true;
+        try {
+            await cancelSubscription();
+            const authStore = useAuthStore();
+            await authStore.fetchUser();
+
+            return { success: true };
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
+    return {
+        plans,
+        isLoading,
+        subscribe,
+        unsubscribe,
+    };
+});

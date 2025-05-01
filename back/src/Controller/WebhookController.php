@@ -7,6 +7,8 @@ use App\Webhook\WebhookManager;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Stripe\Checkout\Session;
+use Stripe\Event;
+use Stripe\Subscription as StripeSubscription;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,18 +41,72 @@ class WebhookController extends AbstractController
             return new Response('Invalid signature: '.$e->getMessage(), 400);
         }
 
-        if ('checkout.session.completed' === $event->type) {
-            $session = $event->data->object;
+        $response = match ($event->type) {
+            'checkout.session.completed' => $this->handleCheckoutSessionCompleted($event),
+            'customer.subscription.updated' => $this->handleSubscriptionUpdated($event),
+            'customer.subscription.deleted' => $this->handleSubscriptionCanceled($event),
+            'customer.subscription.created' => $this->handleSubscriptionUpdated($event),
+            'customer.subscription.paused' => $this->handleSubscriptionUpdated($event),
+            'customer.subscription.resumed' => $this->handleSubscriptionUpdated($event),
+            'customer.subscription.trial_will_end' => $this->handleSubscriptionUpdated($event),
+            default => new Response('Unhandled webhook event: '.$event->type.' - '.$event->id, 200),
+        };
 
-            if (!$session instanceof Session) {
-                $this->logger->error('Invalid session object');
+        return $response;
+    }
 
-                return new Response('Invalid session object', 400);
-            }
+    private function handleCheckoutSessionCompleted(Event $event): Response
+    {
+        $session = $event->data->object;
 
-            return $this->webhookManager->handleCheckoutSessionCompleted($session);
+        if (!$session instanceof Session) {
+            $this->logger->error('Invalid session object');
+
+            return new Response('Invalid session object', 400);
         }
 
-        return new Response('Webhook handled', 200);
+        return $this->webhookManager->handleCheckoutSessionCompleted($session);
+    }
+
+    private function handleSubscriptionUpdated(Event $event): Response
+    {
+        $subscription = $event->data->object;
+
+        if (!$subscription instanceof StripeSubscription) {
+            $this->logger->error('Invalid subscription object');
+
+            return new Response('Invalid subscription object', 400);
+        }
+
+        try {
+            $this->webhookManager->handleSubscriptionUpdated($subscription);
+
+            return new Response('Subscription update handled', 200);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to handle subscription update: '.$e->getMessage());
+
+            return new Response('Failed to handle subscription update', 500);
+        }
+    }
+
+    private function handleSubscriptionCanceled(Event $event): Response
+    {
+        $subscription = $event->data->object;
+
+        if (!$subscription instanceof StripeSubscription) {
+            $this->logger->error('Invalid subscription object');
+
+            return new Response('Invalid subscription object', 400);
+        }
+
+        try {
+            $this->webhookManager->handleSubscriptionCanceled($subscription);
+
+            return new Response('Subscription cancellation handled', 200);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to handle subscription cancellation: '.$e->getMessage());
+
+            return new Response('Failed to handle subscription cancellation', 500);
+        }
     }
 }

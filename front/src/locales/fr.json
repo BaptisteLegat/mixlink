@@ -11,13 +11,41 @@
         "unknown_user": "Utilisateur Inconnu",
         "account_info": "Informations du compte",
         "id": "Identifiant",
+        "email": "Email",
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "unknown": "Non renseigné",
         "role": "Rôle",
         "subscription": "Abonnement",
         "plan": "Formule",
         "start_date": "Date de début",
+        "end_date": "Date de fin",
+        "status": "Statut",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "canceled": "Annulé",
+        "subscription_id": "ID d'abonnement",
         "no_subscription": "Aucun abonnement actif",
         "back_to_home": "Retour à l'accueil",
-        "not_authenticated": "Veuillez vous connecter pour voir votre profil"
+        "not_authenticated": "Veuillez vous connecter pour voir votre profil",
+        "connected_services": "Services connectés",
+        "connected": "Connecté",
+        "connected_with": "Connecté avec",
+        "change_subscription": "Changer d'abonnement",
+        "choose_subscription": "Choisir un abonnement",
+        "current_plan": "Plan actuel",
+        "unsubscribe": {
+            "button": "Se désabonner",
+            "title": "Se désabonner",
+            "warning_title": "Attention",
+            "warning_message": "Vous êtes sur le point de vous désabonner. Cette action est irréversible et vous perdrez tous les avantages de votre plan actuel.",
+            "confirmation_message": "Pour confirmer que vous souhaitez vous désabonner du plan {plan}, veuillez saisir le nom du plan ci-dessous.",
+            "type_to_confirm": "Tapez \"{plan}\" pour confirmer",
+            "confirm": "Je me désabonne",
+            "success": "Vous avez été désabonné avec succès",
+            "error": "Une erreur s'est produite lors de la désabonnement",
+            "text_mismatch": "Le texte saisi ne correspond pas au nom du plan"
+        }
     },
     "footer": {
         "about": "À propos",
@@ -119,5 +147,8 @@
         "title": "Se connecter",
         "connect_with_google": "Se connecter avec Google",
         "connect_with_spotify": "Se connecter avec Spotify"
+    },
+    "common": {
+        "cancel": "Annuler"
     }
 }

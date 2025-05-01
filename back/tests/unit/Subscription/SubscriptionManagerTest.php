@@ -7,26 +7,33 @@ use App\Entity\Plan;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Repository\SubscriptionRepository;
+use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
 use App\Subscription\SubscriptionMapper;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class SubscriptionManagerTest extends TestCase
 {
     private SubscriptionRepository|MockObject $subscriptionRepositoryMock;
     private SubscriptionMapper|MockObject $subscriptionMapperMock;
+    private StripeService|MockObject $stripeServiceMock;
+    private LoggerInterface|MockObject $loggerMock;
     private SubscriptionManager $subscriptionManager;
 
     protected function setUp(): void
     {
         $this->subscriptionRepositoryMock = $this->createMock(SubscriptionRepository::class);
         $this->subscriptionMapperMock = $this->createMock(SubscriptionMapper::class);
-
+        $this->stripeServiceMock = $this->createMock(StripeService::class);
+        $this->loggerMock = $this->createMock(LoggerInterface::class);
         $this->subscriptionManager = new SubscriptionManager(
             $this->subscriptionRepositoryMock,
-            $this->subscriptionMapperMock
+            $this->subscriptionMapperMock,
+            $this->stripeServiceMock,
+            $this->loggerMock
         );
     }
 
@@ -37,7 +44,7 @@ class SubscriptionManagerTest extends TestCase
 
         $plan = new Plan();
         $plan->setName('Premium');
-        $plan->setPrice(new Money(9.99, 'EUR'));
+        $plan->setPrice(new Money(999, 'EUR'));
 
         $stripeSubscriptionId = 'sub_123456789';
         $subscription = new Subscription();
@@ -79,7 +86,7 @@ class SubscriptionManagerTest extends TestCase
 
         $plan = new Plan();
         $plan->setName('Premium');
-        $plan->setPrice(new Money(9.99, 'EUR'));
+        $plan->setPrice(new Money(999, 'EUR'));
 
         $stripeSubscriptionId = 'sub_123456789';
         $updatedSubscription = new Subscription();

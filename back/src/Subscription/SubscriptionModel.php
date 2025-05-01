@@ -13,6 +13,8 @@ class SubscriptionModel
     private ?DateTimeImmutable $endDate = null;
     private bool $isActive = false;
     private ?PlanModel $plan = null;
+    private ?DateTimeImmutable $canceledAt = null;
+    private ?string $status = 'active';
 
     public function getId(): string
     {
@@ -62,6 +64,30 @@ class SubscriptionModel
         return $this;
     }
 
+    public function getCanceledAt(): ?DateTimeImmutable
+    {
+        return $this->canceledAt;
+    }
+
+    public function setCanceledAt(?DateTimeImmutable $canceledAt): self
+    {
+        $this->canceledAt = $canceledAt;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     public function isActive(): bool
     {
         return $this->isActive;
@@ -72,6 +98,11 @@ class SubscriptionModel
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function isCanceled(): bool
+    {
+        return null !== $this->canceledAt || 'canceled' === $this->status;
     }
 
     public function getPlan(): ?PlanModel
@@ -98,7 +129,10 @@ class SubscriptionModel
             'stripeSubscriptionId' => $this->stripeSubscriptionId,
             'startDate' => $this->startDate ? $this->startDate->format('c') : null,
             'endDate' => $this->endDate ? $this->endDate->format('c') : null,
+            'canceledAt' => $this->canceledAt ? $this->canceledAt->format('c') : null,
+            'status' => $this->status,
             'isActive' => $this->isActive,
+            'isCanceled' => $this->isCanceled(),
             'plan' => $this->plan ? $this->plan->toArray() : null,
         ];
     }

@@ -28,11 +28,17 @@ export const useAuthStore = defineStore('auth', () => {
                 isAuthenticated.value = true;
                 subscription.value = response.subscription || null;
                 providers.value = response.providers || [];
+
+                return true;
             } else {
                 resetUserState();
+
+                return false;
             }
-        } catch {
+        } catch (error) {
             resetUserState();
+
+            throw error;
         }
     }
 

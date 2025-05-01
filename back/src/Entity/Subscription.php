@@ -46,6 +46,12 @@ class Subscription implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?DateTimeImmutable $endDate = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $canceledAt = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $status = 'active';
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -111,8 +117,54 @@ class Subscription implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
+    public function getCanceledAt(): ?DateTimeImmutable
+    {
+        return $this->canceledAt;
+    }
+
+    public function setCanceledAt(?DateTimeImmutable $canceledAt): self
+    {
+        $this->canceledAt = $canceledAt;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function isCanceled(): bool
+    {
+        return null !== $this->canceledAt;
+    }
+
     public function isActive(): bool
     {
-        return $this->getEndDate() > new DateTimeImmutable();
+        $now = new DateTimeImmutable();
+
+        // Si la date de fin est dépassée, l'abonnement n'est pas actif
+        if ($this->getEndDate() <= $now) {
+            return false;
+        }
+
+        // Si l'abonnement est annulé mais la période courante n'est pas terminée,
+        // on considère toujours l'abonnement comme actif jusqu'à sa date de fin
+        if ($this->isCanceled()) {
+            // Si le statut est explicitement marqué comme 'canceled' ou similaire
+            // on peut décider de retourner false ici si nécessaire
+            if ('canceled' === $this->getStatus()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Tests\Webhook;
 use App\Entity\Plan;
 use App\Entity\User;
 use App\Repository\PlanRepository;
+use App\Repository\SubscriptionRepository;
 use App\Repository\UserRepository;
 use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
@@ -21,6 +22,7 @@ class WebhookManagerTest extends TestCase
     private PlanRepository|MockObject $planRepository;
     private UserRepository|MockObject $userRepository;
     private StripeService|MockObject $stripeService;
+    private SubscriptionRepository|MockObject $subscriptionRepository;
     private SubscriptionManager|MockObject $subscriptionManager;
     private WebhookManager $webhookManager;
 
@@ -29,12 +31,14 @@ class WebhookManagerTest extends TestCase
         $this->planRepository = $this->createMock(PlanRepository::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->stripeService = $this->createMock(StripeService::class);
+        $this->subscriptionRepository = $this->createMock(SubscriptionRepository::class);
         $this->subscriptionManager = $this->createMock(SubscriptionManager::class);
 
         $this->webhookManager = new WebhookManager(
             $this->planRepository,
             $this->userRepository,
             $this->stripeService,
+            $this->subscriptionRepository,
             $this->subscriptionManager
         );
     }
