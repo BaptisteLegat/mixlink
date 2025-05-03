@@ -51,7 +51,8 @@
         "about": "À propos",
         "contact": "Contact",
         "privacy": "Politique de confidentialité",
-        "terms": "Conditions d'utilisation"
+        "terms": "Conditions d'utilisation",
+        "faq": "FAQ"
     },
     "home": {
         "title_1": "Unifiez Vos",
@@ -149,6 +150,172 @@
         "connect_with_spotify": "Se connecter avec Spotify"
     },
     "common": {
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "loading": "Chargement..."
+    },
+    "routes": {
+        "terms": "Conditions d'utilisation",
+        "privacy": "Politique de confidentialité",
+        "contact": "Contact",
+        "faq": "FAQ"
+    },
+    "terms": {
+        "title": "Conditions d'utilisation",
+        "last_updated": "Dernière mise à jour: {date}",
+        "section1": {
+            "title": "Acceptation des conditions",
+            "content": "En utilisant le service mixlink, vous acceptez de respecter les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service. Nous nous réservons le droit de modifier ces conditions à tout moment, et il est de votre responsabilité de les consulter régulièrement pour rester informé des mises à jour."
+        },
+        "section2": {
+            "title": "Description du service",
+            "content": "mixlink est une plateforme qui permet aux utilisateurs de créer des playlists collaboratives entre différentes plateformes de streaming musical. Notre service vous permet de partager et de contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes sur d'autres plateformes."
+        },
+        "section3": {
+            "title": "Authentification et comptes utilisateurs",
+            "content": "Lors de votre inscription, vous devez fournir des informations exactes et les maintenir à jour. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités qui se produisent sous votre compte. Vous devez nous informer immédiatement de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.",
+            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via les plateformes de streaming musical que vous utilisez déjà (Spotify, Google, Apple Music, etc.). En utilisant cette méthode de connexion, vous autorisez mixlink à accéder à certaines informations de votre profil sur ces plateformes, conformément à leurs politiques de confidentialité. Vous êtes responsable de toutes les activités qui se produisent sous votre compte et devez nous informer immédiatement de toute utilisation non autorisée ou violation de sécurité."
+        },
+        "section4": {
+            "title": "Droits d'auteur et propriété intellectuelle",
+            "content": "mixlink respecte les droits d'auteur et s'attend à ce que ses utilisateurs fassent de même. Notre service permet uniquement de référencer du contenu hébergé sur des plateformes de streaming légales, et nous n'hébergeons pas directement de fichiers audio protégés par des droits d'auteur. Si vous pensez que votre travail a été utilisé d'une manière qui constitue une violation de droit d'auteur, veuillez nous contacter."
+        },
+        "section5": {
+            "title": "Limitations de responsabilité",
+            "content": "mixlink fournit son service 'tel quel' et décline toute responsabilité quant à son exactitude, sa disponibilité ou sa fiabilité. Nous ne sommes pas responsables des interruptions de service dues à des problèmes techniques, des opérations de maintenance ou à des facteurs échappant à notre contrôle raisonnable."
+        },
+        "section6": {
+            "title": "Résiliation",
+            "content": "Nous nous réservons le droit de suspendre ou de mettre fin à votre accès au service, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris, sans limitation, si vous enfreignez les présentes conditions d'utilisation."
+        }
+    },
+    "privacy": {
+        "title": "Politique de confidentialité",
+        "last_updated": "Dernière mise à jour: {date}",
+        "section1": {
+            "title": "Collecte des informations",
+            "content": "Nous collectons des informations lorsque vous vous inscrivez sur notre site, vous connectez à votre compte, créez des playlists ou partagez du contenu. Les informations collectées incluent votre nom, adresse e-mail, et éventuellement vos préférences musicales et historique d'utilisation de l'application.",
+            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via vos plateformes de streaming musical préférées comme Spotify, Google, Apple Music, etc. Lorsque vous vous connectez, nous recevons certaines informations de ces services, notamment votre nom, adresse e-mail, photo de profil et identifiant unique. Nous collectons également des informations sur vos préférences musicales et votre historique d'utilisation de notre application pour améliorer votre expérience."
+        },
+        "section2": {
+            "title": "Utilisation des informations",
+            "content": "Les informations que nous collectons sont utilisées pour personnaliser votre expérience, améliorer notre site web, améliorer le service client et traiter les transactions. Nous pouvons également utiliser ces informations pour envoyer des emails périodiques concernant des mises à jour de notre service ou d'autres produits et services."
+        },
+        "section3": {
+            "title": "Protection des informations",
+            "content": "Nous mettons en œuvre diverses mesures de sécurité pour protéger la sécurité de vos informations personnelles. Nous utilisons un cryptage avancé pour protéger les informations sensibles transmises en ligne et nous protégeons également vos informations hors ligne."
+        },
+        "section4": {
+            "title": "Cookies",
+            "content": "Notre site web utilise des cookies pour améliorer l'expérience utilisateur. Un cookie est un petit fichier placé sur le disque dur de votre ordinateur. Vous pouvez refuser l'utilisation de cookies en modifiant les paramètres de votre navigateur, mais cela peut affecter certaines fonctionnalités de notre service."
+        },
+        "section5": {
+            "title": "Partage des informations",
+            "content": "Nous ne vendons, n'échangeons ni ne transférons vos informations personnelles identifiables à des tiers, sauf lorsque cela est nécessaire pour fournir un service que vous avez demandé ou lorsque nous avons votre autorisation. Cela n'inclut pas les tiers de confiance qui nous aident à exploiter notre site web ou à mener nos affaires, tant que ces parties conviennent de garder ces informations confidentielles."
+        },
+        "section6": {
+            "title": "Vos droits",
+            "content": "Vous avez le droit d'accéder, de mettre à jour ou de supprimer les informations que nous avons sur vous. Vous pouvez exercer ces droits en nous contactant via notre page de contact. Nous répondrons à votre demande dans un délai raisonnable.",
+            "content_oauth": "Vous avez le droit d'accéder, de mettre à jour ou de supprimer les informations que nous avons sur vous. Vous pouvez à tout moment vous déconnecter d'un ou plusieurs services de streaming connectés à votre compte mixlink en accédant à votre profil. Vous pouvez également supprimer entièrement votre compte mixlink, ce qui supprimera toutes vos données de nos serveurs. Si vous souhaitez exercer d'autres droits concernant vos données, vous pouvez nous contacter via notre page de contact. Nous répondrons à votre demande dans un délai raisonnable."
+        }
+    },
+    "contact": {
+        "title": "Contactez-nous",
+        "description": "Vous avez des questions ou des suggestions ? N'hésitez pas à nous contacter et nous vous répondrons dans les plus brefs délais.",
+        "info_title": "Nos coordonnées",
+        "email_title": "Email",
+        "phone_title": "Téléphone",
+        "address_title": "Adresse",
+        "form": {
+            "title": "Envoyez-nous un message",
+            "name": "Nom",
+            "name_placeholder": "Entrez votre nom",
+            "email": "Email",
+            "email_placeholder": "Entrez votre email",
+            "subject": "Sujet",
+            "subject_placeholder": "Entrez le sujet de votre message",
+            "message": "Message",
+            "message_placeholder": "Rédigez votre message ici...",
+            "submit": "Envoyer le message",
+            "success_message": "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.",
+            "error_message": "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer.",
+            "error_rate_limit": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
+            "error_server": "Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.",
+            "validation": {
+                "name_required": "Veuillez entrer votre nom",
+                "email_required": "Veuillez entrer votre email",
+                "email_valid": "Veuillez entrer un email valide",
+                "subject_required": "Veuillez entrer un sujet",
+                "message_required": "Veuillez entrer votre message"
+            }
+        }
+    },
+    "faq": {
+        "title": "Foire Aux Questions",
+        "description": "Trouvez des réponses aux questions les plus fréquemment posées sur mixlink et ses fonctionnalités.",
+        "didnt_find": "Vous n'avez pas trouvé la réponse à votre question ?",
+        "contact_us": "Contactez-nous directement et nous serons ravis de vous aider.",
+        "contact_button": "Nous contacter",
+        "categories": {
+            "general": "Questions générales",
+            "account": "Compte utilisateur",
+            "subscription": "Abonnements et tarifs",
+            "technical": "Support technique"
+        },
+        "general": {
+            "what_is": {
+                "question": "Qu'est-ce que mixlink ?",
+                "answer": "mixlink est une plateforme qui vous permet de créer des playlists collaboratives entre différentes plateformes de streaming musical. Vous pouvez partager et contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes."
+            },
+            "how_works": {
+                "question": "Comment fonctionne mixlink ?",
+                "answer": "mixlink crée un pont entre les différentes plateformes de streaming. Vous créez une playlist, partagez le lien avec vos amis, et chacun peut ajouter des morceaux depuis sa plateforme préférée. Notre système gère les références vers les morceaux sur les différentes plateformes."
+            },
+            "platforms": {
+                "question": "Quelles plateformes de streaming sont prises en charge ?",
+                "answer": "Actuellement, mixlink prend en charge Spotify, Apple Music, YouTube Music et Deezer. Nous travaillons continuellement à l'ajout de nouvelles plateformes pour offrir une expérience encore plus complète."
+            }
+        },
+        "account": {
+            "create": {
+                "question": "Comment créer un compte ?",
+                "answer": "mixlink utilise l'authentification OAuth, ce qui signifie que vous n'avez pas besoin de créer un compte distinct. Vous pouvez simplement vous connecter avec votre compte Spotify, Google ou Apple Music existant. Cliquez sur 'Connexion' dans le menu et choisissez votre plateforme préférée pour commencer."
+            },
+            "delete": {
+                "question": "Comment supprimer mon compte ?",
+                "answer": "Pour supprimer votre compte mixlink, connectez-vous, accédez à votre profil, puis aux paramètres du compte. Vous y trouverez l'option 'Supprimer mon compte'. Une fois confirmée, toutes vos données seront supprimées de nos serveurs. Notez que cela ne modifiera pas vos comptes sur les plateformes de streaming connectées."
+            },
+            "oauth": {
+                "question": "Puis-je connecter plusieurs comptes de streaming à mon compte mixlink ?",
+                "answer": "Oui, vous pouvez connecter plusieurs comptes de services de streaming à votre profil mixlink. Cela vous permettra d'ajouter facilement du contenu à partir de n'importe lequel de ces services et d'exporter vos playlists vers eux. Vous pouvez gérer vos connexions dans la section 'Services connectés' de votre profil."
+            }
+        },
+        "subscription": {
+            "free": {
+                "question": "Que puis-je faire avec un compte gratuit ?",
+                "answer": "Avec un compte gratuit, vous pouvez créer jusqu'à 5 playlists et ajouter jusqu'à 50 morceaux par playlist. Vous pouvez également participer à des playlists collaboratives créées par d'autres utilisateurs."
+            },
+            "premium": {
+                "question": "Qu'offre l'abonnement Premium ?",
+                "answer": "L'abonnement Premium débloque des fonctionnalités supplémentaires comme un nombre illimité de playlists, un nombre illimité de morceaux par playlist, et un historique complet de toutes vos playlists."
+            },
+            "cancel": {
+                "question": "Comment annuler mon abonnement ?",
+                "answer": "Pour annuler votre abonnement, accédez à la section 'Abonnement' de votre profil et cliquez sur 'Se désabonner'. Votre abonnement restera actif jusqu'à la fin de la période en cours, puis ne sera pas renouvelé."
+            }
+        },
+        "technical": {
+            "browser": {
+                "question": "Quels navigateurs sont supportés ?",
+                "answer": "mixlink est compatible avec les versions récentes des principaux navigateurs web : Chrome, Firefox, Safari, et Edge. Pour une expérience optimale, nous vous recommandons de maintenir votre navigateur à jour."
+            },
+            "mobile": {
+                "question": "mixlink est-il disponible sur mobile ?",
+                "answer": "Oui, mixlink est entièrement responsive et fonctionne sur les appareils mobiles via le navigateur web. Nous travaillons également au développement d'applications mobiles natives pour iOS et Android."
+            },
+            "api": {
+                "question": "Proposez-vous une API pour les développeurs ?",
+                "answer": "Oui, nous proposons une API pour les développeurs dans le cadre de notre offre Entreprise. Si vous êtes intéressé, veuillez nous contacter pour discuter de vos besoins spécifiques et des options d'intégration."
+            }
+        }
     }
 }
