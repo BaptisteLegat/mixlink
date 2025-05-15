@@ -234,7 +234,7 @@ class WebhookManagerTest extends TestCase
         $sessionData = [
             'customer_email' => $email,
             'subscription' => $subscriptionId,
-            'id' => $sessionId
+            'id' => $sessionId,
         ];
 
         $session->method('__get')

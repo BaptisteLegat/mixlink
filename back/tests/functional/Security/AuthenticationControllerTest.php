@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Security;
 
-use App\Entity\Provider;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
 use PHPUnit\Framework\MockObject\MockObject;

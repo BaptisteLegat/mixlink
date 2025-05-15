@@ -243,7 +243,8 @@
                 "email_required": "Please enter your email",
                 "email_valid": "Please enter a valid email",
                 "subject_required": "Please enter a subject",
-                "message_required": "Please enter your message"
+                "message_required": "Please enter your message",
+                "message_min": "The message must be at least {min} characters long"
             }
         }
     },

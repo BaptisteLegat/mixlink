@@ -6,6 +6,7 @@
     import PhoneIcon from 'vue-material-design-icons/Phone.vue';
     import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue';
     import SendIcon from 'vue-material-design-icons/Send.vue';
+    import { sendContactEmail } from '@/services/emailService';
 
     const { t } = useI18n();
 
@@ -23,7 +24,10 @@
             { type: 'email', message: t('contact.form.validation.email_valid'), trigger: ['blur', 'change'] },
         ],
         subject: [{ required: true, message: t('contact.form.validation.subject_required'), trigger: 'blur' }],
-        message: [{ required: true, message: t('contact.form.validation.message_required'), trigger: 'blur' }],
+        message: [
+            { required: true, message: t('contact.form.validation.message_required'), trigger: 'blur' },
+            { min: 10, message: t('contact.form.validation.message_min'), trigger: 'blur' },
+        ],
     });
 
     const formRef = ref(null);
@@ -37,7 +41,7 @@
                 isLoading.value = true;
 
                 try {
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    await sendContactEmail(form);
 
                     ElMessage({
                         message: t('contact.form.success_message'),
@@ -136,7 +140,7 @@
                                 </div>
                                 <div class="info-content">
                                     <el-text tag="h4" class="info-title">{{ t('contact.phone_title') }}</el-text>
-                                    <el-link href="tel:+33123456789" class="info-link">+33 7 81 66 441 82</el-link>
+                                    <el-link href="tel:+33123456789" class="info-link">+33 7 81 66 41 82</el-link>
                                 </div>
                             </div>
 

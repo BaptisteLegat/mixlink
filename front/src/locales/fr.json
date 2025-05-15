@@ -245,7 +245,8 @@
                 "email_required": "Veuillez entrer votre email",
                 "email_valid": "Veuillez entrer un email valide",
                 "subject_required": "Veuillez entrer un sujet",
-                "message_required": "Veuillez entrer votre message"
+                "message_required": "Veuillez entrer votre message",
+                "message_min": "Le message doit comporter au moins {min} caractères"
             }
         }
     },

@@ -28,15 +28,18 @@
         "symfony/expression-language": "7.2.*",
         "symfony/flex": "^2.5.0",
         "symfony/framework-bundle": "7.2.*",
+        "symfony/http-client": "7.2.*",
         "symfony/maker-bundle": "^1.62.1",
         "symfony/monolog-bundle": "^3.10",
         "symfony/property-access": "7.2.*",
         "symfony/property-info": "7.2.*",
+        "symfony/resend-mailer": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
         "symfony/validator": "7.2.*",
+        "symfony/webhook": "7.2.*",
         "symfony/yaml": "7.2.*"
     },
     "config": {

@@ -23,7 +23,7 @@ class PlanMapperTest extends TestCase
         $plan->setName('Premium')
             ->setPrice(new Money(999, 'EUR'))
             ->setStripePriceId('price_123456789'
-        );
+            );
 
         $planModel = $this->planMapper->mapModel($plan);
 
