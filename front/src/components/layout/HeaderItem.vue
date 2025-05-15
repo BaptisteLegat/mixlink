@@ -9,32 +9,17 @@
     import SunIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue';
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
+    import { useUserDisplay } from '@/composables/useUserDisplay';
 
     const { locale } = useI18n();
     const authStore = useAuthStore();
-
     const isMobile = useMediaQuery('(max-width: 768px)');
+
+    const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
     function changeLanguage(lang) {
         locale.value = lang;
     }
-
-    const userInitials = computed(() => {
-        if (!authStore.user) return '';
-
-        const firstName = authStore.user.firstName || '';
-        const lastName = authStore.user.lastName || '';
-
-        if (firstName && lastName) {
-            return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-        } else if (firstName) {
-            return firstName.charAt(0).toUpperCase();
-        } else if (authStore.user.email) {
-            return authStore.user.email.charAt(0).toUpperCase();
-        }
-
-        return 'U';
-    });
 </script>
 <template>
     <el-header style="border-bottom: 1px solid #ebeef5" height="80px">

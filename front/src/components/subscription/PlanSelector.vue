@@ -22,11 +22,29 @@
     const loading = ref(false);
     const plans = computed(() => subscriptionStore.plans);
     const currentPlan = computed(() => {
-        if (!authStore.subscription) return null;
+        if (!authStore.subscription || !authStore.subscription.isActive || authStore.subscription.isCanceled) {
+            return null;
+        }
         return authStore.subscription.plan.name;
     });
 
+    const isCurrentPlan = (planName) => {
+        return currentPlan.value === planName && authStore.subscription?.isActive && !authStore.subscription?.isCanceled;
+    };
+
+    const canSubscribe = (planName) => {
+        if (isCurrentPlan(planName)) {
+            return false;
+        }
+        return true;
+    };
+
     async function handlePlanClick(plan) {
+        if (plan.name === 'enterprise') {
+            router.push({ path: '/contact' });
+            return;
+        }
+
         if (!authStore.isAuthenticated) {
             router.push({ path: '/login' });
             return;
@@ -61,7 +79,7 @@
                     'pricing-card-dark': isDark && !plan.highlighted,
                     'pricing-card-highlighted-dark': isDark && plan.highlighted,
                     'pricing-card-compact': props.compact,
-                    'pricing-card-current': currentPlan === plan.name,
+                    'pricing-card-current': isCurrentPlan(plan.name),
                 }"
                 shadow="hover"
                 :body-style="{ padding: props.compact ? '20px 16px' : '32px 24px', height: '100%', display: 'flex', flexDirection: 'column' }"
@@ -70,7 +88,7 @@
                     <StarIcon :size="16" />
                     <span>{{ t(plan.badge) }}</span>
                 </div>
-                <div v-if="currentPlan === plan.name" class="current-plan-badge">
+                <div v-if="isCurrentPlan(plan.name)" class="current-plan-badge">
                     {{ t('profile.current_plan') }}
                 </div>
                 <el-text tag="h3" class="plan-name">{{ t(plan.displayName) }}</el-text>
@@ -97,12 +115,12 @@
                             'plan-cta-secondary': !plan.highlighted,
                         }"
                         @click="handlePlanClick(plan)"
-                        :disabled="currentPlan === plan.name"
+                        :disabled="!canSubscribe(plan.name)"
                         :loading="loading === plan.name"
                         size="large"
                         :style="props.compact ? 'width: 100%' : ''"
                     >
-                        <span v-if="currentPlan === plan.name">{{ t('profile.current_plan') }}</span>
+                        <span v-if="isCurrentPlan(plan.name)">{{ t('profile.current_plan') }}</span>
                         <span v-else>{{ t(plan.cta) }}</span>
                     </el-button>
                 </div>

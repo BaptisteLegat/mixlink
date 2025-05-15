@@ -6,11 +6,14 @@
     import { isDark } from '@/composables/dark';
     import MenuIcon from 'vue-material-design-icons/Menu.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
+    import { useUserDisplay } from '@/composables/useUserDisplay';
 
     const router = useRouter();
     const { locale, t } = useI18n();
     const authStore = useAuthStore();
     const drawerVisible = ref(false);
+
+    const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
     const toggleLanguage = () => {
         locale.value = locale.value === 'en' ? 'fr' : 'en';
@@ -38,23 +41,6 @@
         authStore.logout();
         drawerVisible.value = false;
     };
-
-    const userInitials = computed(() => {
-        if (!authStore.user) return '';
-
-        const firstName = authStore.user.firstName || '';
-        const lastName = authStore.user.lastName || '';
-
-        if (firstName && lastName) {
-            return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-        } else if (firstName) {
-            return firstName.charAt(0).toUpperCase();
-        } else if (authStore.user.email) {
-            return authStore.user.email.charAt(0).toUpperCase();
-        }
-
-        return 'U';
-    });
 </script>
 
 <template>

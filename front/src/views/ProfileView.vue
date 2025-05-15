@@ -3,99 +3,24 @@
     import { useI18n } from 'vue-i18n';
     import { computed, ref } from 'vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
-    import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
-    import GoogleIcon from 'vue-material-design-icons/Google.vue';
-    import AppleIcon from 'vue-material-design-icons/Apple.vue';
-    import EmailIcon from 'vue-material-design-icons/Email.vue';
     import PlanSelector from '@/components/subscription/PlanSelector.vue';
     import UnsubscribeModal from '@/components/subscription/UnsubscribeModal.vue';
+    import { useUserDisplay } from '@/composables/useUserDisplay';
+    import { useProviderIcons } from '@/composables/useProviderIcons';
+    import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
     const unsubscribeModal = ref(null);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('fr-FR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
-    };
-
-    const getProviderIcon = (providerName) => {
-        switch (providerName.toLowerCase()) {
-            case 'spotify':
-                return SpotifyIcon;
-            case 'google':
-                return GoogleIcon;
-            case 'apple':
-                return AppleIcon;
-            default:
-                return EmailIcon;
-        }
-    };
-
-    const getProviderDisplayName = (providerName) => {
-        return providerName.charAt(0).toUpperCase() + providerName.slice(1);
-    };
-
-    const userInitials = computed(() => {
-        if (!authStore.user) return '';
-
-        const firstName = authStore.user.firstName || '';
-        const lastName = authStore.user.lastName || '';
-
-        if (firstName && lastName) {
-            return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-        } else if (firstName) {
-            return firstName.charAt(0).toUpperCase();
-        } else if (authStore.user.email) {
-            return authStore.user.email.charAt(0).toUpperCase();
-        }
-
-        return 'U';
-    });
-
-    const userName = computed(() => {
-        if (!authStore.user) return '';
-
-        const firstName = authStore.user.firstName || '';
-        const lastName = authStore.user.lastName || '';
-
-        if (firstName && lastName) {
-            return `${firstName} ${lastName}`;
-        } else if (firstName) {
-            return firstName;
-        } else if (authStore.user.email) {
-            return authStore.user.email;
-        }
-
-        return t('profile.unknown_user');
-    });
+    const { userInitials, userName } = useUserDisplay(computed(() => authStore.user));
+    const { getProviderIcon, getProviderDisplayName } = useProviderIcons();
+    const { formatDate, getSubscriptionTagType, getSubscriptionStatusLabel, hasActiveSubscription } = useSubscriptionStatus();
 
     function openUnsubscribeModal() {
         unsubscribeModal.value.showDialog();
     }
-
-    const getSubscriptionTagType = (subscription) => {
-        if (subscription.isCanceled) {
-            return 'warning';
-        }
-        return subscription.isActive ? 'success' : 'danger';
-    };
-
-    const getSubscriptionStatusLabel = (subscription) => {
-        if (subscription.isCanceled) {
-            return t('profile.canceled', { endDate: formatDate(subscription.endDate) });
-        }
-        return subscription.isActive ? t('profile.active') : t('profile.inactive');
-    };
 </script>
-
 <template>
     <el-container class="profile-container" v-if="authStore.isAuthenticated">
         <el-space direction="vertical" class="profile-section" :fill="true" :size="30">
@@ -118,7 +43,6 @@
                                 <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
                             </el-avatar>
                             <el-text tag="h3" class="profile-name">{{ userName }}</el-text>
-                            <el-text tag="p" class="profile-email">{{ authStore.user?.email }}</el-text>
                         </div>
 
                         <el-divider />
@@ -162,10 +86,10 @@
                                             <b>{{ t('profile.subscription_id') }}:</b> {{ authStore.subscription.stripeSubscriptionId }}
                                         </el-text>
 
-                                        <div class="subscription-actions">
-                                            <el-button type="danger" plain @click="openUnsubscribeModal">{{
-                                                t('profile.unsubscribe.button')
-                                            }}</el-button>
+                                        <div class="subscription-actions" v-if="hasActiveSubscription">
+                                            <el-button type="danger" plain @click="openUnsubscribeModal">
+                                                {{ t('profile.unsubscribe.button') }}
+                                            </el-button>
                                         </div>
                                     </template>
                                     <el-text tag="p" v-else>
@@ -179,7 +103,7 @@
 
                         <!-- Subscription Management Section -->
                         <el-text tag="h3" class="subscription-section-title">
-                            {{ authStore.subscription ? t('profile.change_subscription') : t('profile.choose_subscription') }}
+                            {{ hasActiveSubscription ? t('profile.change_subscription') : t('profile.choose_subscription') }}
                         </el-text>
                         <PlanSelector :compact="true" />
 

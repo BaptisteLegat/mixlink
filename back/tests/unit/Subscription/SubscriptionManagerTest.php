@@ -44,7 +44,7 @@ class SubscriptionManagerTest extends TestCase
 
         $plan = new Plan();
         $plan->setName('Premium');
-        $plan->setPrice(new Money(9.99, 'EUR'));
+        $plan->setPrice(new Money(999, 'EUR'));
 
         $stripeSubscriptionId = 'sub_123456789';
         $subscription = new Subscription();
@@ -86,7 +86,7 @@ class SubscriptionManagerTest extends TestCase
 
         $plan = new Plan();
         $plan->setName('Premium');
-        $plan->setPrice(new Money(9.99, 'EUR'));
+        $plan->setPrice(new Money(999, 'EUR'));
 
         $stripeSubscriptionId = 'sub_123456789';
         $updatedSubscription = new Subscription();

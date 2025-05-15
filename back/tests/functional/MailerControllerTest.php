@@ -88,7 +88,6 @@ class MailerControllerTest extends WebTestCase
     {
         $contactData = [
             'name' => 'John Doe',
-            // email manquant
             'subject' => 'Test Subject',
             'message' => 'This is a test message.',
         ];
@@ -137,7 +136,7 @@ class MailerControllerTest extends WebTestCase
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'subject' => 'Test Subject',
-            'message' => 'Too short', // Moins de 10 caractères
+            'message' => 'Too short',
         ];
 
         $this->client->request(
@@ -157,7 +156,6 @@ class MailerControllerTest extends WebTestCase
 
     public function testSendContactEmailWithMailerException(): void
     {
-        // Configurer le mock pour simuler une exception lors de l'envoi
         $this->mailerMock
             ->expects($this->once())
             ->method('send')

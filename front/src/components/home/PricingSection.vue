@@ -3,9 +3,12 @@
     import PlanSelector from '@/components/subscription/PlanSelector.vue';
     import { useAuthStore } from '@/stores/authStore';
     import router from '@/router';
+    import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
+
+    const { hasActiveSubscription, formatDate } = useSubscriptionStatus();
 </script>
 
 <template>
@@ -17,12 +20,11 @@
                     <el-text tag="p" size="large" class="section-subtitle">{{ t('home.plans.subtitle') }}</el-text>
                 </el-col>
             </el-row>
-
-            <el-row v-if="authStore.subscription" justify="center">
+            <el-row v-if="hasActiveSubscription" justify="center">
                 <el-col :span="24" :lg="18" :xl="16">
                     <el-text tag="h3" class="section-subtitle">
                         {{ t('home.plans.current_plan') }}: {{ t('home.plans.' + authStore.subscription.plan.name + '.title') }}
-                        {{ t('home.plans.since') }} {{ authStore.subscription.startDate }}
+                        {{ t('home.plans.since') }} {{ formatDate(authStore.subscription.startDate) }}
                     </el-text>
                     <el-text tag="p" class="section-subtitle">
                         {{ t('home.plans.change_plan') }}

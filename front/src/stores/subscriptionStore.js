@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { subscribeToPlan, cancelSubscription, changeSubscription } from '@/services/subscriptionService';
 import { useAuthStore } from '@/stores/authStore';
@@ -33,12 +33,25 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         },
     ]);
 
+    const hasActiveSubscription = computed(() => {
+        const authStore = useAuthStore();
+        return authStore.subscription && authStore.subscription.isActive === true && !authStore.subscription.isCanceled;
+    });
+
+    const currentPlanName = computed(() => {
+        const authStore = useAuthStore();
+        if (!authStore.subscription || !authStore.subscription.isActive || authStore.subscription.isCanceled) {
+            return 'free';
+        }
+        return authStore.subscription.plan?.name || 'free';
+    });
+
     async function subscribe(planName) {
         isLoading.value = true;
         try {
             const authStore = useAuthStore();
 
-            if (authStore.subscription?.stripeSubscriptionId) {
+            if (authStore.subscription?.stripeSubscriptionId && authStore.subscription.isActive && !authStore.subscription.isCanceled) {
                 await changeSubscription(planName);
                 await authStore.fetchUser();
 
@@ -62,8 +75,12 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     async function unsubscribe() {
         isLoading.value = true;
         try {
-            await cancelSubscription();
             const authStore = useAuthStore();
+            if (!authStore.subscription || !authStore.subscription.isActive) {
+                return { success: false, error: 'No active subscription to cancel' };
+            }
+
+            await cancelSubscription();
             await authStore.fetchUser();
 
             return { success: true };
@@ -77,5 +94,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         isLoading,
         subscribe,
         unsubscribe,
+        hasActiveSubscription,
+        currentPlanName,
     };
 });

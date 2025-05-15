@@ -9,25 +9,84 @@ use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
 use DateTimeImmutable;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Stripe\Checkout\Session;
+use Stripe\Event;
 use Stripe\StripeObject;
 use Stripe\Subscription as StripeSubscription;
 use Symfony\Component\HttpFoundation\Response;
 
 class WebhookManager
 {
+    public const string EVENT_CHECKOUT_SESSION_COMPLETED = 'checkout.session.completed';
+    public const string EVENT_SUBSCRIPTION_UPDATED = 'customer.subscription.updated';
+    public const string EVENT_SUBSCRIPTION_DELETED = 'customer.subscription.deleted';
+
     public function __construct(
         private PlanRepository $planRepository,
         private UserRepository $userRepository,
         private StripeService $stripeService,
         private SubscriptionRepository $subscriptionRepository,
         private SubscriptionManager $subscriptionManager,
+        private LoggerInterface $logger,
     ) {
     }
 
-    /**
-     * Handle checkout.session.completed events.
-     */
+    public function handleCheckoutSessionCompletedEvent(Event $event): Response
+    {
+        $session = $event->data->object;
+
+        if (!$session instanceof Session) {
+            $this->logger->error('Invalid session object');
+
+            return new Response('Invalid session object', Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleCheckoutSessionCompleted($session);
+    }
+
+    public function handleSubscriptionUpdatedEvent(Event $event): Response
+    {
+        $subscription = $event->data->object;
+
+        if (!$subscription instanceof StripeSubscription) {
+            $this->logger->error('Invalid subscription object');
+
+            return new Response('Invalid subscription object', Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->handleSubscriptionUpdated($subscription);
+
+            return new Response('Subscription update handled', Response::HTTP_OK);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to handle subscription update: '.$e->getMessage());
+
+            return new Response('Failed to handle subscription update: '.$e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function handleSubscriptionCanceledEvent(Event $event): Response
+    {
+        $subscription = $event->data->object;
+
+        if (!$subscription instanceof StripeSubscription) {
+            $this->logger->error('Invalid subscription object');
+
+            return new Response('Invalid subscription object', Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->handleSubscriptionCanceled($subscription);
+
+            return new Response('Subscription cancellation handled', Response::HTTP_OK);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to handle subscription cancellation: '.$e->getMessage());
+
+            return new Response('Failed to handle subscription cancellation: '.$e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function handleCheckoutSessionCompleted(Session $session): Response
     {
         /** @var string|null $email */
@@ -64,9 +123,6 @@ class WebhookManager
         }
     }
 
-    /**
-     * Extract price ID from session line items.
-     */
     public function getPriceIdFromSession(string $sessionId): ?string
     {
         /** @var StripeObject $lineItems */
@@ -96,46 +152,49 @@ class WebhookManager
 
     public function handleSubscriptionUpdated(StripeSubscription $stripeSubscription): void
     {
-        // Find subscription by Stripe ID
-        $subscription = $this->subscriptionRepository->findOneBy(['stripeSubscriptionId' => $stripeSubscription->id]);
+        try {
+            $subscription = $this->subscriptionRepository->findOneBy(['stripeSubscriptionId' => $stripeSubscription->id]);
 
-        if (!$subscription) {
-            throw new Exception('Subscription not found');
-        }
+            if (!$subscription) {
+                $this->logger->info('Subscription not found in database for update event', [
+                    'stripeSubscriptionId' => $stripeSubscription->id,
+                    'context' => 'This might be normal for new subscriptions',
+                ]);
 
-        // Mettre à jour le statut (pas besoin de vérifier isset car le type est défini dans StripeSubscription)
-        $subscription->setStatus($stripeSubscription->status);
-
-        // Si le statut est "canceled", mettre à jour la date d'annulation
-        if ('canceled' === $stripeSubscription->status) {
-            $subscription->setCanceledAt(new DateTimeImmutable());
-        }
-
-        // Vérifier l'annulation future
-        if ($stripeSubscription->cancel_at_period_end) {
-            $subscription->setCanceledAt(new DateTimeImmutable());
-        } else {
-            // L'annulation a été révoquée
-            $subscription->setCanceledAt(null);
-        }
-
-        // Update end date based on current_period_end
-        /** @var int $currentPeriodEnd */
-        $currentPeriodEnd = $stripeSubscription->offsetGet('current_period_end');
-        $endDate = new DateTimeImmutable('@'.strval($currentPeriodEnd));
-        $subscription->setEndDate($endDate);
-
-        // If subscription has a new price, update the plan
-        if (isset($stripeSubscription->items->data[0]->price->id)) {
-            $priceId = $stripeSubscription->items->data[0]->price->id;
-            $plan = $this->planRepository->findOneBy(['stripePriceId' => $priceId]);
-
-            if ($plan) {
-                $subscription->setPlan($plan);
+                return;
             }
-        }
 
-        $this->subscriptionRepository->save($subscription, true);
+            $subscription->setStatus($stripeSubscription->status);
+
+            if ('canceled' === $stripeSubscription->status) {
+                $subscription->setCanceledAt(new DateTimeImmutable());
+            }
+
+            $subscription->setCanceledAt($stripeSubscription->cancel_at_period_end ? new DateTimeImmutable() : null);
+
+            if (isset($stripeSubscription->current_period_end) && is_int($stripeSubscription->current_period_end)) {
+                $endDate = new DateTimeImmutable('@'.$stripeSubscription->current_period_end);
+                $subscription->setEndDate($endDate);
+            }
+
+            if (!empty($stripeSubscription->items->data[0]->price->id)) {
+                $priceId = $stripeSubscription->items->data[0]->price->id;
+                $plan = $this->planRepository->findOneBy(['stripePriceId' => $priceId]);
+
+                if ($plan) {
+                    $subscription->setPlan($plan);
+                }
+            }
+
+            $this->subscriptionRepository->save($subscription, true);
+        } catch (Exception $e) {
+            $this->logger->error('Error updating subscription', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'stripeSubscriptionId' => $stripeSubscription->id,
+            ]);
+            throw $e;
+        }
     }
 
     public function handleSubscriptionCanceled(StripeSubscription $stripeSubscription): void
@@ -146,17 +205,13 @@ class WebhookManager
             throw new Exception('Subscription not found');
         }
 
-        // Marquer l'abonnement comme annulé immédiatement
         $subscription->setCanceledAt(new DateTimeImmutable());
         $subscription->setStatus('canceled');
 
-        // Si l'annulation est immédiate, mettre à jour la date de fin
         if ('canceled' === $stripeSubscription->status) {
             $endDate = new DateTimeImmutable();
             $subscription->setEndDate($endDate);
-        }
-        // Sinon, garder la date de fin actuelle (fin de la période en cours)
-        elseif ($stripeSubscription->cancel_at_period_end) {
+        } elseif ($stripeSubscription->cancel_at_period_end) {
             /** @var int $currentPeriodEnd */
             $currentPeriodEnd = $stripeSubscription->offsetGet('current_period_end');
             $endDate = new DateTimeImmutable('@'.strval($currentPeriodEnd));
