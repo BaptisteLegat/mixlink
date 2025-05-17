@@ -524,13 +524,14 @@ class WebhookManagerTest extends TestCase
         $canceledAtCallCount = 0;
         $dbSubscription->expects($this->exactly(2))
             ->method('setCanceledAt')
-            ->willReturnCallback(function($value) use (&$canceledAtCallCount) {
-                if ($canceledAtCallCount === 0) {
+            ->willReturnCallback(function ($value) use (&$canceledAtCallCount) {
+                if (0 === $canceledAtCallCount) {
                     $this->assertInstanceOf(\DateTimeImmutable::class, $value);
                 } else {
                     $this->assertNull($value);
                 }
-                $canceledAtCallCount++;
+                ++$canceledAtCallCount;
+
                 return $this->createMock(Subscription::class);
             })
         ;

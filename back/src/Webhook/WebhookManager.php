@@ -35,7 +35,6 @@ class WebhookManager
     public function handleCheckoutSessionCompletedEvent(Event $event): Response
     {
         $session = $event->data->object;
-
         if (!$session instanceof Session) {
             $this->logger->error('Invalid session object');
 

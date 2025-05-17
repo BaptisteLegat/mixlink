@@ -6,8 +6,6 @@ use App\Service\StripeService;
 use App\Webhook\WebhookManager;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use stdClass;
-use Stripe\Checkout\Session;
 use Stripe\Event;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -68,43 +66,13 @@ class WebhookControllerTest extends WebTestCase
         $this->assertEquals('Invalid signature: Invalid signature test', $this->client->getResponse()->getContent());
     }
 
-    public function testHandleStripeWebhookWithCheckoutSessionCompleted(): void
-    {
-        $sessionMock = $this->createMock(Session::class);
-        $eventMock = new Event();
-        $eventMock->type = 'checkout.session.completed';
-        $eventMock->data = new stdClass();
-        $eventMock->data->object = $sessionMock;
-
-        $this->stripeServiceMock
-            ->expects($this->once())
-            ->method('constructWebhookEvent')
-            ->willReturn($eventMock)
-        ;
-
-        $this->webhookManagerMock
-            ->expects($this->once())
-            ->method('handleCheckoutSessionCompleted')
-            ->with($sessionMock)
-            ->willReturn(new Response('Checkout session handled', Response::HTTP_OK))
-        ;
-
-        $this->client->request(
-            'POST',
-            '/api/webhook/stripe',
-            [],
-            [],
-            ['HTTP_STRIPE_SIGNATURE' => 'test_signature'],
-            json_encode(['payload' => 'test'])
-        );
-
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-    }
-
     public function testHandleStripeWebhookWithOtherEventType(): void
     {
-        $eventMock = new Event();
-        $eventMock->type = 'other.event.type';
+        $eventMock = $this->createMock(Event::class);
+        $eventMock->method('__get')->willReturnMap([
+            ['type', 'other.event.type'],
+            ['id', 'evt_123456'],
+        ]);
 
         $this->stripeServiceMock
             ->expects($this->once())
@@ -130,12 +98,13 @@ class WebhookControllerTest extends WebTestCase
         $this->assertEquals('Webhook handled', $this->client->getResponse()->getContent());
     }
 
-    public function testHandleStripeWebhookWithInvalidSessionObject(): void
+    public function testHandleStripeWebhookWithCheckoutSessionCompletedEvent(): void
     {
-        $eventMock = new Event();
-        $eventMock->type = 'checkout.session.completed';
-        $eventMock->data = new stdClass();
-        $eventMock->data->object = new stdClass();
+        $eventMock = $this->createMock(Event::class);
+        $eventMock->method('__get')->willReturnMap([
+            ['type', WebhookManager::EVENT_CHECKOUT_SESSION_COMPLETED],
+            ['id', 'evt_123456'],
+        ]);
 
         $this->stripeServiceMock
             ->expects($this->once())
@@ -144,8 +113,10 @@ class WebhookControllerTest extends WebTestCase
         ;
 
         $this->webhookManagerMock
-            ->expects($this->never())
-            ->method('handleCheckoutSessionCompleted')
+            ->expects($this->once())
+            ->method('handleCheckoutSessionCompletedEvent')
+            ->with($eventMock)
+            ->willReturn(new Response('Checkout session completed', Response::HTTP_OK))
         ;
 
         $this->client->request(
@@ -157,7 +128,109 @@ class WebhookControllerTest extends WebTestCase
             json_encode(['payload' => 'test'])
         );
 
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('Invalid session object', $this->client->getResponse()->getContent());
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('Checkout session completed', $this->client->getResponse()->getContent());
+    }
+
+    public function testHandleStripeWebhookWithSubscriptionUpdatedEvent(): void
+    {
+        $eventMock = $this->createMock(Event::class);
+        $eventMock->method('__get')->willReturnMap([
+            ['type', WebhookManager::EVENT_SUBSCRIPTION_UPDATED],
+            ['id', 'evt_123456'],
+        ]);
+
+        $this->stripeServiceMock
+            ->expects($this->once())
+            ->method('constructWebhookEvent')
+            ->willReturn($eventMock)
+        ;
+
+        $this->webhookManagerMock
+            ->expects($this->once())
+            ->method('handleSubscriptionUpdatedEvent')
+            ->with($eventMock)
+            ->willReturn(new Response('Subscription updated', Response::HTTP_OK))
+        ;
+
+        $this->client->request(
+            'POST',
+            '/api/webhook/stripe',
+            [],
+            [],
+            ['HTTP_STRIPE_SIGNATURE' => 'test_signature'],
+            json_encode(['payload' => 'test'])
+        );
+
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('Subscription updated', $this->client->getResponse()->getContent());
+    }
+
+    public function testHandleStripeWebhookWithSubscriptionDeletedEvent(): void
+    {
+        $eventMock = $this->createMock(Event::class);
+        $eventMock->method('__get')->willReturnMap([
+            ['type', WebhookManager::EVENT_SUBSCRIPTION_DELETED],
+            ['id', 'evt_123456'],
+        ]);
+
+        $this->stripeServiceMock
+            ->expects($this->once())
+            ->method('constructWebhookEvent')
+            ->willReturn($eventMock)
+        ;
+
+        $this->webhookManagerMock
+            ->expects($this->once())
+            ->method('handleSubscriptionCanceledEvent')
+            ->with($eventMock)
+            ->willReturn(new Response('Subscription canceled', Response::HTTP_OK))
+        ;
+
+        $this->client->request(
+            'POST',
+            '/api/webhook/stripe',
+            [],
+            [],
+            ['HTTP_STRIPE_SIGNATURE' => 'test_signature'],
+            json_encode(['payload' => 'test'])
+        );
+
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('Subscription canceled', $this->client->getResponse()->getContent());
+    }
+
+    public function testHandleStripeWebhookWithExceptionDuringProcessing(): void
+    {
+        $eventMock = $this->createMock(Event::class);
+        $eventMock->method('__get')->willReturnMap([
+            ['type', WebhookManager::EVENT_CHECKOUT_SESSION_COMPLETED],
+            ['id', 'evt_123456'],
+        ]);
+
+        $this->stripeServiceMock
+            ->expects($this->once())
+            ->method('constructWebhookEvent')
+            ->willReturn($eventMock)
+        ;
+
+        $this->webhookManagerMock
+            ->expects($this->once())
+            ->method('handleCheckoutSessionCompletedEvent')
+            ->with($eventMock)
+            ->willThrowException(new Exception('Processing error'))
+        ;
+
+        $this->client->request(
+            'POST',
+            '/api/webhook/stripe',
+            [],
+            [],
+            ['HTTP_STRIPE_SIGNATURE' => 'test_signature'],
+            json_encode(['payload' => 'test'])
+        );
+
+        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('Error processing webhook: Processing error', $this->client->getResponse()->getContent());
     }
 }

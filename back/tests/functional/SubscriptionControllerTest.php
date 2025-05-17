@@ -2,10 +2,15 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\Subscription;
 use App\Provider\ProviderManager;
+use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
 use App\Service\StripeService;
+use App\Subscription\SubscriptionManager;
+use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
+use ReflectionProperty;
 use Stripe\Checkout\Session;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,12 +23,14 @@ class SubscriptionControllerTest extends WebTestCase
     private UserRepository $userRepository;
     private ProviderManager|MockObject $providerManagerMock;
     private StripeService|MockObject $stripeServiceMock;
+    private SubscriptionManager|MockObject $subscriptionManagerMock;
+    private PlanRepository $planRepository;
 
     public static function setUpBeforeClass(): void
     {
         self::$loader = static::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         self::$loader->load([
-            './fixtures/subscriptionController.yaml',
+            './fixtures/functionalTests/subscriptionController.yaml',
         ]);
     }
 
@@ -32,12 +39,45 @@ class SubscriptionControllerTest extends WebTestCase
         self::ensureKernelShutdown();
         $this->client = static::createClient();
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+        $this->planRepository = static::getContainer()->get(PlanRepository::class);
 
         $this->providerManagerMock = $this->createMock(ProviderManager::class);
         static::getContainer()->set(ProviderManager::class, $this->providerManagerMock);
 
         $this->stripeServiceMock = $this->createMock(StripeService::class);
         static::getContainer()->set(StripeService::class, $this->stripeServiceMock);
+
+        $this->subscriptionManagerMock = $this->createMock(SubscriptionManager::class);
+        static::getContainer()->set(SubscriptionManager::class, $this->subscriptionManagerMock);
+    }
+
+    /**
+     * Préparation d'un utilisateur avec un abonnement actif pour les tests.
+     */
+    private function setupUserWithActiveSubscription(string $planName = 'premium'): object
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
+        $plan = $this->planRepository->findOneBy(['name' => $planName]);
+
+        // Créer un abonnement actif avec un ID Stripe
+        $subscription = new Subscription();
+        $subscription->setUser($user);
+        $subscription->setPlan($plan);
+        $subscription->setStripeSubscriptionId('sub_test_123456');
+        $subscription->setStatus('active');
+        $subscription->setStartDate(new DateTimeImmutable());
+        $subscription->setEndDate(new DateTimeImmutable('+30 days'));
+
+        // Associer l'abonnement à l'utilisateur avec ReflectionProperty
+        $reflectionProperty = new ReflectionProperty($user, 'subscription');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($user, $subscription);
+
+        return (object) [
+            'user' => $user,
+            'plan' => $plan,
+            'subscription' => $subscription,
+        ];
     }
 
     public function testSubscribeWithoutAuthentication(): void
@@ -149,5 +189,203 @@ class SubscriptionControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(500);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('Unable to create checkout session.', $responseData['error']);
+    }
+
+    public function testCancelSubscriptionWithoutAuthentication(): void
+    {
+        $this->client->request('POST', '/api/subscription/cancel');
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testCancelSubscriptionWithNoActiveSubscription(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
+
+        $reflectionProperty = new ReflectionProperty($user, 'subscription');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($user, null);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/cancel');
+
+        $this->assertResponseStatusCodeSame(404);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('No active subscription found', $responseData['error']);
+    }
+
+    public function testCancelSubscriptionFailure(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription();
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->subscriptionManagerMock
+            ->expects($this->once())
+            ->method('cancelSubscription')
+            ->with($user)
+            ->willReturn(false)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/cancel');
+
+        $this->assertResponseStatusCodeSame(500);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Failed to cancel subscription', $responseData['error']);
+    }
+
+    public function testCancelSubscriptionSuccess(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription();
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->subscriptionManagerMock
+            ->expects($this->once())
+            ->method('cancelSubscription')
+            ->with($user)
+            ->willReturn(true)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/cancel');
+
+        $this->assertResponseIsSuccessful();
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals('Subscription successfully cancelled', $responseData['message']);
+    }
+
+    public function testChangeSubscriptionWithoutAuthentication(): void
+    {
+        $this->client->request('POST', '/api/subscription/change/free');
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testChangeSubscriptionWithNoActiveSubscription(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
+
+        $reflectionProperty = new ReflectionProperty($user, 'subscription');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($user, null);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/change/free');
+
+        $this->assertResponseStatusCodeSame(404);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('No active subscription found', $responseData['error']);
+    }
+
+    public function testChangeSubscriptionWithInvalidPlan(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription();
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/change/nonexistent_plan');
+
+        $this->assertResponseStatusCodeSame(404);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Plan not found', $responseData['error']);
+    }
+
+    public function testChangeSubscriptionToSamePlan(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription('premium');
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/change/premium');
+
+        $this->assertResponseStatusCodeSame(400);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Already subscribed to this plan', $responseData['error']);
+    }
+
+    public function testChangeSubscriptionFailure(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription('premium');
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->subscriptionManagerMock
+            ->expects($this->once())
+            ->method('changeSubscriptionPlan')
+            ->with($user, $this->callback(function ($plan) {
+                return 'free' === $plan->getName();
+            }))
+            ->willReturn(false)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/change/free');
+
+        $this->assertResponseStatusCodeSame(500);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Failed to change subscription', $responseData['error']);
+    }
+
+    public function testChangeSubscriptionSuccess(): void
+    {
+        $userWithSub = $this->setupUserWithActiveSubscription('premium');
+        $user = $userWithSub->user;
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->subscriptionManagerMock
+            ->expects($this->once())
+            ->method('changeSubscriptionPlan')
+            ->with($user, $this->callback(function ($plan) {
+                return 'free' === $plan->getName();
+            }))
+            ->willReturn(true)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+        $this->client->request('POST', '/api/subscription/change/free');
+
+        $this->assertResponseIsSuccessful();
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals('Subscription successfully changed', $responseData['message']);
     }
 }

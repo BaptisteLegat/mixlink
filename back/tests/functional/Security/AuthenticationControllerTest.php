@@ -23,7 +23,7 @@ class AuthenticationControllerTest extends WebTestCase
     {
         self::$loader = static::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         self::$loader->load([
-            './fixtures/authenticationController.yaml',
+            './fixtures/functionalTests/authenticationController.yaml',
         ]);
     }
 
