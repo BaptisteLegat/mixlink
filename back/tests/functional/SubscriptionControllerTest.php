@@ -51,15 +51,11 @@ class SubscriptionControllerTest extends WebTestCase
         static::getContainer()->set(SubscriptionManager::class, $this->subscriptionManagerMock);
     }
 
-    /**
-     * Préparation d'un utilisateur avec un abonnement actif pour les tests.
-     */
     private function setupUserWithActiveSubscription(string $planName = 'premium'): object
     {
         $user = $this->userRepository->findOneBy(['email' => 'john-doe-subscription@test.fr']);
         $plan = $this->planRepository->findOneBy(['name' => $planName]);
 
-        // Créer un abonnement actif avec un ID Stripe
         $subscription = new Subscription();
         $subscription->setUser($user);
         $subscription->setPlan($plan);
@@ -68,7 +64,6 @@ class SubscriptionControllerTest extends WebTestCase
         $subscription->setStartDate(new DateTimeImmutable());
         $subscription->setEndDate(new DateTimeImmutable('+30 days'));
 
-        // Associer l'abonnement à l'utilisateur avec ReflectionProperty
         $reflectionProperty = new ReflectionProperty($user, 'subscription');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($user, $subscription);
@@ -173,15 +168,18 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->stripeServiceMock
             ->method('getPriceIdForPlan')
-            ->willReturn('price_test_id');
+            ->willReturn('price_test_id')
+        ;
 
         $this->stripeServiceMock
             ->method('createCheckoutSession')
-            ->willReturn($checkoutSessionMock);
+            ->willReturn($checkoutSessionMock)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
         $this->client->request('GET', '/api/subscribe/premium');

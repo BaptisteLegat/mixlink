@@ -19,9 +19,15 @@
 <template>
     <el-config-provider :locale="elementLocale">
         <Header />
-        <el-main>
+        <el-main class="main-container">
             <router-view />
         </el-main>
         <Footer />
     </el-config-provider>
 </template>
+<style lang="scss">
+    .main-container {
+        padding: 0;
+        margin: 0;
+    }
+</style>

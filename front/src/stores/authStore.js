@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { fetchUserProfile, apiLogout } from '@/api';
+import { fetchUserProfile, apiLogout, apiDeleteAccount } from '@/api';
 import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
 
@@ -76,6 +76,18 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function deleteAccount() {
+        try {
+            await apiDeleteAccount();
+            document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            resetUserState();
+            return true;
+        } catch (error) {
+            console.error('Erreur lors de la suppression du compte :', error);
+            throw error;
+        }
+    }
+
     return {
         user,
         isAuthenticated,
@@ -85,5 +97,6 @@ export const useAuthStore = defineStore('auth', () => {
         subscribe,
         fetchUser,
         logout,
+        deleteAccount,
     };
 });

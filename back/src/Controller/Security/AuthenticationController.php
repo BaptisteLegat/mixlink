@@ -65,12 +65,12 @@ class AuthenticationController extends AbstractController
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
         if (null === $accessToken) {
-            return new JsonResponse(null);
+            return new JsonResponse([]);
         }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
         if (null === $user) {
-            return new JsonResponse(null);
+            return new JsonResponse([]);
         }
 
         $userModel = $this->userManager->getUserModel($user);
@@ -81,7 +81,32 @@ class AuthenticationController extends AbstractController
     #[Route('/api/logout', name: 'api_logout')]
     public function logout(): JsonResponse
     {
-        $response = new JsonResponse(null);
+        $response = new JsonResponse([]);
+        $response->headers->clearCookie('AUTH_TOKEN');
+
+        return $response;
+    }
+
+    #[Route('/api/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $accessToken = $request->cookies->get('AUTH_TOKEN');
+        if (null === $accessToken) {
+            return new JsonResponse(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = $this->providerManager->findByAccessToken($accessToken);
+        if (null === $user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        $result = $this->userManager->deleteUser($user);
+
+        if (!$result) {
+            return new JsonResponse(['error' => 'Failed to delete account'], 500);
+        }
+
+        $response = new JsonResponse(['success' => true]);
         $response->headers->clearCookie('AUTH_TOKEN');
 
         return $response;

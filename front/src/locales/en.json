@@ -34,6 +34,13 @@
         "change_subscription": "Change Subscription",
         "choose_subscription": "Choose a Subscription",
         "current_plan": "Current Plan",
+        "danger_zone": {
+            "title": "Danger Zone",
+            "unsubscribe_title": "Unsubscribe",
+            "unsubscribe_description": "You will lose access to all premium features.",
+            "delete_title": "Delete account",
+            "delete_description": "This action is irreversible. All your data will be permanently deleted."
+        },
         "unsubscribe": {
             "button": "Unsubscribe",
             "title": "Unsubscribe",
@@ -45,6 +52,18 @@
             "success": "You have successfully unsubscribed",
             "error": "An error occurred during unsubscription",
             "text_mismatch": "The entered text does not match the plan name"
+        },
+        "delete_account": {
+            "button": "Delete my account",
+            "title": "Delete my account",
+            "warning_title": "Danger",
+            "warning_message": "You are about to delete your account. This action is PERMANENT and irreversible. All your data will be deleted from our system.",
+            "confirmation_message": "To confirm the deletion of your account, please type 'DELETE' below.",
+            "type_to_confirm": "Type \"{confirm}\" to confirm",
+            "confirm": "I confirm deletion",
+            "success": "Your account has been successfully deleted",
+            "error": "An error occurred during account deletion",
+            "text_mismatch": "The entered text does not match 'DELETE'"
         }
     },
     "footer": {
@@ -145,9 +164,12 @@
         "cancel": "Cancel"
     },
     "login": {
-        "title": "Sign in",
+        "title": "Login",
+        "welcome_message": "Welcome to mixlink! Sign in to create and share playlists across different platforms",
         "connect_with_google": "Sign in with Google",
-        "connect_with_spotify": "Sign in with Spotify"
+        "connect_with_spotify": "Sign in with Spotify",
+        "terms_notice": "By logging in, you agree to our",
+        "terms_link": "Terms of Service"
     },
     "common": {
         "cancel": "Annuler",

@@ -34,6 +34,13 @@
         "change_subscription": "Changer d'abonnement",
         "choose_subscription": "Choisir un abonnement",
         "current_plan": "Plan actuel",
+        "danger_zone": {
+            "title": "Zone de danger",
+            "unsubscribe_title": "Se désabonner",
+            "unsubscribe_description": "Vous perdrez l'accès à toutes les fonctionnalités premium.",
+            "delete_title": "Supprimer le compte",
+            "delete_description": "Cette action est irréversible. Toutes vos données seront supprimées définitivement."
+        },
         "unsubscribe": {
             "button": "Se désabonner",
             "title": "Se désabonner",
@@ -45,6 +52,18 @@
             "success": "Vous avez été désabonné avec succès",
             "error": "Une erreur s'est produite lors de la désabonnement",
             "text_mismatch": "Le texte saisi ne correspond pas au nom du plan"
+        },
+        "delete_account": {
+            "button": "Supprimer mon compte",
+            "title": "Supprimer mon compte",
+            "warning_title": "Danger",
+            "warning_message": "Vous êtes sur le point de supprimer votre compte. Cette action est DÉFINITIVE et irréversible. Toutes vos données seront supprimées de notre système.",
+            "confirmation_message": "Pour confirmer la suppression de votre compte, veuillez saisir 'DELETE' ci-dessous.",
+            "type_to_confirm": "Tapez \"{confirm}\" pour confirmer",
+            "confirm": "Je confirme la suppression",
+            "success": "Votre compte a été supprimé avec succès",
+            "error": "Une erreur s'est produite lors de la suppression du compte",
+            "text_mismatch": "Le texte saisi ne correspond pas à 'DELETE'"
         }
     },
     "footer": {
@@ -146,8 +165,11 @@
     },
     "login": {
         "title": "Se connecter",
+        "welcome_message": "Bienvenue sur mixlink ! Connectez-vous pour créer et partager des playlists entre différentes plateformes",
         "connect_with_google": "Se connecter avec Google",
-        "connect_with_spotify": "Se connecter avec Spotify"
+        "connect_with_spotify": "Se connecter avec Spotify",
+        "terms_notice": "En vous connectant, vous acceptez nos",
+        "terms_link": "Conditions d'utilisation"
     },
     "common": {
         "cancel": "Annuler",

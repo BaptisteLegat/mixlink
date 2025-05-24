@@ -29,6 +29,19 @@ export async function apiLogout() {
     return response.json();
 }
 
+export async function apiDeleteAccount() {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me/delete`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Erreur lors de la suppression du compte');
+    }
+
+    return response.json();
+}
+
 export async function fetchWithAuth(path, options = {}) {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${path}`, {
         ...options,
