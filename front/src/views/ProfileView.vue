@@ -132,34 +132,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <el-divider v-if="authStore.providers && authStore.providers.length > 0" />
-                            <div class="profile-actions">
-                                <el-button type="primary" @click="$router.push('/')">
-                                    {{ t('profile.back_to_home') }}
-                                </el-button>
-                                <el-button type="danger" @click="authStore.logout()">
-                                    {{ t('header.logout') }}
-                                </el-button>
-                            </div>
-                            <el-divider />
                             <div class="danger-zone">
                                 <el-text tag="h3" class="danger-title">{{ t('profile.danger_zone.title') }}</el-text>
                                 <el-space direction="vertical" :fill="true" :size="15">
-                                    <div v-if="authStore.subscription" class="danger-action">
-                                        <div>
-                                            <el-text tag="h4">{{ t('profile.danger_zone.unsubscribe_title') }}</el-text>
-                                            <el-text type="info">{{ t('profile.danger_zone.unsubscribe_description') }}</el-text>
-                                        </div>
-                                        <el-button type="danger" plain @click="openUnsubscribeModal">
-                                            {{ t('profile.unsubscribe.button') }}
-                                        </el-button>
-                                    </div>
-
                                     <div class="danger-action">
-                                        <div>
-                                            <el-text tag="h4">{{ t('profile.danger_zone.delete_title') }}</el-text>
-                                            <el-text type="info">{{ t('profile.danger_zone.delete_description') }}</el-text>
-                                        </div>
                                         <el-button type="danger" @click="openDeleteAccountModal">
                                             {{ t('profile.delete_account.button') }}
                                         </el-button>
@@ -339,14 +315,5 @@
         color: var(--el-color-danger);
         font-weight: bold;
         margin-bottom: 16px;
-    }
-
-    .danger-action {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        border: 1px solid var(--el-border-color);
-        border-radius: 8px;
     }
 </style>

@@ -37,9 +37,7 @@
         "danger_zone": {
             "title": "Danger Zone",
             "unsubscribe_title": "Unsubscribe",
-            "unsubscribe_description": "You will lose access to all premium features.",
-            "delete_title": "Delete account",
-            "delete_description": "This action is irreversible. All your data will be permanently deleted."
+            "unsubscribe_description": "You will lose access to all premium features."
         },
         "unsubscribe": {
             "button": "Unsubscribe",
@@ -56,14 +54,10 @@
         "delete_account": {
             "button": "Delete my account",
             "title": "Delete my account",
-            "warning_title": "Danger",
             "warning_message": "You are about to delete your account. This action is PERMANENT and irreversible. All your data will be deleted from our system.",
-            "confirmation_message": "To confirm the deletion of your account, please type 'DELETE' below.",
-            "type_to_confirm": "Type \"{confirm}\" to confirm",
             "confirm": "I confirm deletion",
             "success": "Your account has been successfully deleted",
-            "error": "An error occurred during account deletion",
-            "text_mismatch": "The entered text does not match 'DELETE'"
+            "error": "An error occurred during account deletion"
         }
     },
     "footer": {

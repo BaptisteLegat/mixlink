@@ -100,9 +100,15 @@ class AuthenticationController extends AbstractController
             return new JsonResponse(['error' => 'User not found'], 404);
         }
 
-        $result = $this->userManager->deleteUser($user);
+        try {
+            $this->userManager->deleteUser($user);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to delete user', [
+                'userId' => $user->getId(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-        if (!$result) {
             return new JsonResponse(['error' => 'Failed to delete account'], 500);
         }
 

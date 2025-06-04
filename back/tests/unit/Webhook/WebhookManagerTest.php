@@ -62,6 +62,7 @@ class WebhookManagerTest extends TestCase
             ->method('error')
             ->with('Invalid session object')
         ;
+
         $response = $this->webhookManager->handleCheckoutSessionCompletedEvent($event);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Invalid session object', $response->getContent());
@@ -691,9 +692,16 @@ class WebhookManagerTest extends TestCase
             ->willReturn(null)
         ;
 
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('Subscription not found for cancellation event', [
+                'stripeSubscriptionId' => 'sub_123',
+            ])
+        ;
+
         $response = $this->webhookManager->handleSubscriptionCanceledEvent($event);
-        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-        $this->assertEquals('Failed to handle subscription cancellation: Subscription not found', $response->getContent());
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertEquals('Subscription cancellation handled', $response->getContent());
     }
 
     public function testHandleSubscriptionCanceledWithException(): void

@@ -201,7 +201,11 @@ class WebhookManager
         $subscription = $this->subscriptionRepository->findOneBy(['stripeSubscriptionId' => $stripeSubscription->id]);
 
         if (!$subscription) {
-            throw new Exception('Subscription not found');
+            $this->logger->info('Subscription not found for cancellation event', [
+                'stripeSubscriptionId' => $stripeSubscription->id,
+            ]);
+
+            return;
         }
 
         $subscription->setCanceledAt(new DateTimeImmutable());

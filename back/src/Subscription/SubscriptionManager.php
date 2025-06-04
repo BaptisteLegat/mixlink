@@ -48,9 +48,6 @@ class SubscriptionManager
         return $subscription;
     }
 
-    /**
-     * Cancel a subscription.
-     */
     public function cancelSubscription(User $user): bool
     {
         $subscription = $user->getSubscription();
@@ -65,23 +62,18 @@ class SubscriptionManager
         }
 
         try {
-            // Annuler sur Stripe
             $stripeResponse = $this->stripeService->cancelSubscription($stripeSubscriptionId);
 
             if (!($stripeResponse instanceof StripeSubscription)) {
                 throw new Exception('Invalid Stripe subscription response');
             }
 
-            // Mettre à jour localement
             $subscription->setCanceledAt(new DateTimeImmutable());
             $subscription->setStatus('canceled');
 
-            // Si l'annulation est à effet immédiat dans Stripe
             if ('canceled' === $stripeResponse->status) {
                 $subscription->setEndDate(new DateTimeImmutable());
-            }
-            // Sinon, on utilise la date de fin de période
-            elseif ($stripeResponse->cancel_at_period_end) {
+            } elseif ($stripeResponse->cancel_at_period_end) {
                 /** @var int $currentPeriodEnd */
                 $currentPeriodEnd = $stripeResponse->current_period_end ?? time();
                 $endDate = new DateTimeImmutable('@'.strval($currentPeriodEnd));
@@ -98,9 +90,6 @@ class SubscriptionManager
         }
     }
 
-    /**
-     * Change a subscription to a new plan.
-     */
     public function changeSubscriptionPlan(User $user, Plan $newPlan): bool
     {
         $subscription = $user->getSubscription();
@@ -121,7 +110,6 @@ class SubscriptionManager
         }
 
         try {
-            // Mettre à jour sur Stripe
             $stripeResponse = $this->stripeService->changeSubscriptionPlan(
                 $stripeSubscriptionId,
                 $priceId
@@ -131,9 +119,8 @@ class SubscriptionManager
                 throw new Exception('Invalid Stripe subscription response');
             }
 
-            // Mettre à jour localement
             $subscription->setPlan($newPlan);
-            $subscription->setCanceledAt(null); // Réinitialiser l'annulation si elle existait
+            $subscription->setCanceledAt(null);
             $subscription->setStatus($stripeResponse->status);
 
             /** @var int $currentPeriodEnd */
