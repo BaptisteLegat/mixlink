@@ -4,6 +4,8 @@ namespace App\Tests\Functional\Security;
 
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
+use App\User\UserManager;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -191,7 +193,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->assertEquals(
-            '{}',
+            '[]',
             $this->client->getResponse()->getContent()
         );
     }
@@ -211,7 +213,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->assertEquals(
-            '{}',
+            '[]',
             $this->client->getResponse()->getContent()
         );
     }
@@ -227,9 +229,93 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->assertEquals(
-            '{}',
+            '[]',
             $this->client->getResponse()->getContent()
         );
+
+        $cookieHeader = $this->client->getResponse()->headers->getCookies();
+        $deletedCookie = array_filter($cookieHeader, fn ($cookie) => 'AUTH_TOKEN' === $cookie->getName() && 0 !== $cookie->getExpiresTime());
+        $this->assertNotEmpty($deletedCookie);
+    }
+
+     public function testDeleteAccountWithoutToken(): void
+    {
+        $this->client->request('DELETE', '/api/me/delete');
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseData = json_decode($responseContent, true);
+
+        $this->assertEquals('Unauthorized', $responseData['error']);
+    }
+
+    public function testDeleteAccountWithInvalidToken(): void
+    {
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn(null)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'invalid_access_token'));
+
+        $this->client->request('DELETE', '/api/me/delete');
+
+        $this->assertResponseStatusCodeSame(404);
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseData = json_decode($responseContent, true);
+
+        $this->assertEquals('User not found', $responseData['error']);
+    }
+
+    public function testDeleteAccountWithException(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $userManagerMock = $this->createMock(UserManager::class);
+        $userManagerMock->method('deleteUser')
+            ->willThrowException(new Exception('Error deleting user'));
+
+        static::getContainer()->set(UserManager::class, $userManagerMock);
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+
+        $this->client->request('DELETE', '/api/me/delete');
+
+        $this->assertResponseStatusCodeSame(500);
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseData = json_decode($responseContent, true);
+
+        $this->assertEquals('Failed to delete account', $responseData['error']);
+    }
+
+    public function testDeleteAccountWithValidToken(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'valid_access_token'));
+
+        $this->client->request('DELETE', '/api/me/delete');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseData = json_decode($responseContent, true);
+
+        $this->assertTrue($responseData['success']);
 
         $cookieHeader = $this->client->getResponse()->headers->getCookies();
         $deletedCookie = array_filter($cookieHeader, fn ($cookie) => 'AUTH_TOKEN' === $cookie->getName() && 0 !== $cookie->getExpiresTime());

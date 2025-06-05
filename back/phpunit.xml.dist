@@ -32,9 +32,13 @@
     </testsuites>
     <coverage/>
 
-    <!-- <extensions>
-        <extension class="Symfony\Component\Panther\ServerExtension" />
-    </extensions> -->
+    <extensions>
+        <bootstrap class="DG\BypassFinals\PHPUnitExtension">
+        <parameter name="bypassFinal" value="true"/>
+        <parameter name="bypassReadOnly" value="false"/>
+        <parameter name="cacheDirectory" value="./cache"/>
+        </bootstrap>
+    </extensions>
 
     <source>
         <include>

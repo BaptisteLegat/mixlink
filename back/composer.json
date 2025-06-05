@@ -95,6 +95,7 @@
         }
     },
     "require-dev": {
+        "dg/bypass-finals": "^1.9",
         "friendsofphp/php-cs-fixer": "^3.75",
         "hautelook/alice-bundle": "^2.15.1",
         "phpmd/phpmd": "^2.15",
