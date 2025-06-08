@@ -163,8 +163,6 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertArrayHasKey('id', $provider);
         $this->assertArrayHasKey('name', $provider);
         $this->assertEquals('google', $provider['name']);
-        $this->assertArrayHasKey('accessToken', $provider);
-        $this->assertArrayHasKey('refreshToken', $provider);
 
         $this->assertArrayHasKey('subscription', $responseData);
         $this->assertArrayHasKey('id', $responseData['subscription']);
@@ -238,7 +236,7 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertNotEmpty($deletedCookie);
     }
 
-     public function testDeleteAccountWithoutToken(): void
+    public function testDeleteAccountWithoutToken(): void
     {
         $this->client->request('DELETE', '/api/me/delete');
 

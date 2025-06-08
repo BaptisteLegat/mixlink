@@ -76,9 +76,9 @@ class UserManager
         $filters->enable('softdeleteable');
     }
 
-    public function getUserModel(User $user): UserModel
+    public function getUserModel(User $user, ?string $currentAccessToken = null): UserModel
     {
-        return $this->userMapper->mapModel(new UserModel(), $user);
+        return $this->userMapper->mapModel(new UserModel(), $user, $currentAccessToken);
     }
 
     public function deleteUser(User $user): void

@@ -58,6 +58,17 @@
             "confirm": "I confirm deletion",
             "success": "Your account has been successfully deleted",
             "error": "An error occurred during account deletion"
+        },
+        "providers": {
+            "disconnect_title": "Disconnect Service",
+            "disconnect_warning": "You are about to disconnect this service from your account. You will no longer be able to access your playlists on this platform through mixlink, but your account on this platform will remain intact.",
+            "disconnect_confirm": "Disconnect",
+            "disconnect_success": "Service has been successfully disconnected",
+            "disconnect_error": "An error occurred while disconnecting the service",
+            "no_providers": "No services connected",
+            "disconnect_main_title": "Warning: Main Authentication Service",
+            "disconnect_main_warning": "This service is used to log in to mixlink. If you disconnect it, you will be automatically logged out of your mixlink account.",
+            "disconnect_main_success": "Service disconnected. You have been logged out of your account."
         }
     },
     "footer": {

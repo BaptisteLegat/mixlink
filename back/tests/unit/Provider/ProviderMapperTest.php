@@ -141,8 +141,45 @@ class ProviderMapperTest extends TestCase
 
         $this->assertInstanceOf(ProviderModel::class, $providerModel);
         $this->assertEquals($name, $providerModel->getName());
-        $this->assertEquals($accessToken, $providerModel->getAccessToken());
-        $this->assertEquals($refreshToken, $providerModel->getRefreshToken());
+        $this->assertFalse($providerModel->isMain());
+    }
+
+    public function testMapModelWithCurrentAccessToken(): void
+    {
+        $name = ApiReference::GOOGLE;
+        $accessToken = 'test_access_token';
+        $refreshToken = 'test_refresh_token';
+        $currentAccessToken = 'test_access_token';
+
+        $provider = new Provider();
+        $provider->setName($name);
+        $provider->setAccessToken($accessToken);
+        $provider->setRefreshToken($refreshToken);
+
+        $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
+
+        $this->assertInstanceOf(ProviderModel::class, $providerModel);
+        $this->assertEquals($name, $providerModel->getName());
+        $this->assertTrue($providerModel->isMain());
+    }
+
+    public function testMapModelWithDifferentAccessToken(): void
+    {
+        $name = ApiReference::GOOGLE;
+        $accessToken = 'test_access_token';
+        $refreshToken = 'test_refresh_token';
+        $currentAccessToken = 'different_access_token';
+
+        $provider = new Provider();
+        $provider->setName($name);
+        $provider->setAccessToken($accessToken);
+        $provider->setRefreshToken($refreshToken);
+
+        $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
+
+        $this->assertInstanceOf(ProviderModel::class, $providerModel);
+        $this->assertEquals($name, $providerModel->getName());
+        $this->assertFalse($providerModel->isMain());
     }
 
     public function testMapModelWithNullValues(): void
@@ -158,8 +195,7 @@ class ProviderMapperTest extends TestCase
 
         $this->assertInstanceOf(ProviderModel::class, $providerModel);
         $this->assertEquals($name, $providerModel->getName());
-        $this->assertNull($providerModel->getAccessToken());
-        $this->assertNull($providerModel->getRefreshToken());
+        $this->assertFalse($providerModel->isMain());
     }
 
     public function testMapModelWithEmptyValues(): void
@@ -177,7 +213,25 @@ class ProviderMapperTest extends TestCase
 
         $this->assertInstanceOf(ProviderModel::class, $providerModel);
         $this->assertEquals($name, $providerModel->getName());
-        $this->assertEquals($accessToken, $providerModel->getAccessToken());
-        $this->assertEquals($refreshToken, $providerModel->getRefreshToken());
+        $this->assertFalse($providerModel->isMain());
+    }
+
+    public function testMapModelWithNullCurrentAccessToken(): void
+    {
+        $name = ApiReference::GOOGLE;
+        $accessToken = 'test_access_token';
+        $refreshToken = 'test_refresh_token';
+        $currentAccessToken = null;
+
+        $provider = new Provider();
+        $provider->setName($name);
+        $provider->setAccessToken($accessToken);
+        $provider->setRefreshToken($refreshToken);
+
+        $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
+
+        $this->assertInstanceOf(ProviderModel::class, $providerModel);
+        $this->assertEquals($name, $providerModel->getName());
+        $this->assertFalse($providerModel->isMain());
     }
 }

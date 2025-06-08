@@ -4,6 +4,7 @@
     import { useAuthStore } from '@/stores/authStore';
     import GradientBackground from '@/components/ui/GradientBackground.vue';
     import DeleteAccountModal from '@/components/user/DeleteAccountModal.vue';
+    import DisconnectProviderModal from '@/components/user/DisconnectProviderModal.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
     import PlanSelector from '@/components/subscription/PlanSelector.vue';
     import UnsubscribeModal from '@/components/subscription/UnsubscribeModal.vue';
@@ -12,6 +13,7 @@
     import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
     import { ElMessage } from 'element-plus';
     import { useRouter } from 'vue-router';
+    import { Close } from '@element-plus/icons-vue';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
@@ -19,6 +21,7 @@
 
     const unsubscribeModal = ref(null);
     const deleteAccountModal = ref(null);
+    const disconnectProviderModal = ref(null);
 
     const { userInitials, userName } = useUserDisplay(computed(() => authStore.user));
     const { getProviderIcon, getProviderDisplayName } = useProviderIcons();
@@ -30,6 +33,10 @@
 
     function openDeleteAccountModal() {
         deleteAccountModal.value.showDialog();
+    }
+
+    function openDisconnectProviderModal(provider) {
+        disconnectProviderModal.value.showDialog(provider);
     }
 
     async function handleAccountDeleted() {
@@ -57,10 +64,10 @@
                                     :icon="authStore.user?.profilePicture ? null : UserIcon"
                                     class="profile-avatar"
                                 >
-                                <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
-                            </el-avatar>
-                            <el-text tag="h3" class="profile-name">{{ userName }}</el-text>
-                        </div>
+                                    <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
+                                </el-avatar>
+                                <el-text tag="h3" class="profile-name">{{ userName }}</el-text>
+                            </div>
                             <el-divider />
                             <div class="profile-info">
                                 <el-row :gutter="20">
@@ -129,6 +136,15 @@
                                             <h4 class="provider-name">{{ getProviderDisplayName(provider.name) }}</h4>
                                             <span class="provider-status">{{ t('profile.connected') }}</span>
                                         </div>
+                                        <el-button
+                                            type="danger"
+                                            circle
+                                            size="small"
+                                            class="disconnect-button"
+                                            @click="openDisconnectProviderModal(provider)"
+                                        >
+                                            <el-icon><Close /></el-icon>
+                                        </el-button>
                                     </div>
                                 </div>
                             </div>
@@ -148,6 +164,7 @@
             </el-space>
             <UnsubscribeModal ref="unsubscribeModal" />
             <DeleteAccountModal ref="deleteAccountModal" @account-deleted="handleAccountDeleted" />
+            <DisconnectProviderModal ref="disconnectProviderModal" />
         </el-container>
         <el-container v-else>
             <el-row justify="center">
@@ -285,6 +302,7 @@
         border-radius: 8px;
         padding: 12px 16px;
         min-width: 180px;
+        position: relative;
     }
 
     .provider-icon {
@@ -292,8 +310,7 @@
     }
 
     .provider-details {
-        display: flex;
-        flex-direction: column;
+        flex-grow: 1;
     }
 
     .provider-name {
@@ -305,6 +322,13 @@
     .provider-status {
         font-size: 0.85rem;
         color: #67c23a;
+    }
+
+    .disconnect-button {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 12px;
     }
 
     .danger-zone {

@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { fetchUserProfile, apiLogout, apiDeleteAccount } from '@/api';
+import { fetchUserProfile, apiLogout, apiDeleteAccount, apiDisconnectProvider } from '@/api';
 import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
 
@@ -88,6 +88,21 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function disconnectProvider(providerId) {
+        try {
+            const response = await apiDisconnectProvider(providerId);
+
+            if (!response.mainProvider) {
+                providers.value = providers.value.filter((provider) => provider.id !== providerId);
+            }
+
+            return response;
+        } catch (error) {
+            console.error('Erreur lors de la déconnexion du provider :', error);
+            throw error;
+        }
+    }
+
     return {
         user,
         isAuthenticated,
@@ -98,5 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
         fetchUser,
         logout,
         deleteAccount,
+        disconnectProvider,
+        resetUserState,
     };
 });

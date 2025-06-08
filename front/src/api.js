@@ -42,6 +42,21 @@ export async function apiDeleteAccount() {
     return response.json();
 }
 
+export async function apiDisconnectProvider(providerId) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/provider/${providerId}/disconnect`, {
+        method: 'POST',
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+
+        throw new Error(errorData.error || 'Erreur lors de la déconnexion du service');
+    }
+
+    return response.json();
+}
+
 export async function fetchWithAuth(path, options = {}) {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${path}`, {
         ...options,

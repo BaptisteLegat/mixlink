@@ -132,7 +132,7 @@ class UserMapperTest extends TestCase
 
         $userModel = new UserModel();
 
-        $result = $this->userMapper->mapModel($userModel, $user);
+        $result = $this->userMapper->mapModel($userModel, $user, null);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('', $result->getFirstName());
         $this->assertEquals('', $result->getLastName());
@@ -153,10 +153,12 @@ class UserMapperTest extends TestCase
             ->addProvider(new Provider())
         ;
         $userModel = new UserModel();
+        $currentAccessToken = 'test_access_token';
 
         $this->providerMapper
             ->expects($this->exactly(2))
             ->method('mapModel')
+            ->with($this->anything(), $currentAccessToken)
             ->willReturn(new ProviderModel())
         ;
 
@@ -165,12 +167,7 @@ class UserMapperTest extends TestCase
             ->method('mapModel')
         ;
 
-        $this->subscriptionMapper
-            ->expects($this->never())
-            ->method('mapModel')
-        ;
-
-        $result = $this->userMapper->mapModel($userModel, $user);
+        $result = $this->userMapper->mapModel($userModel, $user, $currentAccessToken);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('John', $result->getFirstName());
         $this->assertEquals('Doe', $result->getLastName());
@@ -204,7 +201,7 @@ class UserMapperTest extends TestCase
             ->willReturn(new SubscriptionModel())
         ;
 
-        $result = $this->userMapper->mapModel($userModel, $user);
+        $result = $this->userMapper->mapModel($userModel, $user, null);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('John', $result->getFirstName());
         $this->assertEquals('Doe', $result->getLastName());
@@ -214,5 +211,31 @@ class UserMapperTest extends TestCase
         $this->assertCount(0, $result->getProviders());
         $this->assertInstanceOf(SubscriptionModel::class, $result->getSubscription());
         $this->assertEquals($user->getSubscription()->getId(), $result->getSubscription()->getId());
+    }
+
+    public function testMapModelWithCurrentAccessToken(): void
+    {
+        $user = new User();
+        $user->setFirstName('John')
+            ->setLastName('Doe')
+            ->setEmail('test@test.fr')
+            ->setProfilePicture('test')
+            ->setRoles(['ROLE_USER'])
+            ->addProvider(new Provider())
+        ;
+
+        $userModel = new UserModel();
+        $currentAccessToken = 'access_token_12345';
+
+        $this->providerMapper
+            ->expects($this->once())
+            ->method('mapModel')
+            ->with($this->anything(), $currentAccessToken)
+            ->willReturn(new ProviderModel())
+        ;
+
+        $result = $this->userMapper->mapModel($userModel, $user, $currentAccessToken);
+        $this->assertInstanceOf(UserModel::class, $result);
+        $this->assertCount(1, $result->getProviders());
     }
 }

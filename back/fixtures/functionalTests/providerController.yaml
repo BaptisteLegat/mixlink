@@ -1,0 +1,46 @@
+include:
+  - ../templates/plan.yaml
+  - ../templates/provider.yaml
+  - ../templates/subscription.yaml
+  - ../templates/user.yaml
+
+App\Entity\Plan:
+  free (extends plan_free):
+    subscriptions: ['@subscription-1']
+
+  premium (extends plan_premium):
+    subscriptions: ['@subscription-2']
+
+  custom (extends plan_custom):
+    subscriptions: ['@subscription-3']
+
+App\Entity\Provider:
+  spotify-1 (extends spotify):
+    user: '@jane-smith-1'
+
+  google-1 (extends google):
+    user: '@john-doe-1'
+
+  spotify-2 (extends spotify-second):
+    user: '@john-doe-1'
+
+  deezer-1 (extends deezer):
+    user: '@alice-johnson-1'
+
+App\Entity\Subscription:
+  subscription-1 (extends subscription):
+    plan: '@free'
+    user: '@jane-smith-1'
+
+  subscription-2 (extends subscription):
+    plan: '@premium'
+    user: '@john-doe-1'
+
+  subscription-3 (extends subscription):
+    plan: '@custom'
+    user: '@alice-johnson-1'
+
+App\Entity\User:
+  john-doe-1 (extends john-doe): ~
+  jane-smith-1 (extends jane-smith): ~
+  alice-johnson-1 (extends alice-johnson): ~

@@ -73,7 +73,7 @@ class AuthenticationController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $userModel = $this->userManager->getUserModel($user);
+        $userModel = $this->userManager->getUserModel($user, $accessToken);
 
         return new JsonResponse($userModel->toArray());
     }

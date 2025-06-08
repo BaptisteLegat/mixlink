@@ -8,6 +8,7 @@ class ProviderModel
     private string $name = '';
     private ?string $accessToken = null;
     private ?string $refreshToken = null;
+    private bool $isMain = false;
 
     public function getId(): string
     {
@@ -57,6 +58,18 @@ class ProviderModel
         return $this;
     }
 
+    public function isMain(): bool
+    {
+        return $this->isMain;
+    }
+
+    public function setIsMain(bool $isMain): self
+    {
+        $this->isMain = $isMain;
+
+        return $this;
+    }
+
     /**
      * Convert the model to an array.
      *
@@ -67,8 +80,7 @@ class ProviderModel
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'accessToken' => $this->accessToken,
-            'refreshToken' => $this->refreshToken,
+            'isMain' => $this->isMain,
         ];
     }
 }

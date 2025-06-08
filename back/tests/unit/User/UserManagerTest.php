@@ -247,11 +247,33 @@ class UserManagerTest extends TestCase
         $this->userMapperMocked
             ->expects($this->once())
             ->method('mapModel')
-            ->with($userModel, $user)
+            ->with($this->isInstanceOf(UserModel::class), $user, null)
             ->willReturn($userModel)
         ;
 
         $result = $this->userManager->getUserModel($user);
+
+        $this->assertSame($userModel, $result);
+    }
+
+    public function testGetUserModelWithAccessToken(): void
+    {
+        $user = new User();
+        $userModel = new UserModel();
+        $currentAccessToken = 'access_token_test_123';
+
+        $this->userMapperMocked
+            ->expects($this->once())
+            ->method('mapModel')
+            ->with(
+                $this->isInstanceOf(UserModel::class),
+                $user,
+                $currentAccessToken
+            )
+            ->willReturn($userModel)
+        ;
+
+        $result = $this->userManager->getUserModel($user, $currentAccessToken);
 
         $this->assertSame($userModel, $result);
     }

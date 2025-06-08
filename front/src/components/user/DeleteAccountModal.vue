@@ -40,12 +40,7 @@
 <template>
     <el-dialog v-model="dialogVisible" :title="t('profile.delete_account.title')" width="30%" center destroy-on-close>
         <div class="delete-account-content">
-            <el-alert
-                type="error"
-                :description="t('profile.delete_account.warning_message')"
-                show-icon
-                :closable="false"
-            />
+            <el-alert type="error" :description="t('profile.delete_account.warning_message')" show-icon :closable="false" />
         </div>
         <template #footer>
             <span class="dialog-footer">

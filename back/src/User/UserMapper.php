@@ -64,7 +64,7 @@ class UserMapper
         }
     }
 
-    public function mapModel(UserModel $userModel, User $user): UserModel
+    public function mapModel(UserModel $userModel, User $user, ?string $currentAccessToken = null): UserModel
     {
         $userModel = $userModel->setId((string) $user->getId())
             ->setFirstName($user->getFirstName())
@@ -76,7 +76,7 @@ class UserMapper
 
         $providers = [];
         foreach ($user->getProviders() as $provider) {
-            $providers[] = $this->providerMapper->mapModel($provider);
+            $providers[] = $this->providerMapper->mapModel($provider, $currentAccessToken);
         }
 
         $userModel->setProviders($providers);
