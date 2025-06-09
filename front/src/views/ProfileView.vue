@@ -191,6 +191,9 @@
         z-index: 10;
         margin: 0 auto;
         max-width: 1440px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 8px;
     }
 
     .profile-section {
@@ -198,6 +201,7 @@
         z-index: 1;
         padding: 60px 16px;
         width: 100%;
+        box-sizing: border-box;
     }
 
     .section-title {
@@ -218,6 +222,7 @@
         border-radius: 16px;
         overflow: hidden;
         padding: 20px;
+        box-sizing: border-box;
     }
 
     .profile-header {
@@ -279,8 +284,19 @@
     }
 
     @media (max-width: 768px) {
-        .profile-actions {
-            flex-direction: column;
+        .profile-container {
+            max-width: 100%;
+            padding: 0 2px;
+        }
+        .profile-section {
+            padding: 30px 2px;
+        }
+        .profile-card {
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .section-title {
+            font-size: 1.3rem;
         }
     }
     .connected-services {

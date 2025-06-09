@@ -29,3 +29,25 @@ h6 {
         color: $purple;
     }
 }
+
+.el-dialog__headerbtn {
+    .el-dialog__close {
+        color: #000000 !important;
+
+        &:hover {
+            color: $primary-color !important;
+        }
+    }
+}
+
+html.dark {
+    .el-dialog__headerbtn {
+        .el-dialog__close {
+            color: #ffffff !important;
+
+            &:hover {
+                color: $purple !important;
+            }
+        }
+    }
+}
