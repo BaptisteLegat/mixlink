@@ -19,8 +19,8 @@ use Doctrine\ORM\Query\FilterCollection;
 use Exception;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class UserManagerTest extends TestCase

@@ -160,7 +160,7 @@ describe('HeaderMobile Component', () => {
         vi.mocked(useAuthStore).mockReturnValue({
             isAuthenticated: true,
             logout: vi.fn(),
-            user: {}
+            user: {},
         });
 
         wrapper = mount(HeaderMobile, {
@@ -194,7 +194,7 @@ describe('HeaderMobile Component', () => {
         vi.mocked(useAuthStore).mockReturnValue({
             isAuthenticated: true,
             logout: logoutMock,
-            user: {}
+            user: {},
         });
 
         wrapper = mount(HeaderMobile, {

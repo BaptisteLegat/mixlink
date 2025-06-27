@@ -9,7 +9,7 @@ use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
 use App\Security\OAuthUserData;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Monolog\Test\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ProviderMapperTest extends TestCase
 {

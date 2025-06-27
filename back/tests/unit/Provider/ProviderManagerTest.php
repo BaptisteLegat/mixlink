@@ -15,8 +15,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\FilterCollection;
 use Exception;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class ProviderManagerTest extends TestCase
