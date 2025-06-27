@@ -9,7 +9,6 @@ use App\Provider\ProviderManager;
 use App\Provider\ProviderMapper;
 use App\Repository\ProviderRepository;
 use App\Security\OAuthUserData;
-use App\Tests\Unit\PHPUnitHelper;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\FilterCollection;
@@ -21,8 +20,6 @@ use Psr\Log\LoggerInterface;
 
 class ProviderManagerTest extends TestCase
 {
-    use PHPUnitHelper;
-
     private ProviderRepository|MockObject $providerRepositoryMocked;
     private ProviderMapper|MockObject $providerMapperMocked;
     private EntityManagerInterface|MockObject $entityManagerMocked;
