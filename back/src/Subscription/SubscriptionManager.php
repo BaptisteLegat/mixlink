@@ -114,7 +114,6 @@ class SubscriptionManager
                 $stripeSubscriptionId,
                 $priceId
             );
-
             if (!($stripeResponse instanceof StripeSubscription)) {
                 throw new Exception('Invalid Stripe subscription response');
             }
@@ -124,7 +123,7 @@ class SubscriptionManager
             $subscription->setStatus($stripeResponse->status);
 
             /** @var int $currentPeriodEnd */
-            $currentPeriodEnd = $stripeResponse->current_period_end ?? time();
+            $currentPeriodEnd = $stripeResponse->current_period_end ?? (time() + (30 * 24 * 60 * 60));
             $endDate = new DateTimeImmutable('@'.strval($currentPeriodEnd));
             $subscription->setEndDate($endDate);
 
