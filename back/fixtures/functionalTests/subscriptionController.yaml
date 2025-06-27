@@ -1,8 +1,8 @@
 include:
-  - ../templates/plan.yaml
-  - ../templates/provider.yaml
-  - ../templates/subscription.yaml
-  - ../templates/user.yaml
+  - '../templates/plan.yaml'
+  - '../templates/provider.yaml'
+  - '../templates/subscription.yaml'
+  - '../templates/user.yaml'
 
 App\Entity\Plan:
   free (extends plan_free):

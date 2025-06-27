@@ -19,6 +19,10 @@
         locale.value = locale.value === 'en' ? 'fr' : 'en';
     };
 
+    const toggleDarkMode = () => {
+        isDark.value = !isDark.value;
+    };
+
     const getLanguageText = computed(() => {
         return locale.value === 'en' ? 'English 🇬🇧' : 'Français 🇫🇷';
     });
@@ -65,7 +69,7 @@
                 <el-menu-item @click="toggleLanguage">
                     {{ getLanguageText }}
                 </el-menu-item>
-                <el-menu-item @click="isDark = !isDark">
+                <el-menu-item @click="toggleDarkMode">
                     {{ getThemeText }}
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
