@@ -1,23 +1,347 @@
 {
     "header": {
-        "login": "Sign in",
-        "logout": "Sign out",
-        "light_mode": "Light Mode",
-        "dark_mode": "Dark Mode"
+        "profile": "Profile",
+        "login": "Login",
+        "logout": "Logout",
+        "dark_mode": "Dark mode",
+        "light_mode": "Light mode"
+    },
+    "profile": {
+        "title": "My Profile",
+        "unknown_user": "Unknown User",
+        "account_info": "Account Information",
+        "id": "ID",
+        "email": "Email",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "unknown": "Not specified",
+        "role": "Role",
+        "subscription": "Subscription",
+        "plan": "Plan",
+        "start_date": "Start Date",
+        "end_date": "End Date",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "canceled": "Canceled",
+        "subscription_id": "Subscription ID",
+        "no_subscription": "No active subscription",
+        "back_to_home": "Back to Home",
+        "not_authenticated": "Please login to view your profile",
+        "connected_services": "Connected Services",
+        "connected": "Connected",
+        "connected_with": "Connected with",
+        "change_subscription": "Change Subscription",
+        "choose_subscription": "Choose a Subscription",
+        "current_plan": "Current Plan",
+        "danger_zone": {
+            "title": "Danger Zone",
+            "unsubscribe_title": "Unsubscribe",
+            "unsubscribe_description": "You will lose access to all premium features."
+        },
+        "unsubscribe": {
+            "button": "Unsubscribe",
+            "title": "Unsubscribe",
+            "warning_title": "Warning",
+            "warning_message": "You are about to unsubscribe. This action is irreversible and you will lose all the benefits of your current plan.",
+            "confirmation_message": "To confirm that you want to unsubscribe from the {plan} plan, please enter the plan name below.",
+            "type_to_confirm": "Type \"{plan}\" to confirm",
+            "confirm": "I Unsubscribe",
+            "success": "You have successfully unsubscribed",
+            "error": "An error occurred during unsubscription",
+            "text_mismatch": "The entered text does not match the plan name"
+        },
+        "delete_account": {
+            "button": "Delete my account",
+            "title": "Delete my account",
+            "warning_message": "You are about to delete your account. This action is PERMANENT and irreversible. All your data will be deleted from our system.",
+            "confirm": "I confirm deletion",
+            "success": "Your account has been successfully deleted",
+            "error": "An error occurred during account deletion"
+        },
+        "providers": {
+            "disconnect_title": "Disconnect Service",
+            "disconnect_warning": "You are about to disconnect this service from your account. You will no longer be able to access your playlists on this platform through mixlink, but your account on this platform will remain intact.",
+            "disconnect_confirm": "Disconnect",
+            "disconnect_success": "Service has been successfully disconnected",
+            "disconnect_error": "An error occurred while disconnecting the service",
+            "no_providers": "No services connected",
+            "disconnect_main_title": "Warning: Main Authentication Service",
+            "disconnect_main_warning": "This service is used to log in to mixlink. If you disconnect it, you will be automatically logged out of your mixlink account.",
+            "disconnect_main_success": "Service disconnected. You have been logged out of your account."
+        }
     },
     "footer": {
         "about": "About",
         "contact": "Contact",
         "privacy": "Privacy Policy",
-        "terms": "Terms of Service"
+        "terms": "Terms of Service",
+        "faq": "FAQ"
+    },
+    "home": {
+        "title_1": "Unify Your",
+        "title_2": "Music",
+        "title_3": "Playlists",
+        "subtitle": "Create collaborative playlists between different streaming platforms in a few clicks. No need for app switching or sign-ups.",
+        "start_free": "Start Free",
+        "view_demo": "View Demo",
+        "how_it_works": "How It Works",
+        "features": {
+            "title": "Features",
+            "subtitle": "Discover what makes mixlink unique",
+            "feature1": {
+                "title": "Cross-Platform Creation",
+                "description": "Create playlists that integrate songs from different streaming platforms in one place."
+            },
+            "feature2": {
+                "title": "Easy Sharing",
+                "description": "Share a simple link with your friends so they can contribute to your playlist."
+            },
+            "feature3": {
+                "title": "URL Addition",
+                "description": "Add songs by simply pasting the URL or searching by name and artist."
+            },
+            "feature4": {
+                "title": "Complete History",
+                "description": "View the complete history of all playlists created."
+            }
+        },
+        "plans": {
+            "title": "Subscription Plans",
+            "subtitle": "Choose the plan that best suits your needs",
+            "per_month": "/month",
+            "popular": "Popular",
+            "current_plan": "You are currently on the plan",
+            "since": "since",
+            "change_plan": "Want to change your plan? Click the button below.",
+            "change_plan_cta": "Change Plan",
+            "free": {
+                "title": "Free",
+                "feature1": "Create up to 5 playlists",
+                "feature2": "Add up to 50 songs per playlist",
+                "cta": "Get Started, Free"
+            },
+            "premium": {
+                "title": "Premium",
+                "feature1": "Unlimited playlists",
+                "feature2": "Unlimited number of songs",
+                "feature3": "Complete history",
+                "cta": "Get Premium"
+            },
+            "enterprise": {
+                "title": "Enterprise",
+                "price": "Custom-made",
+                "feature1": "Everything in Premium",
+                "feature2": "Custom branding",
+                "cta": "Contact Us"
+            }
+        },
+        "tabs": {
+            "one": {
+                "title": "Create a playlist",
+                "description": "Create a new mixlink session and configure your playlist settings."
+            },
+            "two": {
+                "title": "Share the link",
+                "description": "Send the link to your session to friends or colleagues so they can contribute."
+            },
+            "three": {
+                "title": "Enjoy the music",
+                "description": "Listen to your collaborative playlist and enjoy the music together."
+            },
+            "four": {
+                "title": "Enjoy your playlist",
+                "description": "Validate the songs and export the playlist to your favorite streaming platform."
+            },
+            "create": "Create",
+            "share": "Share",
+            "add": "Add",
+            "enjoy": "Enjoy"
+        },
+        "cta": {
+            "title": "Ready to revolutionize your music experience?",
+            "subtitle": "Join us and start creating collaborative playlists today.",
+            "button": "Get Started"
+        }
     },
     "button": {
         "submit": "Submit",
         "cancel": "Cancel"
     },
     "login": {
-        "title": "Sign in",
+        "title": "Login",
+        "welcome_message": "Welcome to mixlink! Sign in to create and share playlists across different platforms",
         "connect_with_google": "Sign in with Google",
-        "connect_with_spotify": "Sign in with Spotify"
+        "connect_with_spotify": "Sign in with Spotify",
+        "terms_notice": "By logging in, you agree to our",
+        "terms_link": "Terms of Service"
+    },
+    "common": {
+        "cancel": "Annuler",
+        "loading": "Chargement..."
+    },
+    "routes": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "contact": "Contact",
+        "faq": "FAQ"
+    },
+    "terms": {
+        "title": "Terms of Service",
+        "last_updated": "Last updated: {date}",
+        "section1": {
+            "title": "Acceptance of Terms",
+            "content": "By using the mixlink service, you agree to comply with these terms of service. If you do not accept these terms, please do not use our service. We reserve the right to modify these terms at any time, and it is your responsibility to review them regularly to stay informed of updates."
+        },
+        "section2": {
+            "title": "Service Description",
+            "content": "mixlink is a platform that allows users to create collaborative playlists across different music streaming platforms. Our service enables you to share and contribute to playlists without needing to switch applications or create new accounts on other platforms."
+        },
+        "section3": {
+            "title": "Authentication and User Accounts",
+            "content": "When registering, you must provide accurate information and keep it up to date. You are responsible for maintaining the confidentiality of your credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account or any other security breach.",
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Apple Music, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
+        },
+        "section4": {
+            "title": "Copyright and Intellectual Property",
+            "content": "mixlink respects copyright and expects its users to do the same. Our service only allows referencing content hosted on legal streaming platforms, and we do not directly host copyright-protected audio files. If you believe that your work has been used in a way that constitutes copyright infringement, please contact us."
+        },
+        "section5": {
+            "title": "Limitations of Liability",
+            "content": "mixlink provides its service 'as is' and disclaims all responsibility for its accuracy, availability, or reliability. We are not responsible for service interruptions due to technical issues, maintenance operations, or factors beyond our reasonable control."
+        },
+        "section6": {
+            "title": "Termination",
+            "content": "We reserve the right to suspend or terminate your access to the service, without notice or liability, for any reason whatsoever, including, without limitation, if you breach these terms of service."
+        }
+    },
+    "privacy": {
+        "title": "Privacy Policy",
+        "last_updated": "Last updated: {date}",
+        "section1": {
+            "title": "Information Collection",
+            "content": "We collect information when you register on our site, log in to your account, create playlists, or share content. The information collected includes your name, email address, and potentially your music preferences and application usage history.",
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Apple Music, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
+        },
+        "section2": {
+            "title": "Use of Information",
+            "content": "The information we collect is used to personalize your experience, improve our website, improve customer service, and process transactions. We may also use this information to send periodic emails regarding updates to our service or other products and services."
+        },
+        "section3": {
+            "title": "Information Protection",
+            "content": "We implement various security measures to protect the security of your personal information. We use advanced encryption to protect sensitive information transmitted online, and we also protect your information offline."
+        },
+        "section4": {
+            "title": "Cookies",
+            "content": "Our website uses cookies to enhance the user experience. A cookie is a small file placed on your computer's hard drive. You can refuse the use of cookies by changing your browser settings, but this may affect certain features of our service."
+        },
+        "section5": {
+            "title": "Information Sharing",
+            "content": "We do not sell, trade, or transfer your personally identifiable information to third parties, except when necessary to provide a service you have requested or when we have your permission. This does not include trusted third parties who assist us in operating our website or conducting our business, as long as those parties agree to keep this information confidential."
+        },
+        "section6": {
+            "title": "Your Rights",
+            "content": "You have the right to access, update, or delete the information we have about you. You can exercise these rights by contacting us via our contact page. We will respond to your request within a reasonable timeframe.",
+            "content_oauth": "You have the right to access, update, or delete the information we have about you. You can disconnect from one or more streaming services connected to your mixlink account at any time by accessing your profile. You can also completely delete your mixlink account, which will remove all your data from our servers. If you wish to exercise other rights regarding your data, you can contact us via our contact page. We will respond to your request within a reasonable timeframe."
+        }
+    },
+    "contact": {
+        "title": "Contact Us",
+        "description": "Have questions or suggestions? Feel free to contact us and we will get back to you as soon as possible.",
+        "info_title": "Our Contact Information",
+        "email_title": "Email",
+        "phone_title": "Phone",
+        "address_title": "Address",
+        "form": {
+            "title": "Send Us a Message",
+            "name": "Name",
+            "name_placeholder": "Enter your name",
+            "email": "Email",
+            "email_placeholder": "Enter your email",
+            "subject": "Subject",
+            "subject_placeholder": "Enter the subject of your message",
+            "message": "Message",
+            "message_placeholder": "Write your message here...",
+            "submit": "Send Message",
+            "success_message": "Your message has been sent successfully. We will get back to you shortly.",
+            "error_message": "An error occurred while sending the message. Please try again.",
+            "validation": {
+                "name_required": "Please enter your name",
+                "email_required": "Please enter your email",
+                "email_valid": "Please enter a valid email",
+                "subject_required": "Please enter a subject",
+                "message_required": "Please enter your message",
+                "message_min": "The message must be at least {min} characters long"
+            }
+        }
+    },
+    "faq": {
+        "title": "Frequently Asked Questions",
+        "description": "Find answers to the most commonly asked questions about mixlink and its features.",
+        "didnt_find": "Didn't find the answer to your question?",
+        "contact_us": "Contact us directly and we'll be happy to help.",
+        "contact_button": "Contact Us",
+        "categories": {
+            "general": "General Questions",
+            "account": "User Account",
+            "subscription": "Subscriptions and Pricing",
+            "technical": "Technical Support"
+        },
+        "general": {
+            "what_is": {
+                "question": "What is mixlink?",
+                "answer": "mixlink is a platform that allows you to create collaborative playlists across different music streaming platforms. You can share and contribute to playlists without needing to switch applications or create new accounts."
+            },
+            "how_works": {
+                "question": "How does mixlink work?",
+                "answer": "mixlink creates a bridge between different streaming platforms. You create a playlist, share the link with your friends, and everyone can add songs from their preferred platform. Our system handles the references to songs across different platforms."
+            },
+            "platforms": {
+                "question": "Which streaming platforms are supported?",
+                "answer": "Currently, mixlink supports Spotify, Apple Music, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
+            }
+        },
+        "account": {
+            "create": {
+                "question": "How do I create an account?",
+                "answer": "mixlink uses OAuth authentication, which means you don't need to create a separate account. You can simply sign in with your existing Spotify, Google, or Apple Music account. Click on 'Login' in the menu and choose your preferred platform to get started."
+            },
+            "delete": {
+                "question": "How can I delete my account?",
+                "answer": "To delete your mixlink account, log in, go to your profile, then to account settings. You will find the option 'Delete my account' there. Once confirmed, all your data will be removed from our servers. Note that this will not modify your accounts on the connected streaming platforms."
+            },
+            "oauth": {
+                "question": "Can I connect multiple streaming accounts to my mixlink account?",
+                "answer": "Yes, you can connect multiple streaming service accounts to your mixlink profile. This will allow you to easily add content from any of these services and export your playlists to them. You can manage your connections in the 'Connected Services' section of your profile."
+            }
+        },
+        "subscription": {
+            "free": {
+                "question": "What can I do with a free account?",
+                "answer": "With a free account, you can create up to 5 playlists and add up to 50 songs per playlist. You can also participate in collaborative playlists created by other users."
+            },
+            "premium": {
+                "question": "What does the Premium subscription offer?",
+                "answer": "The Premium subscription unlocks additional features like unlimited playlists, unlimited songs per playlist, and a complete history of all your playlists."
+            },
+            "cancel": {
+                "question": "How do I cancel my subscription?",
+                "answer": "To cancel your subscription, go to the 'Subscription' section of your profile and click on 'Unsubscribe'. Your subscription will remain active until the end of the current period, then will not be renewed."
+            }
+        },
+        "technical": {
+            "browser": {
+                "question": "Which browsers are supported?",
+                "answer": "mixlink is compatible with recent versions of major web browsers: Chrome, Firefox, Safari, and Edge. For the best experience, we recommend keeping your browser up to date."
+            },
+            "mobile": {
+                "question": "Is mixlink available on mobile?",
+                "answer": "Yes, mixlink is fully responsive and works on mobile devices via the web browser. We are also working on developing native mobile apps for iOS and Android."
+            },
+            "api": {
+                "question": "Do you offer an API for developers?",
+                "answer": "Yes, we offer an API for developers as part of our Enterprise offering. If you are interested, please contact us to discuss your specific needs and integration options."
+            }
+        }
     }
 }

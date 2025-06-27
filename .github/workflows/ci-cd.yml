@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   symfony-tests:
@@ -72,12 +73,12 @@ jobs:
       - name: Run GrumPHP
         run: |
           cd back
-          vendor/bin/grumphp run
+          XDEBUG_MODE=off vendor/bin/grumphp run
 
       - name: Run PHPUnit unit tests
         run: |
           cd back
-          vendor/bin/phpunit tests/unit
+          XDEBUG_MODE=off vendor/bin/phpunit tests/unit
 
       - name: Run PHPUnit functional tests
         run: |
@@ -85,7 +86,34 @@ jobs:
           sed -i 's/database/127.0.0.1/g' phpunit.xml.dist
           sed -i 's/3306/3800/g' phpunit.xml.dist
           bin/console c:c --env=test
-          vendor/bin/phpunit tests/functional
+          XDEBUG_MODE=off vendor/bin/phpunit tests/functional
+  build-backend:
+    needs: symfony-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase repository
+        id: lowercase_repo
+        run: |
+          echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Build and push Backend Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./back
+          file: ./back/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:${{ github.sha }}
 
   frontend-tests:
     if: '! github.event.pull_request.draft'
@@ -131,3 +159,31 @@ jobs:
       #   run: |
       #     cd front
       #     npm run test:e2e
+
+  build-frontend:
+    needs: frontend-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase repository
+        id: lowercase_repo
+        run: |
+          echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./front
+          file: ./front/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest
+            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:${{ github.sha }}

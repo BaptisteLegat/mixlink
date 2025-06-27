@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\User;
+use App\Provider\ProviderManager;
+use App\Voter\AuthenticationVoter;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+class ProviderController extends AbstractController
+{
+    public function __construct(
+        private ProviderManager $providerManager,
+        private LoggerInterface $logger,
+    ) {
+    }
+
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
+    #[Route('/api/provider/{id}/disconnect', name: 'api_provider_disconnect', methods: ['POST'])]
+    public function disconnect(
+        string $id,
+        Request $request,
+    ): JsonResponse {
+        /** @var string $accessToken */
+        $accessToken = $request->cookies->get('AUTH_TOKEN');
+        /** @var User $user */
+        $user = $this->providerManager->findByAccessToken($accessToken);
+
+        try {
+            $provider = null;
+            foreach ($user->getProviders() as $p) {
+                if ((string) $p->getId() === $id) {
+                    $provider = $p;
+                    break;
+                }
+            }
+
+            if (null === $provider) {
+                return new JsonResponse(['error' => 'Provider not found'], 404);
+            }
+
+            $isMainProvider = $provider->getAccessToken() === $accessToken;
+
+            $this->providerManager->disconnectProvider($id, $user);
+
+            if ($isMainProvider) {
+                $response = new JsonResponse([
+                    'success' => true,
+                    'mainProvider' => true,
+                    'message' => 'Provider disconnected. You will be logged out.',
+                ]);
+                $response->headers->clearCookie('AUTH_TOKEN');
+
+                return $response;
+            }
+
+            return new JsonResponse([
+                'success' => true,
+                'mainProvider' => false,
+                'message' => 'Provider successfully disconnected',
+            ]);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to disconnect provider', [
+                'providerId' => $id,
+                'userId' => $user->getId(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return new JsonResponse(['error' => 'Failed to disconnect provider'], 500);
+        }
+    }
+}

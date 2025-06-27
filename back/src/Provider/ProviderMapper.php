@@ -25,4 +25,20 @@ class ProviderMapper
 
         return $provider;
     }
+
+    public function mapModel(Provider $provider, ?string $currentAccessToken = null): ProviderModel
+    {
+        $providerModel = new ProviderModel();
+        $accessToken = $provider->getAccessToken();
+
+        $isMain = null !== $currentAccessToken && $accessToken === $currentAccessToken;
+
+        $providerModel
+            ->setId((string) $provider->getId())
+            ->setName($provider->getName())
+            ->setIsMain($isMain)
+        ;
+
+        return $providerModel;
+    }
 }

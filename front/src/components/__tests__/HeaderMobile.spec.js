@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createI18n } from 'vue-i18n';
 import { createPinia, setActivePinia } from 'pinia';
@@ -32,6 +32,10 @@ vi.mock('vue-router', () => ({
     useRouter: () => mockRouter,
 }));
 
+afterEach(() => {
+    vi.clearAllMocks();
+});
+
 describe('HeaderMobile Component', () => {
     let wrapper;
     let i18n;
@@ -43,6 +47,7 @@ describe('HeaderMobile Component', () => {
             messages: {
                 en: {
                     header: {
+                        profile: 'Profile',
                         login: 'Login',
                         logout: 'Logout',
                         dark_mode: 'Dark mode',
@@ -51,6 +56,7 @@ describe('HeaderMobile Component', () => {
                 },
                 fr: {
                     header: {
+                        profile: 'Profil',
                         login: 'Connexion',
                         logout: 'Déconnexion',
                         dark_mode: 'Mode sombre',
@@ -82,14 +88,14 @@ describe('HeaderMobile Component', () => {
 
     it('should open the drawer when clicking the menu icon', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         expect(wrapper.findComponent(ElDrawer).exists()).toBe(true);
     });
 
     it('should have a menu with 3 items', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         expect(menu.findAllComponents(ElMenuItem).length).toBe(3);
@@ -97,33 +103,33 @@ describe('HeaderMobile Component', () => {
 
     it('should toggle language when clicking on the language item', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const languageItem = menu.findAllComponents(ElMenuItem)[0];
-        await languageItem.trigger('click');
+        await languageItem.trigger('click', {});
 
         expect(i18n.global.locale.value).toBe('fr');
     });
 
     it('should toggle dark mode when clicking on the dark mode item', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const darkModeItem = menu.findAllComponents(ElMenuItem)[1];
-        await darkModeItem.trigger('click');
+        await darkModeItem.trigger('click', {});
 
         expect(isDarkMock.value).toBe(true);
     });
 
     it('should navigate to login page when clicking on the login item', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const loginItem = menu.findAllComponents(ElMenuItem)[2];
-        await loginItem.trigger('click');
+        await loginItem.trigger('click', {});
 
         expect(mockRouter.push).toHaveBeenCalledWith('/login');
     });
@@ -132,7 +138,7 @@ describe('HeaderMobile Component', () => {
         isDarkMock.value = true;
 
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const themeItem = menu.findAllComponents(ElMenuItem)[1];
@@ -143,7 +149,7 @@ describe('HeaderMobile Component', () => {
         isDarkMock.value = false;
 
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const themeItem = menu.findAllComponents(ElMenuItem)[1];
@@ -154,6 +160,7 @@ describe('HeaderMobile Component', () => {
         vi.mocked(useAuthStore).mockReturnValue({
             isAuthenticated: true,
             logout: vi.fn(),
+            user: {},
         });
 
         wrapper = mount(HeaderMobile, {
@@ -173,10 +180,12 @@ describe('HeaderMobile Component', () => {
         });
 
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
-        const logoutItem = menu.findAllComponents(ElMenuItem)[2];
+        const profileItem = menu.findAllComponents(ElMenuItem)[2];
+        expect(profileItem.text()).toContain('Profile');
+        const logoutItem = menu.findAllComponents(ElMenuItem)[3];
         expect(logoutItem.text()).toContain('Logout');
     });
 
@@ -185,6 +194,7 @@ describe('HeaderMobile Component', () => {
         vi.mocked(useAuthStore).mockReturnValue({
             isAuthenticated: true,
             logout: logoutMock,
+            user: {},
         });
 
         wrapper = mount(HeaderMobile, {
@@ -204,18 +214,18 @@ describe('HeaderMobile Component', () => {
         });
 
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
-        const logoutItem = menu.findAllComponents(ElMenuItem)[2];
-        await logoutItem.trigger('click');
+        const logoutItem = menu.findAllComponents(ElMenuItem)[3];
+        await logoutItem.trigger('click', {});
 
         expect(logoutMock).toHaveBeenCalled();
     });
 
     it('should display the correct language text (English)', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const languageItem = menu.findAllComponents(ElMenuItem)[0];
@@ -226,7 +236,7 @@ describe('HeaderMobile Component', () => {
         i18n.global.locale.value = 'fr';
 
         const menuIcon = wrapper.findComponent(MenuIcon);
-        await menuIcon.trigger('click');
+        await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
         const languageItem = menu.findAllComponents(ElMenuItem)[0];

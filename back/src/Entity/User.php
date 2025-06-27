@@ -16,7 +16,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
-#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: false)]
 class User implements BlameableInterface, TimestampableInterface
 {
     use BlameableEntity;
@@ -52,6 +52,9 @@ class User implements BlameableInterface, TimestampableInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $deletedBy = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Subscription::class, cascade: ['persist', 'remove'])]
+    private ?Subscription $subscription = null;
 
     public function __construct()
     {
@@ -150,6 +153,9 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Provider>
+     */
     public function getProviders(): Collection
     {
         return $this->providers;
@@ -160,5 +166,22 @@ class User implements BlameableInterface, TimestampableInterface
         $criteria = $this->providers->filter(fn (Provider $p) => $p->getName() === $name);
 
         return $criteria->isEmpty() ? null : $criteria->first();
+    }
+
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): self
+    {
+        // set the owning side of the relation if necessary
+        if ($subscription && $subscription->getUser() !== $this) {
+            $subscription->setUser($this);
+        }
+
+        $this->subscription = $subscription;
+
+        return $this;
     }
 }

@@ -4,7 +4,7 @@
 @use './styles/_fonts.scss' as *;
 
 body {
-    font-family: $font-family, sans-serif;
+    font-family: $app-font-family;
 }
 
 h1,
@@ -27,5 +27,27 @@ h6 {
 
     &.secondary-dark {
         color: $purple;
+    }
+}
+
+.el-dialog__headerbtn {
+    .el-dialog__close {
+        color: #000000 !important;
+
+        &:hover {
+            color: $primary-color !important;
+        }
+    }
+}
+
+html.dark {
+    .el-dialog__headerbtn {
+        .el-dialog__close {
+            color: #ffffff !important;
+
+            &:hover {
+                color: $purple !important;
+            }
+        }
     }
 }

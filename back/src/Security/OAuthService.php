@@ -9,9 +9,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class OAuthService
 {
     public const array GOOGLE_SCOPES = [
-        'https://www.googleapis.com/auth/youtube', // Access to YouTube
-        'https://www.googleapis.com/auth/userinfo.email', // Access to email
-        'https://www.googleapis.com/auth/userinfo.profile', // Access to profile
+        'https://www.googleapis.com/auth/youtube',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
     ];
 
     public const array SPOTIFY_SCOPES = [
@@ -23,9 +23,6 @@ class OAuthService
     {
     }
 
-    /**
-     * Get the redirect response for the given provider.
-     */
     public function getRedirectResponse(string $provider): RedirectResponse
     {
         $client = $this->clientRegistry->getClient($provider);
@@ -48,9 +45,9 @@ class OAuthService
         $user = $client->fetchUserFromToken($accessToken);
 
         return new OAuthUserData(
-            user: $user,
-            accessToken: $accessToken->getToken(),
-            refreshToken: $accessToken->getRefreshToken()
+            $user,
+            $accessToken->getToken(),
+            $accessToken->getRefreshToken()
         );
     }
 }

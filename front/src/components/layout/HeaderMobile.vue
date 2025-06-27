@@ -1,52 +1,86 @@
 <script setup>
     import { ref, computed } from 'vue';
     import { useI18n } from 'vue-i18n';
+    import { useRouter } from 'vue-router';
+    import { useAuthStore } from '@/stores/authStore';
     import { isDark } from '@/composables/dark';
     import MenuIcon from 'vue-material-design-icons/Menu.vue';
-    import { useAuthStore } from '@/stores/authStore';
+    import UserIcon from 'vue-material-design-icons/Account.vue';
+    import { useUserDisplay } from '@/composables/useUserDisplay';
 
+    const router = useRouter();
     const { locale, t } = useI18n();
     const authStore = useAuthStore();
+    const drawerVisible = ref(false);
 
-    const isMenuOpen = ref(false);
+    const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
-    const languageText = computed(() => {
+    const toggleLanguage = () => {
+        locale.value = locale.value === 'en' ? 'fr' : 'en';
+    };
+
+    const toggleDarkMode = () => {
+        isDark.value = !isDark.value;
+    };
+
+    const getLanguageText = computed(() => {
         return locale.value === 'en' ? 'English 🇬🇧' : 'Français 🇫🇷';
     });
 
-    const themeText = computed(() => {
+    const getThemeText = computed(() => {
         return isDark.value ? `${t('header.light_mode')} 🌞` : `${t('header.dark_mode')} 🌙`;
     });
 
-    function toggleMenu() {
-        isMenuOpen.value = !isMenuOpen.value;
-    }
+    const handleLogin = () => {
+        router.push('/login');
+        drawerVisible.value = false;
+    };
 
-    function toggleLanguage() {
-        locale.value = locale.value === 'en' ? 'fr' : 'en';
-    }
+    const handleProfile = () => {
+        router.push('/profile');
+        drawerVisible.value = false;
+    };
 
-    function toggleTheme() {
-        isDark.value = !isDark.value;
-    }
+    const handleLogout = () => {
+        authStore.logout();
+        drawerVisible.value = false;
+    };
 </script>
+
 <template>
     <div>
-        <el-link type="primary" :underline="false" @click="toggleMenu">
-            <MenuIcon style="width: 24px; height: 24px" />
-        </el-link>
-        <el-drawer v-model="isMenuOpen" title="Menu" direction="rtl" size="70%">
+        <MenuIcon style="width: 24px; height: 24px; cursor: pointer" @click="drawerVisible = true" />
+
+        <el-drawer v-model="drawerVisible" direction="rtl" size="70%">
+            <template #header>
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%">
+                    <span>Menu</span>
+                    <el-avatar
+                        v-if="authStore.isAuthenticated"
+                        :size="40"
+                        :src="authStore.user?.profilePicture"
+                        :icon="authStore.user?.profilePicture ? null : UserIcon"
+                    >
+                        <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
+                    </el-avatar>
+                </div>
+            </template>
             <el-menu style="border: 0">
                 <el-menu-item @click="toggleLanguage">
-                    {{ languageText }}
+                    {{ getLanguageText }}
                 </el-menu-item>
-                <el-menu-item @click="toggleTheme">
-                    {{ themeText }}
+                <el-menu-item @click="toggleDarkMode">
+                    {{ getThemeText }}
                 </el-menu-item>
-                <el-menu-item v-if="authStore.isAuthenticated" @click="authStore.logout()">
-                    {{ t('header.logout') }}
-                </el-menu-item>
-                <el-menu-item v-else @click="$router.push('/login')">
+                <template v-if="authStore.isAuthenticated">
+                    <el-menu-item @click="handleProfile">
+                        {{ t('header.profile') }}
+                    </el-menu-item>
+                    <el-menu-item @click="handleLogout">
+                        {{ t('header.logout') }}
+                    </el-menu-item>
+                </template>
+                <el-menu-item v-else @click="handleLogin">
                     {{ t('header.login') }}
                 </el-menu-item>
             </el-menu>

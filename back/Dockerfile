@@ -21,4 +21,6 @@ COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 WORKDIR /var/www/html
 
+COPY . /var/www/html
+
 CMD ["php-fpm"]

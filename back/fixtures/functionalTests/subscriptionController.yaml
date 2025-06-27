@@ -1,0 +1,40 @@
+include:
+  - '../templates/plan.yaml'
+  - '../templates/provider.yaml'
+  - '../templates/subscription.yaml'
+  - '../templates/user.yaml'
+
+App\Entity\Plan:
+  free (extends plan_free):
+    subscriptions: ['@subscription-free']
+
+  premium (extends plan_premium):
+    subscriptions: ['@subscription-premium']
+
+App\Entity\Provider:
+  spotify-test (extends spotify):
+    user: '@user-with-subscription'
+
+  google-test (extends google):
+    user: '@user-without-subscription'
+
+App\Entity\Subscription:
+  subscription-free (extends subscription):
+    plan: '@free'
+    user: '@user-with-subscription'
+
+  subscription-premium (extends subscription):
+    plan: '@premium'
+    user: '@user-with-premium'
+
+App\Entity\User:
+  user-with-subscription (extends john-doe):
+    email: 'john-doe-subscription@test.fr'
+    subscription: '@subscription-free'
+
+  user-without-subscription (extends jane-smith):
+    email: 'jane-smith-without-subscription@test.fr'
+
+  user-with-premium (extends alice-johnson):
+    email: 'john-doe-subscription-premium@test.fr'
+    subscription: '@subscription-premium'

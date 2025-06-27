@@ -4,14 +4,18 @@
     import { useMediaQuery } from '@vueuse/core';
     import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
+    import { computed } from 'vue';
     import TranslateIcon from 'vue-material-design-icons/Translate.vue';
     import SunIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue';
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
+    import UserIcon from 'vue-material-design-icons/Account.vue';
+    import { useUserDisplay } from '@/composables/useUserDisplay';
 
     const { locale } = useI18n();
     const authStore = useAuthStore();
-
     const isMobile = useMediaQuery('(max-width: 768px)');
+
+    const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
     function changeLanguage(lang) {
         locale.value = lang;
@@ -52,9 +56,24 @@
                             :inactive-icon="MoonIcon"
                             style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023c0; margin-right: 20px"
                         />
-                        <el-button v-if="authStore.isAuthenticated" type="primary" @click="authStore.logout()">
-                            {{ $t('header.logout') }}
-                        </el-button>
+
+                        <template v-if="authStore.isAuthenticated">
+                            <el-dropdown>
+                                <el-avatar :size="40" :src="authStore.user?.profilePicture" :icon="authStore.user?.profilePicture ? null : UserIcon">
+                                    <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
+                                </el-avatar>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item @click="$router.push('/profile')">
+                                            {{ $t('header.profile') }}
+                                        </el-dropdown-item>
+                                        <el-dropdown-item divided @click="authStore.logout()">
+                                            {{ $t('header.logout') }}
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
                         <el-button v-else type="primary" @click="$router.push('/login')">
                             {{ $t('header.login') }}
                         </el-button>

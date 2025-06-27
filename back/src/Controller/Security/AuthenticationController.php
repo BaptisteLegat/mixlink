@@ -2,7 +2,6 @@
 
 namespace App\Controller\Security;
 
-use App\Entity\Provider;
 use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
@@ -65,41 +64,55 @@ class AuthenticationController extends AbstractController
     public function getUserProfile(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
-
         if (null === $accessToken) {
-            return new JsonResponse([
-                'isAuthenticated' => false,
-                'user' => null,
-            ]);
+            return new JsonResponse([]);
         }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
-
         if (null === $user) {
-            return new JsonResponse([
-                'isAuthenticated' => false,
-                'user' => null,
-            ]);
+            return new JsonResponse([]);
         }
 
-        $response = new JsonResponse([
-            'isAuthenticated' => true,
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'providers' => array_map(fn (Provider $p): string => $p->getName(), $user->getProviders()->toArray()),
-        ]);
+        $userModel = $this->userManager->getUserModel($user, $accessToken);
 
-        return $response;
+        return new JsonResponse($userModel->toArray());
     }
 
     #[Route('/api/logout', name: 'api_logout')]
     public function logout(): JsonResponse
     {
-        $response = new JsonResponse([
-            'isAuthenticated' => false,
-            'user' => null,
-        ]);
+        $response = new JsonResponse([]);
+        $response->headers->clearCookie('AUTH_TOKEN');
 
+        return $response;
+    }
+
+    #[Route('/api/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $accessToken = $request->cookies->get('AUTH_TOKEN');
+        if (null === $accessToken) {
+            return new JsonResponse(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = $this->providerManager->findByAccessToken($accessToken);
+        if (null === $user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        try {
+            $this->userManager->deleteUser($user);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to delete user', [
+                'userId' => $user->getId(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return new JsonResponse(['error' => 'Failed to delete account'], 500);
+        }
+
+        $response = new JsonResponse(['success' => true]);
         $response->headers->clearCookie('AUTH_TOKEN');
 
         return $response;

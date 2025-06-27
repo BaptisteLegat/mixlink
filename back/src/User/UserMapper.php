@@ -4,6 +4,8 @@ namespace App\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\User;
+use App\Provider\ProviderMapper;
+use App\Subscription\SubscriptionMapper;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
@@ -11,22 +13,30 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class UserMapper
 {
+    public function __construct(
+        private ProviderMapper $providerMapper,
+        private SubscriptionMapper $subscriptionMapper,
+    ) {
+    }
+
     private const array PROVIDER_MAPPERS = [
-        ApiReference::GOOGLE => 'mapGoogleUser',
-        ApiReference::SPOTIFY => 'mapSpotifyUser',
+        ApiReference::GOOGLE,
+        ApiReference::SPOTIFY,
     ];
 
     public function mapEntity(ResourceOwnerInterface $resourceOwner, string $providerName, ?User $user): User
     {
         $user ??= new User();
 
-        if (!isset(self::PROVIDER_MAPPERS[$providerName])) {
+        if (!in_array($providerName, self::PROVIDER_MAPPERS, true)) {
             throw new InvalidArgumentException("Provider $providerName not supported");
         }
 
-        $method = self::PROVIDER_MAPPERS[$providerName];
-
-        $this->$method($resourceOwner, $user);
+        if ($resourceOwner instanceof GoogleUser) {
+            $this->mapGoogleUser($resourceOwner, $user);
+        } elseif ($resourceOwner instanceof SpotifyResourceOwner) {
+            $this->mapSpotifyUser($resourceOwner, $user);
+        }
 
         $user->setRoles(['ROLE_USER']);
 
@@ -52,5 +62,31 @@ class UserMapper
         if (!empty($images) && isset($images[0]['url'])) {
             $user->setProfilePicture($images[0]['url']);
         }
+    }
+
+    public function mapModel(UserModel $userModel, User $user, ?string $currentAccessToken = null): UserModel
+    {
+        $userModel = $userModel->setId((string) $user->getId())
+            ->setFirstName($user->getFirstName())
+            ->setLastName($user->getLastName())
+            ->setEmail($user->getEmail())
+            ->setProfilePicture($user->getProfilePicture())
+            ->setRoles($user->getRoles())
+        ;
+
+        $providers = [];
+        foreach ($user->getProviders() as $provider) {
+            $providers[] = $this->providerMapper->mapModel($provider, $currentAccessToken);
+        }
+
+        $userModel->setProviders($providers);
+
+        $subscription = $user->getSubscription();
+        if (null !== $subscription) {
+            $subscriptionModel = $this->subscriptionMapper->mapModel($subscription);
+            $userModel->setSubscription($subscriptionModel);
+        }
+
+        return $userModel;
     }
 }
