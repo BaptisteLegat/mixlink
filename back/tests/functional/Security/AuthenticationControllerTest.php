@@ -41,7 +41,7 @@ class AuthenticationControllerTest extends WebTestCase
 
     public function testConnectGoogle(): void
     {
-        $this->client->request('GET', '/auth/google');
+        $this->client->request('GET', '/api/auth/google');
         $this->assertResponseStatusCodeSame(302);
         $location = $this->client->getResponse()->headers->get('Location');
         $this->assertStringContainsString(self::GOOGLE_URL, $location);
@@ -49,7 +49,7 @@ class AuthenticationControllerTest extends WebTestCase
 
     public function testConnectSpotify(): void
     {
-        $this->client->request('GET', '/auth/spotify');
+        $this->client->request('GET', '/api/auth/spotify');
         $this->assertResponseStatusCodeSame(302);
         $location = $this->client->getResponse()->headers->get('Location');
         $this->assertStringContainsString(self::SPOTIFY_URL, $location);
@@ -65,7 +65,7 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'google_access_token_123'));
 
-        $this->client->request('GET', '/auth/google/callback');
+        $this->client->request('GET', '/api/auth/google/callback');
 
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
@@ -82,7 +82,7 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_access_token_123'));
 
-        $this->client->request('GET', '/auth/spotify/callback');
+        $this->client->request('GET', '/api/auth/spotify/callback');
 
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
@@ -101,7 +101,7 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'google_access_token_123'));
 
-        $this->client->request('GET', '/auth/google/callback');
+        $this->client->request('GET', '/api/auth/google/callback');
 
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
@@ -120,7 +120,7 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_access_token_123'));
 
-        $this->client->request('GET', '/auth/spotify/callback');
+        $this->client->request('GET', '/api/auth/spotify/callback');
 
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();

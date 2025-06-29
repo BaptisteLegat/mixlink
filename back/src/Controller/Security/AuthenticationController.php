@@ -24,13 +24,13 @@ class AuthenticationController extends AbstractController
     ) {
     }
 
-    #[Route('/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/api/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
     public function connect(string $provider): RedirectResponse
     {
         return $this->oAuthService->getRedirectResponse($provider);
     }
 
-    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/api/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
     public function connectCheck(string $provider): RedirectResponse
     {
         try {

@@ -19,7 +19,7 @@
     const spotifyButtonRef = ref(null);
 
     const redirectTo = (provider) => {
-        window.location.href = `${API_BASE_URL}/auth/${provider}`;
+        window.location.href = `${API_BASE_URL}/api/auth/${provider}`;
     };
 
     onMounted(() => {
