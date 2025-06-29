@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/api')]
 class SubscriptionController extends AbstractController
 {
     public function __construct(
@@ -24,7 +25,7 @@ class SubscriptionController extends AbstractController
     }
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
-    #[Route('/api/subscribe/{planName}', name: 'api_subscription_start', methods: ['GET'])]
+    #[Route('/subscribe/{planName}', name: 'api_subscription_start', methods: ['GET'])]
     public function subscribe(
         string $planName,
         PlanRepository $planRepository,
@@ -68,7 +69,7 @@ class SubscriptionController extends AbstractController
     }
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
-    #[Route('/api/subscription/cancel', name: 'api_subscription_cancel', methods: ['POST'])]
+    #[Route('/subscription/cancel', name: 'api_subscription_cancel', methods: ['POST'])]
     public function cancelSubscription(Request $request): JsonResponse
     {
         /** @var string $accessToken */
@@ -94,7 +95,7 @@ class SubscriptionController extends AbstractController
     }
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
-    #[Route('/api/subscription/change/{planName}', name: 'api_subscription_change', methods: ['POST'])]
+    #[Route('/subscription/change/{planName}', name: 'api_subscription_change', methods: ['POST'])]
     public function changeSubscription(
         string $planName,
         Request $request,
