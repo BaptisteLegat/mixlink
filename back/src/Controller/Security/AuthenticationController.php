@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api')]
 class AuthenticationController extends AbstractController
 {
     public function __construct(
@@ -24,13 +25,13 @@ class AuthenticationController extends AbstractController
     ) {
     }
 
-    #[Route('/api/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
     public function connect(string $provider): RedirectResponse
     {
         return $this->oAuthService->getRedirectResponse($provider);
     }
 
-    #[Route('/api/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
     public function connectCheck(string $provider): RedirectResponse
     {
         try {
@@ -60,7 +61,7 @@ class AuthenticationController extends AbstractController
         }
     }
 
-    #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    #[Route('/me', name: 'api_me', methods: ['GET'])]
     public function getUserProfile(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
@@ -78,7 +79,7 @@ class AuthenticationController extends AbstractController
         return new JsonResponse($userModel->toArray());
     }
 
-    #[Route('/api/logout', name: 'api_logout')]
+    #[Route('/logout', name: 'api_logout')]
     public function logout(): JsonResponse
     {
         $response = new JsonResponse([]);
@@ -87,7 +88,7 @@ class AuthenticationController extends AbstractController
         return $response;
     }
 
-    #[Route('/api/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
+    #[Route('/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
     public function deleteAccount(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
