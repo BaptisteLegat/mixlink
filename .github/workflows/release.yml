@@ -24,15 +24,12 @@ jobs:
           VERSION="${VERSION#v}"
           echo "🔍 Extracting notes for version: $VERSION"
 
-          # Affichage debug du CHANGELOG
           echo "📝 CHANGELOG content:"
           cat CHANGELOG.md
 
-          # Trouver la ligne de début
-          START_LINE=$(grep -nE "^## \[${VERSION//./\\.}\]" CHANGELOG.md | cut -d: -f1)
-          if [ -z "$START_LINE" ]; then
-            START_LINE=$(grep -nE "^## \[${VERSION//./\\.}\] - " CHANGELOG.md | cut -d: -f1)
-          fi
+          # Escaper les points dans la version
+          ESCAPED_VERSION=$(echo "$VERSION" | sed 's/\./\\./g')
+          START_LINE=$(grep -nE "^## \[${ESCAPED_VERSION}\]" CHANGELOG.md | cut -d: -f1)
 
           if [ -z "$START_LINE" ]; then
             echo "⚠️ Version $VERSION not found in CHANGELOG"
@@ -40,18 +37,21 @@ jobs:
           else
             echo "✅ Found version at line $START_LINE"
 
-            # Cherche la ligne de début de la version suivante
-            NEXT_VERSION_LINE=$(awk "NR > $START_LINE && /^## \\[/" CHANGELOG.md | head -n 1 | grep -n "^" | cut -d: -f1)
-            if [ -z "$NEXT_VERSION_LINE" ]; then
-              NOTES=$(tail -n +$((START_LINE + 1)) CHANGELOG.md)
+            # Cherche les lignes suivantes qui contiennent des titres
+            NEXT_LINE=$(grep -nE "^## \[" CHANGELOG.md | cut -d: -f1 | awk -v s="$START_LINE" '$1 > s {print $1; exit}')
+
+            if [ -z "$NEXT_LINE" ]; then
+              END_LINE=$(wc -l < CHANGELOG.md)
             else
-              END_LINE=$((START_LINE + NEXT_VERSION_LINE - 2))
-              NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md)
+              END_LINE=$((NEXT_LINE - 1))
             fi
 
-            echo "📄 Extracted notes:"
-            echo "$NOTES"
+            echo "📏 Extracting lines $((START_LINE + 1)) to $END_LINE"
+            NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md)
           fi
+
+          echo "📄 Extracted notes:"
+          echo "$NOTES"
 
           {
             echo "notes<<EOF"
