@@ -23,23 +23,18 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/}"
           VERSION="${VERSION#v}"
           echo "Extracting notes for version: $VERSION"
-          
           # Afficher le contenu du CHANGELOG pour le débogage
           echo "CHANGELOG content:"
           cat CHANGELOG.md
-          
           # Utilisez une approche plus simple et robuste avec sed
           START_LINE=$(grep -n "## \[${VERSION}" CHANGELOG.md | head -n 1 | cut -d ":" -f 1)
-          
           if [ -z "$START_LINE" ]; then
             echo "Warning: Version $VERSION not found in CHANGELOG"
             NOTES="No specific release notes found for this version."
           else
             echo "Found version at line $START_LINE"
-            
             # Trouver la ligne de la version suivante ou la fin du fichier
             NEXT_VERSION_LINE=$(grep -n "^## \[" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}' | cut -d ":" -f 1)
-            
             if [ -z "$NEXT_VERSION_LINE" ]; then
               # Si pas de version suivante, prendre jusqu'à la fin du fichier
               NOTES=$(tail -n +$((START_LINE + 1)) CHANGELOG.md)
@@ -47,14 +42,14 @@ jobs:
               # Sinon, extraire entre les deux versions
               NOTES=$(sed -n "$((START_LINE + 1)),$((NEXT_VERSION_LINE - 1))p" CHANGELOG.md)
             fi
-            
             echo "Extracted notes:"
             echo "$NOTES"
           fi
-          
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "notes<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1

@@ -11,6 +11,7 @@ et ce projet utilise le [versionnement sémantique](https://semver.org/lang/fr/)
 - Mise en place de la CI/CD de release automatisée : création des GitHub Releases à partir du `CHANGELOG.md` lors du push d’un tag `v*`.
 
 ## [1.1.0-test] - 2025-07-08
+
 ### Test
 - Ceci est un test de la CI/CD de release automatisée.
 
