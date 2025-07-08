@@ -22,29 +22,37 @@ jobs:
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
           VERSION="${VERSION#v}"
-          echo "Extracting notes for version: $VERSION"
-          # Afficher le contenu du CHANGELOG pour le débogage
-          echo "CHANGELOG content:"
+          echo "🔍 Extracting notes for version: $VERSION"
+
+          # Affichage debug du CHANGELOG
+          echo "📝 CHANGELOG content:"
           cat CHANGELOG.md
-          # Utilisez une approche plus simple et robuste avec sed
-          START_LINE=$(grep -n "## \[${VERSION}" CHANGELOG.md | head -n 1 | cut -d ":" -f 1)
+
+          # Trouver la ligne de début
+          START_LINE=$(grep -nE "^## \[${VERSION//./\\.}\]" CHANGELOG.md | cut -d: -f1)
           if [ -z "$START_LINE" ]; then
-            echo "Warning: Version $VERSION not found in CHANGELOG"
+            START_LINE=$(grep -nE "^## \[${VERSION//./\\.}\] - " CHANGELOG.md | cut -d: -f1)
+          fi
+
+          if [ -z "$START_LINE" ]; then
+            echo "⚠️ Version $VERSION not found in CHANGELOG"
             NOTES="No specific release notes found for this version."
           else
-            echo "Found version at line $START_LINE"
-            # Trouver la ligne de la version suivante ou la fin du fichier
-            NEXT_VERSION_LINE=$(grep -n "^## \[" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}' | cut -d ":" -f 1)
+            echo "✅ Found version at line $START_LINE"
+
+            # Cherche la ligne de début de la version suivante
+            NEXT_VERSION_LINE=$(awk "NR > $START_LINE && /^## \\[/" CHANGELOG.md | head -n 1 | grep -n "^" | cut -d: -f1)
             if [ -z "$NEXT_VERSION_LINE" ]; then
-              # Si pas de version suivante, prendre jusqu'à la fin du fichier
               NOTES=$(tail -n +$((START_LINE + 1)) CHANGELOG.md)
             else
-              # Sinon, extraire entre les deux versions
-              NOTES=$(sed -n "$((START_LINE + 1)),$((NEXT_VERSION_LINE - 1))p" CHANGELOG.md)
+              END_LINE=$((START_LINE + NEXT_VERSION_LINE - 2))
+              NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md)
             fi
-            echo "Extracted notes:"
+
+            echo "📄 Extracted notes:"
             echo "$NOTES"
           fi
+
           {
             echo "notes<<EOF"
             echo "$NOTES"
@@ -54,6 +62,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.notes }}
