@@ -21,11 +21,11 @@ jobs:
         id: changelog
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
+          VERSION="${VERSION#v}"
           NOTES=$(awk "/## \\[$VERSION\\]/,/## \\[/" CHANGELOG.md | sed '$d' | tail -n +2)
-          NOTES="${NOTES//'%'/'%25'}"
-          NOTES="${NOTES//$'\n'/'%0A'}"
-          NOTES="${NOTES//$'\r'/'%0D'}"
-          echo "notes=$NOTES" >> $GITHUB_OUTPUT
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
