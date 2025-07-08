@@ -22,36 +22,21 @@ jobs:
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
           VERSION="${VERSION#v}"
-          echo "🔍 Extracting notes for version: $VERSION"
 
-          echo "📝 CHANGELOG content:"
-          cat CHANGELOG.md
-
-          # Escaper les points dans la version
           ESCAPED_VERSION=$(echo "$VERSION" | sed 's/\./\\./g')
           START_LINE=$(grep -nE "^## \[${ESCAPED_VERSION}\]" CHANGELOG.md | cut -d: -f1)
 
           if [ -z "$START_LINE" ]; then
-            echo "⚠️ Version $VERSION not found in CHANGELOG"
             NOTES="No specific release notes found for this version."
           else
-            echo "✅ Found version at line $START_LINE"
-
-            # Cherche les lignes suivantes qui contiennent des titres
             NEXT_LINE=$(grep -nE "^## \[" CHANGELOG.md | cut -d: -f1 | awk -v s="$START_LINE" '$1 > s {print $1; exit}')
-
             if [ -z "$NEXT_LINE" ]; then
               END_LINE=$(wc -l < CHANGELOG.md)
             else
               END_LINE=$((NEXT_LINE - 1))
             fi
-
-            echo "📏 Extracting lines $((START_LINE + 1)) to $END_LINE"
             NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md)
           fi
-
-          echo "📄 Extracted notes:"
-          echo "$NOTES"
 
           {
             echo "notes<<EOF"
