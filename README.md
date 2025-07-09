@@ -175,7 +175,21 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 
 ## Documentation API Backend
 
-> **TODO** : Ajouter la documentation de l'API backend.
+La documentation de l'API backend est générée automatiquement à partir des annotations dans le code. Pour la visualiser, accédez à :
+[http://localhost/api/doc](http://localhost/api/doc)
+
+Pour accéder à l'url, il faut renseigner un nom d'utilisateur et un mot de passe. Par défaut, utilisez :
+- **Nom d'utilisateur** : `admin_doc`
+
+Pour le mot de passe, il faut ajouter la variable d'environnement `API_DOC_PASSWORD` dans le fichier `.env.local` du backend.
+Vous devez haser le mot de passe avec la commande suivante :
+```bash
+docker compose exec php bin/console security:hash-password
+```
+Copiez le hash généré et collez-le dans le fichier `.env.local` :
+```properties
+API_DOC_PASSWORD='votre_hash_généré'
+```
 
 ---
 

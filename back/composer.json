@@ -7,8 +7,6 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "api-platform/doctrine-orm": "^4.1.7",
-        "api-platform/symfony": "^4.1.7",
         "doctrine/dbal": "^3.9.4",
         "doctrine/doctrine-bundle": "^2.14.0",
         "doctrine/doctrine-migrations-bundle": "^3.4.1",
@@ -17,6 +15,7 @@
         "knpuniversity/oauth2-client-bundle": "^2.18.3",
         "league/oauth2-client": "^2.8.1",
         "league/oauth2-google": "^4.0.1",
+        "nelmio/api-doc-bundle": "^5.4",
         "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6.2",
         "phpstan/phpdoc-parser": "^2.1",
@@ -38,9 +37,13 @@
         "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
+        "symfony/uid": "7.2.*",
         "symfony/validator": "7.2.*",
         "symfony/webhook": "7.2.*",
-        "symfony/yaml": "7.2.*"
+        "symfony/yaml": "7.2.*",
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0",
+        "zircote/swagger-php": "^5.1"
     },
     "config": {
         "allow-plugins": {

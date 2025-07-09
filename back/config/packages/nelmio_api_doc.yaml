@@ -1,0 +1,21 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: "MixLink API"
+            description: "API documentation for MixLink platform"
+            version: "1.0.0"
+        security:
+            - ApiKeyAuth: []
+        components:
+            securitySchemes:
+                ApiKeyAuth:
+                    type: apiKey
+                    in: header
+                    name: X-API-KEY
+    areas:
+        default:
+            path_patterns:
+                - ^/api(?!/doc$)
+            host_patterns: []
+            name_patterns: []
+            disable_default_routes: false

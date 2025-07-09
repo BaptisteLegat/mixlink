@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Mail\ContactModel;
 use Exception;
 use JsonException;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,56 @@ class MailerController extends AbstractController
     private const string CONTACT_EMAIL = 'contact@mix-link.fr';
 
     #[Route('/api/contact', name: 'api_contact', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/contact',
+        summary: 'Send an email from the contact form',
+        description: 'Sends an email using JSON data from the request body',
+        tags: ['Contact'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            description: 'Contact form data',
+            content: new OA\JsonContent(
+                required: ['name', 'email', 'subject', 'message'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john.doe@example.com'),
+                    new OA\Property(property: 'subject', type: 'string', example: 'Product inquiry'),
+                    new OA\Property(property: 'message', type: 'string', example: 'Hello, I would like to know more about...')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Email sent successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Email sent successfully')
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid request (invalid JSON or incorrect data)',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'errors', type: 'object', example: ['message' => 'Invalid JSON'])
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server error when sending the email',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: 'Error sending email: ...')
+                    ]
+                )
+            )
+        ]
+    )]
     public function sendContactEmail(
         Request $request,
         MailerInterface $mailer,

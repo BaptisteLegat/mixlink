@@ -5,10 +5,22 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        in_memory:
+            memory:
+                users:
+                    admin_doc:
+                        password: '%env(resolve:API_DOC_PASSWORD)%'
+                        roles: ['ROLE_API_DOC']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_doc:
+            pattern: ^/api/doc
+            stateless: true
+            http_basic:
+                realm: "API Documentation"
+            provider: in_memory
         main:
             lazy: true
             provider: users_in_memory
@@ -24,6 +36,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/doc, roles: ROLE_API_DOC }
 
 when@test:
     security:
