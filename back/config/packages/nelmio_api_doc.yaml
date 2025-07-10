@@ -19,3 +19,10 @@ nelmio_api_doc:
             host_patterns: []
             name_patterns: []
             disable_default_routes: false
+
+    models:
+        names:
+            - { alias: UserModel, type: App\User\UserModel }
+            - { alias: SubscriptionModel, type: App\Subscription\SubscriptionModel }
+            - { alias: PlanModel, type: App\Plan\PlanModel }
+            - { alias: ProviderModel, type: App\Provider\ProviderModel }

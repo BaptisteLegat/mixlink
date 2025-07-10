@@ -4,7 +4,25 @@ namespace App\Subscription;
 
 use App\Plan\PlanModel;
 use DateTimeImmutable;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'SubscriptionModel',
+    title: 'Subscription Model',
+    description: 'Represents a user subscription',
+    type: 'object',
+    properties: [
+        new OA\Property(property: 'id', type: 'string', description: 'Subscription ID', example: '123'),
+        new OA\Property(property: 'stripeSubscriptionId', type: 'string', nullable: true, description: 'Stripe subscription ID', example: 'sub_1234567890'),
+        new OA\Property(property: 'startDate', type: 'string', format: 'date-time', nullable: true, description: 'Subscription start date', example: '2023-01-01T00:00:00+00:00'),
+        new OA\Property(property: 'endDate', type: 'string', format: 'date-time', nullable: true, description: 'Subscription end date', example: '2023-12-31T23:59:59+00:00'),
+        new OA\Property(property: 'canceledAt', type: 'string', format: 'date-time', nullable: true, description: 'Subscription cancellation date', example: '2023-06-15T10:30:00+00:00'),
+        new OA\Property(property: 'status', type: 'string', nullable: true, description: 'Subscription status', example: 'active'),
+        new OA\Property(property: 'isActive', type: 'boolean', description: 'Whether the subscription is active', example: true),
+        new OA\Property(property: 'isCanceled', type: 'boolean', description: 'Whether the subscription is canceled', example: false),
+        new OA\Property(property: 'plan', ref: '#/components/schemas/PlanModel', nullable: true, description: 'Associated plan'),
+    ]
+)]
 class SubscriptionModel
 {
     private string $id = '';

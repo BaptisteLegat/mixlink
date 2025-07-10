@@ -6,6 +6,7 @@ use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
 use Exception;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api')]
+#[OA\Tag(name: 'Authentication', description: 'OAuth authentication endpoints')]
 class AuthenticationController extends AbstractController
 {
     public function __construct(
@@ -25,13 +27,69 @@ class AuthenticationController extends AbstractController
     ) {
     }
 
-    #[Route('/auth/{provider}', name: 'app_auth', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}', name: 'app_auth', methods: ['GET'], requirements: ['provider' => 'google|spotify'])]
+    #[OA\Get(
+        path: '/api/auth/{provider}',
+        summary: 'Initiate OAuth authentication',
+        description: 'Redirects to OAuth provider for authentication',
+        tags: ['Authentication'],
+        parameters: [
+            new OA\Parameter(
+                name: 'provider',
+                in: 'path',
+                required: true,
+                description: 'OAuth provider',
+                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 302,
+                description: 'Redirect to OAuth provider',
+                headers: [
+                    new OA\Header(header: 'Location', description: 'OAuth provider URL', schema: new OA\Schema(type: 'string')),
+                ]
+            ),
+        ]
+    )]
     public function connect(string $provider): RedirectResponse
     {
         return $this->oAuthService->getRedirectResponse($provider);
     }
 
-    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', methods: ['GET'], requirements: ['provider' => 'google|spotify'])]
+    #[OA\Get(
+        path: '/api/auth/{provider}/callback',
+        summary: 'OAuth callback handler',
+        description: 'Handles OAuth callback and creates user session',
+        tags: ['Authentication'],
+        parameters: [
+            new OA\Parameter(
+                name: 'provider',
+                in: 'path',
+                required: true,
+                description: 'OAuth provider',
+                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify'])
+            ),
+            new OA\Parameter(
+                name: 'code',
+                in: 'query',
+                required: true,
+                description: 'OAuth authorization code',
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 302,
+                description: 'Redirect to frontend with authentication cookie',
+                headers: [
+                    new OA\Header(header: 'Location', description: 'Frontend URL', schema: new OA\Schema(type: 'string')),
+                    new OA\Header(header: 'Set-Cookie', description: 'Authentication token', schema: new OA\Schema(type: 'string')),
+                ]
+            ),
+        ]
+    )]
     public function connectCheck(string $provider): RedirectResponse
     {
         try {
@@ -62,6 +120,24 @@ class AuthenticationController extends AbstractController
     }
 
     #[Route('/me', name: 'api_me', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/me',
+        summary: 'Get current user profile',
+        description: 'Returns the authenticated user\'s profile information or empty object if not authenticated',
+        tags: ['Authentication'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'User profile data or empty object when not authenticated',
+                content: new OA\JsonContent(
+                    oneOf: [
+                        new OA\Schema(ref: '#/components/schemas/UserModel'),
+                        new OA\Schema(type: 'object', properties: []),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function getUserProfile(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');
@@ -79,7 +155,23 @@ class AuthenticationController extends AbstractController
         return new JsonResponse($userModel->toArray());
     }
 
-    #[Route('/logout', name: 'api_logout')]
+    #[Route('/logout', name: 'api_logout', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/logout',
+        summary: 'Logout user',
+        description: 'Clears the authentication cookie',
+        tags: ['Authentication'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Logout successful',
+                content: new OA\JsonContent(type: 'object'),
+                headers: [
+                    new OA\Header(header: 'Set-Cookie', description: 'Clear authentication cookie', schema: new OA\Schema(type: 'string')),
+                ]
+            ),
+        ]
+    )]
     public function logout(): JsonResponse
     {
         $response = new JsonResponse([]);
@@ -89,6 +181,41 @@ class AuthenticationController extends AbstractController
     }
 
     #[Route('/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/me/delete',
+        summary: 'Delete user account',
+        description: 'Permanently deletes the authenticated user\'s account',
+        tags: ['Authentication'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Account deleted successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Unauthorized'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User not found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'User not found'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function deleteAccount(Request $request): JsonResponse
     {
         $accessToken = $request->cookies->get('AUTH_TOKEN');

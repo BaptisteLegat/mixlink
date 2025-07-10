@@ -8,6 +8,7 @@ use App\Repository\PlanRepository;
 use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
 use App\Voter\AuthenticationVoter;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
+#[OA\Tag(name: 'Subscription', description: 'Subscription management endpoints')]
 class SubscriptionController extends AbstractController
 {
     public function __construct(
@@ -26,6 +28,50 @@ class SubscriptionController extends AbstractController
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscribe/{planName}', name: 'api_subscription_start', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/subscribe/{planName}',
+        summary: 'Start a new subscription',
+        description: 'Creates a Stripe checkout session for the specified plan',
+        tags: ['Subscription'],
+        parameters: [
+            new OA\Parameter(
+                name: 'planName',
+                in: 'path',
+                required: true,
+                description: 'Name of the plan to subscribe to',
+                schema: new OA\Schema(type: 'string', example: 'premium')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Checkout session created successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'url', type: 'string', description: 'Stripe checkout URL', example: 'https://checkout.stripe.com/pay/cs_test_...'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid plan or configuration error',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Plan not found.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Plan not found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Plan not found.'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function subscribe(
         string $planName,
         PlanRepository $planRepository,
@@ -70,6 +116,42 @@ class SubscriptionController extends AbstractController
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscription/cancel', name: 'api_subscription_cancel', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/subscription/cancel',
+        summary: 'Cancel current subscription',
+        description: 'Cancels the user\'s active subscription',
+        tags: ['Subscription'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Subscription cancelled successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Subscription successfully cancelled'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'No active subscription found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'No active subscription found'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Failed to cancel subscription',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Failed to cancel subscription'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function cancelSubscription(Request $request): JsonResponse
     {
         /** @var string $accessToken */
@@ -96,6 +178,51 @@ class SubscriptionController extends AbstractController
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscription/change/{planName}', name: 'api_subscription_change', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/subscription/change/{planName}',
+        summary: 'Change subscription plan',
+        description: 'Changes the user\'s subscription to a different plan',
+        tags: ['Subscription'],
+        parameters: [
+            new OA\Parameter(
+                name: 'planName',
+                in: 'path',
+                required: true,
+                description: 'Name of the new plan',
+                schema: new OA\Schema(type: 'string', example: 'premium')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Subscription changed successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Subscription successfully changed'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Already subscribed to this plan',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Already subscribed to this plan'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Plan not found or no active subscription',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Plan not found'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function changeSubscription(
         string $planName,
         Request $request,

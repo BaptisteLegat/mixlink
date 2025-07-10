@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\StripeService;
 use App\Webhook\WebhookManager;
 use Exception;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,58 @@ class WebhookController extends AbstractController
     }
 
     #[Route('/api/webhook/stripe', name: 'stripe_webhook', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/webhook/stripe',
+        summary: 'Handle Stripe webhook events',
+        description: 'Processes Stripe webhook events for subscription management',
+        tags: ['Webhooks'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            description: 'Stripe webhook event payload',
+            content: new OA\JsonContent(
+                type: 'object',
+                example: [
+                    'id' => 'evt_1234567890',
+                    'type' => 'checkout.session.completed',
+                    'data' => [
+                        'object' => [
+                            'id' => 'cs_1234567890',
+                            'subscription' => 'sub_1234567890',
+                        ],
+                    ],
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Webhook processed successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Webhook handled'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid request or missing signature',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Missing signature'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Error processing webhook',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Error processing webhook: ...'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function handleStripeWebhook(Request $request): Response
     {
         $payload = $request->getContent();

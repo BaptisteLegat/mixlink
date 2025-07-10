@@ -2,6 +2,21 @@
 
 namespace App\Plan;
 
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: 'PlanModel',
+    title: 'Plan Model',
+    description: 'Represents a subscription plan',
+    type: 'object',
+    properties: [
+        new OA\Property(property: 'id', type: 'string', description: 'Plan ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
+        new OA\Property(property: 'name', type: 'string', description: 'Plan name', example: 'premium'),
+        new OA\Property(property: 'price', type: 'number', format: 'float', description: 'Plan price', example: 9.99),
+        new OA\Property(property: 'currency', type: 'string', description: 'Currency code', example: 'EUR'),
+        new OA\Property(property: 'stripePriceId', type: 'string', nullable: true, description: 'Stripe price ID', example: 'price_1234567890'),
+    ]
+)]
 class PlanModel
 {
     private string $id = '';

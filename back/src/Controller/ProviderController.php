@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Voter\AuthenticationVoter;
 use Exception;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[OA\Tag(name: 'Provider', description: 'OAuth provider management endpoints')]
 class ProviderController extends AbstractController
 {
     public function __construct(
@@ -23,6 +25,52 @@ class ProviderController extends AbstractController
 
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/api/provider/{id}/disconnect', name: 'api_provider_disconnect', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/provider/{id}/disconnect',
+        summary: 'Disconnect OAuth provider',
+        description: 'Disconnects a specific OAuth provider from the user account',
+        tags: ['Provider'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Provider ID',
+                schema: new OA\Schema(type: 'string', example: '01234567-89ab-cdef-0123-456789abcdef')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Provider disconnected successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'mainProvider', type: 'boolean', description: 'Whether this was the main provider', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Provider successfully disconnected'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Provider not found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Provider not found'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Failed to disconnect provider',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string', example: 'Failed to disconnect provider'),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function disconnect(
         string $id,
         Request $request,

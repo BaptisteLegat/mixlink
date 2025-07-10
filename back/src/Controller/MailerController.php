@@ -37,7 +37,7 @@ class MailerController extends AbstractController
                     new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
                     new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john.doe@example.com'),
                     new OA\Property(property: 'subject', type: 'string', example: 'Product inquiry'),
-                    new OA\Property(property: 'message', type: 'string', example: 'Hello, I would like to know more about...')
+                    new OA\Property(property: 'message', type: 'string', example: 'Hello, I would like to know more about...'),
                 ]
             )
         ),
@@ -48,7 +48,7 @@ class MailerController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Email sent successfully')
+                        new OA\Property(property: 'message', type: 'string', example: 'Email sent successfully'),
                     ]
                 )
             ),
@@ -57,7 +57,7 @@ class MailerController extends AbstractController
                 description: 'Invalid request (invalid JSON or incorrect data)',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'errors', type: 'object', example: ['message' => 'Invalid JSON'])
+                        new OA\Property(property: 'errors', type: 'object', example: ['message' => 'Invalid JSON']),
                     ]
                 )
             ),
@@ -67,10 +67,10 @@ class MailerController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
-                        new OA\Property(property: 'error', type: 'string', example: 'Error sending email: ...')
+                        new OA\Property(property: 'error', type: 'string', example: 'Error sending email: ...'),
                     ]
                 )
-            )
+            ),
         ]
     )]
     public function sendContactEmail(

@@ -4,7 +4,24 @@ namespace App\User;
 
 use App\Provider\ProviderModel;
 use App\Subscription\SubscriptionModel;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'UserModel',
+    title: 'User Model',
+    description: 'Represents a user with providers and subscription',
+    type: 'object',
+    properties: [
+        new OA\Property(property: 'id', type: 'string', description: 'User ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
+        new OA\Property(property: 'firstName', type: 'string', nullable: true, description: 'User first name', example: 'John'),
+        new OA\Property(property: 'lastName', type: 'string', nullable: true, description: 'User last name', example: 'Doe'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', description: 'User email', example: 'john.doe@example.com'),
+        new OA\Property(property: 'profilePicture', type: 'string', nullable: true, description: 'Profile picture URL', example: 'https://example.com/profile.jpg'),
+        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string'), description: 'User roles', example: ['ROLE_USER']),
+        new OA\Property(property: 'providers', type: 'array', items: new OA\Items(ref: '#/components/schemas/ProviderModel'), description: 'Connected OAuth providers'),
+        new OA\Property(property: 'subscription', ref: '#/components/schemas/SubscriptionModel', nullable: true, description: 'User subscription'),
+    ]
+)]
 class UserModel
 {
     private string $id = '';
