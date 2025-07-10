@@ -22,20 +22,27 @@ jobs:
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
           VERSION="${VERSION#v}"
-
-          ESCAPED_VERSION=$(echo "$VERSION" | sed 's/\./\\./g')
-          START_LINE=$(grep -nE "^## \[${ESCAPED_VERSION}\]" CHANGELOG.md | cut -d: -f1)
-
+          echo "Looking for version: $VERSION"
+          # Recherche plus flexible de la version
+          START_LINE=$(grep -nE "^## \[${VERSION}\]" CHANGELOG.md | head -1 | cut -d: -f1)
           if [ -z "$START_LINE" ]; then
+            echo "Version $VERSION not found in CHANGELOG.md"
+            echo "Available versions:"
+            grep -E "^## \[" CHANGELOG.md
             NOTES="No specific release notes found for this version."
           else
-            NEXT_LINE=$(grep -nE "^## \[" CHANGELOG.md | cut -d: -f1 | awk -v s="$START_LINE" '$1 > s {print $1; exit}')
+            echo "Found version at line: $START_LINE"
+            # Trouver la prochaine section (ligne suivante commençant par ## [)
+            NEXT_LINE=$(tail -n +$((START_LINE + 1)) CHANGELOG.md | grep -nE "^## \[" | head -1 | cut -d: -f1)
             if [ -z "$NEXT_LINE" ]; then
+              # Pas de section suivante, prendre jusqu'à la fin
               END_LINE=$(wc -l < CHANGELOG.md)
             else
-              END_LINE=$((NEXT_LINE - 1))
+              # Calculer la ligne réelle dans le fichier
+              END_LINE=$((START_LINE + NEXT_LINE - 1))
             fi
-            NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md)
+            echo "Extracting lines from $((START_LINE + 1)) to $END_LINE"
+            NOTES=$(sed -n "$((START_LINE + 1)),$END_LINE"p CHANGELOG.md | sed '/^$/d' | head -n -1)
           fi
 
           {
