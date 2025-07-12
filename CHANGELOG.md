@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.1.1] - 2025-07-12
+### Added
+- Dockerfile (front and back) for production deployment
+
+### Changed
+- Updated the workflow of cicd.yml to include the Dockerfile.prod instead of Dockerfile
+
 ## [1.1.0] - 2025-07-10
 
 ### Added
