@@ -1,6 +1,8 @@
 name: CI/CD Pipeline
 
 on:
+  push:
+    branches: [ "master" ]
   pull_request:
     branches: [ "*" ]
     types: ['opened', 'reopened', 'synchronize', 'ready_for_review']
@@ -88,6 +90,7 @@ jobs:
           bin/console c:c --env=test
           XDEBUG_MODE=off vendor/bin/phpunit tests/functional
   build-backend:
+    if: github.ref == 'refs/heads/master'
     needs: symfony-tests
     runs-on: ubuntu-latest
     steps:
@@ -109,7 +112,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./back
-          file: ./back/Dockerfile
+          file: ./back/Dockerfile.prod
           push: true
           tags: |
             ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest
@@ -161,6 +164,7 @@ jobs:
       #     npm run test:e2e
 
   build-frontend:
+    if: github.ref == 'refs/heads/master'
     needs: frontend-tests
     runs-on: ubuntu-latest
     steps:
@@ -182,7 +186,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./front
-          file: ./front/Dockerfile
+          file: ./front/Dockerfile.prod
           push: true
           tags: |
             ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest
