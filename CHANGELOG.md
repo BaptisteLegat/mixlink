@@ -8,7 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.1.2] - 2025-07-14
+
+### Fixed
+- Fixed an OAuth callback error causing a 500 Internal Server Error due to an invalid state or malformed Spotify response
+
 ## [1.1.1] - 2025-07-12
+
 ### Added
 - Dockerfile (front and back) for production deployment
 
