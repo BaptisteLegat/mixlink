@@ -1,0 +1,516 @@
+<script setup>
+    import { ref, onMounted, onUnmounted, computed } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import { useI18n } from 'vue-i18n';
+    import { useSessionStore } from '@/stores/sessionStore';
+    import { useAuthStore } from '@/stores/authStore';
+    import { ElMessage, ElMessageBox } from 'element-plus';
+    import ExitIcon from 'vue-material-design-icons/ExitToApp.vue';
+    import StopIcon from 'vue-material-design-icons/Stop.vue';
+    import GroupIcon from 'vue-material-design-icons/AccountGroup.vue';
+    import MusicIcon from 'vue-material-design-icons/Music.vue';
+
+    const { t } = useI18n();
+    const route = useRoute();
+    const router = useRouter();
+    const sessionStore = useSessionStore();
+    const authStore = useAuthStore();
+
+    const sessionCode = ref(route.params.code);
+    const session = ref(null);
+    const isLoading = ref(true);
+    const error = ref(null);
+    const participants = ref([]);
+    const currentUserPseudo = ref('');
+    const isHost = ref(false);
+    const hasJoined = ref(false);
+
+    const mercureConnection = ref(null);
+
+    const participantCount = computed(() => participants.value.length);
+
+    onMounted(async () => {
+        await loadSession();
+        if (session.value) {
+            setupMercureConnection();
+        }
+    });
+
+    onUnmounted(() => {
+        if (mercureConnection.value) {
+            mercureConnection.value.close();
+        }
+    });
+
+    async function loadSession() {
+        try {
+            isLoading.value = true;
+            const loadedSession = await sessionStore.getSessionByCode(sessionCode.value);
+            session.value = loadedSession;
+
+            if (authStore.isAuthenticated && authStore.user) {
+                isHost.value = session.value.host.id === authStore.user.id;
+                if (isHost.value) {
+                    currentUserPseudo.value = session.value.host.firstName || 'Hôte';
+                    hasJoined.value = true;
+                }
+            }
+
+            await loadParticipants();
+
+            error.value = null;
+        } catch (err) {
+            console.error('Error loading session:', err);
+            error.value = 'Session non trouvée';
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
+    async function loadParticipants() {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${sessionCode.value}/participants`, {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                participants.value = data.participants || [];
+            } else {
+                console.error('Error loading participants:', await response.text());
+            }
+        } catch (err) {
+            console.error('Error loading participants:', err);
+        }
+    }
+
+    async function setupMercureConnection() {
+        if (!session.value) return;
+
+        try {
+            const tokenEndpoint = isHost.value ? `/api/mercure/auth/host/${session.value.code}` : `/api/mercure/auth/${session.value.code}`;
+
+            const tokenResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}${tokenEndpoint}`, {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!tokenResponse.ok) {
+                console.error('Failed to get Mercure token:', await tokenResponse.text());
+                return;
+            }
+
+            const tokenData = await tokenResponse.json();
+            const url = new URL(tokenData.mercureUrl);
+            url.searchParams.append('topic', `session/${session.value.code}`);
+            url.searchParams.append('authorization', tokenData.token);
+
+            mercureConnection.value = new EventSource(url.toString());
+
+            mercureConnection.value.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleMercureMessage(data);
+            };
+
+            mercureConnection.value.onerror = (error) => {
+                console.error('Mercure connection error:', error);
+            };
+
+            console.log('Mercure connection established for session:', session.value.code);
+        } catch (error) {
+            console.error('Error setting up Mercure connection:', error);
+        }
+    }
+
+    function handleMercureMessage(data) {
+        console.log('Received Mercure message:', data);
+
+        switch (data.event) {
+            case 'participant_joined':
+                handleParticipantJoined(data.participant);
+                break;
+            case 'participant_left':
+                handleParticipantLeft(data.participant);
+                break;
+            case 'session_ended':
+                handleSessionEnded();
+                break;
+            default:
+                console.log('Unknown Mercure event:', data.event);
+        }
+    }
+
+    function handleParticipantJoined(participant) {
+        if (!participants.value.find((p) => p.id === participant.id)) {
+            participants.value.push(participant);
+        }
+
+        ElMessage({
+            message: `${participant.pseudo} a rejoint la session`,
+            type: 'success',
+            duration: 3000,
+        });
+    }
+
+    function handleParticipantLeft(participant) {
+        participants.value = participants.value.filter((p) => p.id !== participant.id);
+
+        ElMessage({
+            message: `${participant.pseudo} a quitté la session`,
+            type: 'info',
+            duration: 3000,
+        });
+    }
+
+    function handleSessionEnded() {
+        ElMessage({
+            message: "La session a été terminée par l'hôte",
+            type: 'warning',
+            duration: 5000,
+        });
+
+        setTimeout(() => {
+            router.push('/');
+        }, 3000);
+    }
+
+    async function leaveSession() {
+        try {
+            await ElMessageBox.confirm(t('session.leave.confirmation'), t('session.leave.title'), {
+                confirmButtonText: t('session.leave.confirm'),
+                cancelButtonText: t('common.cancel'),
+                type: 'warning',
+            });
+
+            if (!isHost.value && currentUserPseudo.value) {
+                await sessionStore.leaveSession(sessionCode.value, currentUserPseudo.value);
+            }
+
+            sessionStore.leaveCurrentSession();
+            router.push('/');
+        } catch {
+            // User canceled
+        }
+    }
+
+    async function endSession() {
+        try {
+            await ElMessageBox.confirm(t('session.end.confirmation'), t('session.end.title'), {
+                confirmButtonText: t('session.end.confirm'),
+                cancelButtonText: t('common.cancel'),
+                type: 'warning',
+            });
+
+            await sessionStore.endSession(sessionCode.value);
+            ElMessage.success(t('session.end.success'));
+            router.push('/');
+        } catch (error) {
+            if (error.message) {
+                ElMessage.error(t('session.end.error'));
+            }
+        }
+    }
+
+    function joinAsGuest() {
+        if (!currentUserPseudo.value.trim()) {
+            ElMessage.error(t('session.join.pseudo_required'));
+            return;
+        }
+
+        joinSession();
+    }
+
+    async function joinSession() {
+        try {
+            const result = await sessionStore.joinSession(sessionCode.value, currentUserPseudo.value.trim());
+            hasJoined.value = true;
+            ElMessage.success(result.message);
+            await loadParticipants();
+        } catch (error) {
+            console.error('Error joining session:', error);
+            ElMessage.error(error.message || 'Erreur lors de la connexion à la session');
+        }
+    }
+</script>
+
+<template>
+    <div class="session-page">
+        <div v-if="isLoading" class="loading-container">
+            <el-skeleton :rows="5" animated />
+        </div>
+
+        <div v-else-if="error" class="error-container">
+            <el-result icon="error" :title="error" :sub-title="t('session.error.not_found_description')">
+                <template #extra>
+                    <el-button type="primary" @click="router.push('/')">
+                        {{ t('session.error.back_home') }}
+                    </el-button>
+                </template>
+            </el-result>
+        </div>
+
+        <div v-else class="session-container">
+            <el-card class="session-header">
+                <div class="session-info">
+                    <div class="session-main-info">
+                        <h1 class="session-title">{{ session.name }}</h1>
+                        <el-tag type="primary" size="large">{{ session.code }}</el-tag>
+                    </div>
+                    <div class="session-description" v-if="session.description">
+                        <p>{{ session.description }}</p>
+                    </div>
+                </div>
+
+                <div class="session-actions">
+                    <el-button v-if="isHost" type="danger" @click="endSession" :icon="StopIcon">
+                        {{ t('session.end.button') }}
+                    </el-button>
+                    <el-button v-else type="warning" @click="leaveSession" :icon="ExitIcon">
+                        {{ t('session.leave.button') }}
+                    </el-button>
+                </div>
+            </el-card>
+
+            <el-card v-if="!authStore.isAuthenticated && !hasJoined" class="guest-join-card">
+                <div class="guest-join-content">
+                    <h3>{{ t('session.join.title') }}</h3>
+                    <p>{{ t('session.join.description') }}</p>
+                    <div class="pseudo-input-group">
+                        <el-input
+                            v-model="currentUserPseudo"
+                            :placeholder="t('session.join.pseudo_placeholder')"
+                            size="large"
+                            maxlength="20"
+                            show-word-limit
+                            @keyup.enter="joinAsGuest"
+                        />
+                        <el-button type="primary" size="large" @click="joinAsGuest" :disabled="!currentUserPseudo.trim()">
+                            {{ t('session.join.button') }}
+                        </el-button>
+                    </div>
+                </div>
+            </el-card>
+
+            <el-card class="participants-card">
+                <template #header>
+                    <div class="participants-header">
+                        <GroupIcon style="margin-right: 8px" />
+                        {{ t('session.participants.title') }}
+                        <el-badge :value="participantCount" class="participants-count" />
+                    </div>
+                </template>
+
+                <div class="participants-list">
+                    <div class="participant-item">
+                        <el-avatar :src="session.host.profilePicture" size="small">
+                            {{ session.host.firstName?.charAt(0) || 'H' }}
+                        </el-avatar>
+                        <span class="participant-name">{{ session.host.firstName || 'Hôte' }}</span>
+                        <el-tag type="success" size="small">{{ t('session.participants.host') }}</el-tag>
+                    </div>
+
+                    <div v-for="participant in participants" :key="participant.id" class="participant-item">
+                        <el-avatar size="small">
+                            {{ participant.pseudo?.charAt(0) || 'G' }}
+                        </el-avatar>
+                        <span class="participant-name">{{ participant.pseudo }}</span>
+                        <el-tag type="info" size="small">{{ t('session.participants.guest') }}</el-tag>
+                    </div>
+                </div>
+
+                <div v-if="participants.length === 0" class="no-participants">
+                    <p>{{ t('session.participants.waiting') }}</p>
+                </div>
+            </el-card>
+
+            <el-card class="playlist-card">
+                <template #header>
+                    <div class="playlist-header">
+                        <MusicIcon style="margin-right: 8px" />
+                        {{ t('session.playlist.title') }}
+                    </div>
+                </template>
+
+                <div class="playlist-content">
+                    <el-empty :description="t('session.playlist.empty')">
+                        <template #image>
+                            <MusicIcon style="width: 60px; height: 60px; color: #909399" />
+                        </template>
+                        <template #description>
+                            <p>{{ t('session.playlist.empty_description') }}</p>
+                        </template>
+                    </el-empty>
+                </div>
+            </el-card>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+    .session-page {
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+    }
+
+    .loading-container,
+    .error-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .session-container {
+        max-width: 1200px;
+        margin: 0 auto;
+
+        .session-header {
+            margin-bottom: 20px;
+
+            .session-info {
+                .session-main-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-bottom: 10px;
+
+                    .session-title {
+                        margin: 0;
+                        color: var(--el-text-color-primary);
+                    }
+                }
+
+                .session-description {
+                    color: var(--el-text-color-regular);
+                    margin-bottom: 15px;
+                }
+            }
+
+            .session-actions {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 15px;
+            }
+        }
+
+        .guest-join-card {
+            margin-bottom: 20px;
+
+            .guest-join-content {
+                text-align: center;
+
+                h3 {
+                    margin-bottom: 10px;
+                    color: var(--el-text-color-primary);
+                }
+
+                p {
+                    color: var(--el-text-color-regular);
+                    margin-bottom: 20px;
+                }
+
+                .pseudo-input-group {
+                    display: flex;
+                    gap: 10px;
+                    max-width: 400px;
+                    margin: 0 auto;
+
+                    .el-input {
+                        flex: 1;
+                    }
+                }
+            }
+        }
+
+        .participants-card {
+            margin-bottom: 20px;
+
+            .participants-header {
+                display: flex;
+                align-items: center;
+                font-weight: 600;
+
+                .participants-count {
+                    margin-left: 10px;
+                }
+            }
+
+            .participants-list {
+                .participant-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 10px 0;
+                    border-bottom: 1px solid var(--el-border-color-lighter);
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    .participant-name {
+                        flex: 1;
+                        font-weight: 500;
+                    }
+                }
+            }
+
+            .no-participants {
+                text-align: center;
+                padding: 20px;
+                color: var(--el-text-color-regular);
+            }
+        }
+
+        .playlist-card {
+            .playlist-header {
+                display: flex;
+                align-items: center;
+                font-weight: 600;
+            }
+
+            .playlist-content {
+                min-height: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+
+    // Responsive design
+    @media (max-width: 768px) {
+        .session-page {
+            padding: 10px;
+        }
+
+        .session-container {
+            .session-header {
+                .session-info {
+                    .session-main-info {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 10px;
+                    }
+                }
+
+                .session-actions {
+                    justify-content: center;
+                }
+            }
+
+            .guest-join-card {
+                .guest-join-content {
+                    .pseudo-input-group {
+                        flex-direction: column;
+                        max-width: 100%;
+                    }
+                }
+            }
+        }
+    }
+</style>

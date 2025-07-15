@@ -7,11 +7,13 @@
     import MenuIcon from 'vue-material-design-icons/Menu.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
     import { useUserDisplay } from '@/composables/useUserDisplay';
+    import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
 
     const router = useRouter();
     const { locale, t } = useI18n();
     const authStore = useAuthStore();
     const drawerVisible = ref(false);
+    const createSessionModalRef = ref(null);
 
     const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
@@ -45,6 +47,11 @@
         authStore.logout();
         drawerVisible.value = false;
     };
+
+    const openCreateSessionModal = () => {
+        createSessionModalRef.value.showDialog();
+        drawerVisible.value = false;
+    };
 </script>
 
 <template>
@@ -73,6 +80,9 @@
                     {{ getThemeText }}
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
+                    <el-menu-item @click="openCreateSessionModal">
+                        {{ t('header.create_session') }}
+                    </el-menu-item>
                     <el-menu-item @click="handleProfile">
                         {{ t('header.profile') }}
                     </el-menu-item>
@@ -85,5 +95,7 @@
                 </el-menu-item>
             </el-menu>
         </el-drawer>
+
+        <CreateSessionModal ref="createSessionModalRef" />
     </div>
 </template>

@@ -10,18 +10,20 @@ export const useSubscriptionStore = defineStore('subscription', () => {
             name: 'free',
             displayName: 'home.plans.free.title',
             price: '0',
-            features: ['home.plans.free.feature1', 'home.plans.free.feature2'],
+            features: ['home.plans.free.feature1', 'home.plans.free.feature2', 'home.plans.free.feature3'],
             cta: 'home.plans.free.cta',
             highlighted: false,
+            maxParticipants: 3,
         },
         {
             name: 'premium',
             displayName: 'home.plans.premium.title',
             price: '3,99',
-            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3'],
+            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3', 'home.plans.premium.feature4'],
             cta: 'home.plans.premium.cta',
             highlighted: true,
             badge: 'home.plans.popular',
+            maxParticipants: 10,
         },
         {
             name: 'enterprise',
@@ -44,6 +46,15 @@ export const useSubscriptionStore = defineStore('subscription', () => {
             return 'free';
         }
         return authStore.subscription.plan?.name || 'free';
+    });
+
+    const currentPlanMaxParticipants = computed(() => {
+        const currentPlan = plans.value.find((plan) => plan.name === currentPlanName.value);
+        return currentPlan?.maxParticipants || 3;
+    });
+
+    const currentPlan = computed(() => {
+        return plans.value.find((plan) => plan.name === currentPlanName.value) || plans.value[0];
     });
 
     async function subscribe(planName) {
@@ -96,5 +107,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         unsubscribe,
         hasActiveSubscription,
         currentPlanName,
+        currentPlanMaxParticipants,
+        currentPlan,
     };
 });

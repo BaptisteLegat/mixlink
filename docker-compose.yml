@@ -49,6 +49,22 @@ services:
     environment:
       PMA_HOST: database
 
+  mercure:
+    image: dunglas/mercure:latest
+    container_name: mercure
+    restart: always
+    environment:
+      SERVER_NAME: ':3001'
+      MERCURE_PUBLISHER_JWT_KEY: 'aVerySecretKey!ForMercureJWT123456789'
+      MERCURE_SUBSCRIBER_JWT_KEY: 'aVerySecretKey!ForMercureJWT123456789'
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://localhost:3000 http://localhost
+    ports:
+      - "3001:3001"
+    volumes:
+      - mercure_data:/data
+      - mercure_config:/config
+
   frontend:
     build:
       context: ./front
@@ -61,3 +77,7 @@ services:
       - /app/node_modules
     stdin_open: true
     tty: true
+
+volumes:
+  mercure_data:
+  mercure_config:

@@ -4,7 +4,8 @@
         "login": "Connexion",
         "logout": "Déconnexion",
         "dark_mode": "Mode sombre",
-        "light_mode": "Mode clair"
+        "light_mode": "Mode clair",
+        "create_session": "Créer une session"
     },
     "profile": {
         "title": "Mon Profil",
@@ -119,6 +120,7 @@
                 "title": "Gratuit",
                 "feature1": "Créez jusqu'à 5 playlists",
                 "feature2": "Ajout jusqu'à 50 morceaux par playlist",
+                "feature3": "Maximum 3 participants par session",
                 "cta": "Commencer, gratuitement"
             },
             "premium": {
@@ -126,6 +128,7 @@
                 "feature1": "Playlists illimitées",
                 "feature2": "Nombre illimité de morceaux",
                 "feature3": "Historique complet",
+                "feature4": "Maximum 10 participants par session",
                 "cta": "Obtenir premium"
             },
             "enterprise": {
@@ -178,7 +181,8 @@
     },
     "common": {
         "cancel": "Annuler",
-        "loading": "Chargement..."
+        "loading": "Chargement...",
+        "close": "Fermer"
     },
     "routes": {
         "terms": "Conditions d'utilisation",
@@ -344,6 +348,101 @@
                 "question": "Proposez-vous une API pour les développeurs ?",
                 "answer": "Oui, nous proposons une API pour les développeurs dans le cadre de notre offre Entreprise. Si vous êtes intéressé, veuillez nous contacter pour discuter de vos besoins spécifiques et des options d'intégration."
             }
+        }
+    },
+    "session": {
+        "create": {
+            "title": "Créer une session",
+            "button": "Créer la session",
+            "success": "Session créée avec succès !",
+            "error": "Erreur lors de la création de la session"
+        },
+        "form": {
+            "name": "Nom",
+            "name_placeholder": "Nom de la session",
+            "participants_limit": "Avec votre plan {plan}, vous pouvez inviter jusqu'à {limit} participants",
+            "validation": {
+                "name_required": "Le nom est requis",
+                "name_min": "Le nom doit contenir au moins 3 caractères",
+                "name_max": "Le nom ne peut pas dépasser 50 caractères"
+            }
+        },
+        "share": {
+            "title": "Partager la session",
+            "success_title": "Session créée !",
+            "success_description": "Votre session a été créée avec succès. Partagez le lien ou le code avec vos amis.",
+            "share_with_friends": "Partager avec des amis",
+            "share_link": "Lien de partage",
+            "session_code": "Code de session",
+            "copy": "Copier",
+            "copied": "Lien copié !",
+            "copied_short": "Copié",
+            "copy_error": "Erreur lors de la copie",
+            "join_session": "Rejoindre la session"
+        },
+        "info": {
+            "name": "Nom",
+            "code": "Code",
+            "description": "Description",
+            "max_participants": "Participants max",
+            "participants": "participants"
+        },
+        "participants": {
+            "title": "Participants",
+            "host": "Hôte",
+            "guest": "Invité",
+            "waiting": "En attente de participants..."
+        },
+        "playlist": {
+            "title": "Playlist collaborative",
+            "empty": "Aucune musique ajoutée",
+            "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !"
+        },
+        "join": {
+            "title": "Rejoindre la session",
+            "description": "Entrez votre pseudo pour rejoindre la session",
+            "code": "Code de session",
+            "code_placeholder": "Entrez le code de session",
+            "pseudo": "Pseudo",
+            "pseudo_placeholder": "Votre pseudo",
+            "button": "Rejoindre",
+            "join_button": "Rejoindre",
+            "success": "Vous avez rejoint la session avec succès !",
+            "error": "Erreur lors de la connexion à la session",
+            "session_not_found": "Session introuvable",
+            "session_inactive": "Cette session n'est plus active",
+            "validation": {
+                "code_required": "Le code de session est requis",
+                "code_length": "Le code doit contenir entre 6 et 8 caractères",
+                "pseudo_required": "Le pseudo est requis",
+                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
+            }
+        },
+        "rejoin": {
+            "title": "Rejoindre la session existante",
+            "button": "Rejoindre la session",
+            "success": "Vous avez rejoint la session avec succès !",
+            "error": "Erreur lors de la reconnexion à la session",
+            "alert_title": "Session active détectée",
+            "alert_description": "Vous avez déjà une session active : {name}. Voulez-vous la rejoindre ?"
+        },
+        "leave": {
+            "title": "Quitter la session",
+            "confirmation": "Êtes-vous sûr de vouloir quitter cette session ?",
+            "confirm": "Quitter",
+            "button": "Quitter"
+        },
+        "end": {
+            "title": "Terminer la session",
+            "confirmation": "Êtes-vous sûr de vouloir terminer cette session ? Cette action est irréversible.",
+            "confirm": "Terminer",
+            "button": "Terminer la session",
+            "success": "Session terminée avec succès",
+            "error": "Erreur lors de la terminaison de la session"
+        },
+        "error": {
+            "not_found_description": "Cette session n'existe pas ou a été terminée",
+            "back_home": "Retour à l'accueil"
         }
     }
 }

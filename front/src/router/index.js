@@ -51,6 +51,22 @@ const routes = [
             title: 'routes.faq',
         },
     },
+    {
+        path: '/session/:code',
+        name: 'session',
+        component: () => import('@/views/SessionView.vue'),
+        meta: {
+            title: 'Session',
+        },
+    },
+    {
+        path: '/session/join/:code',
+        name: 'session-join',
+        component: () => import('@/views/SessionView.vue'),
+        meta: {
+            title: 'Rejoindre une session',
+        },
+    },
 ];
 
 const router = createRouter({
@@ -66,7 +82,6 @@ router.beforeEach(async (to, from, next) => {
     if (!userLoaded) {
         try {
             await authStore.fetchUser();
-
             userLoaded = true;
         } catch (error) {
             console.error('Error fetching user:', error);

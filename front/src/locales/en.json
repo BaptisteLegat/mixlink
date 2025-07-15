@@ -4,7 +4,8 @@
         "login": "Login",
         "logout": "Logout",
         "dark_mode": "Dark mode",
-        "light_mode": "Light mode"
+        "light_mode": "Light mode",
+        "create_session": "Create Session"
     },
     "profile": {
         "title": "My Profile",
@@ -119,6 +120,7 @@
                 "title": "Free",
                 "feature1": "Create up to 5 playlists",
                 "feature2": "Add up to 50 songs per playlist",
+                "feature3": "Maximum of 3 participants per session",
                 "cta": "Get Started, Free"
             },
             "premium": {
@@ -126,6 +128,7 @@
                 "feature1": "Unlimited playlists",
                 "feature2": "Unlimited number of songs",
                 "feature3": "Complete history",
+                "feature4": "Maximum of 10 participants per session",
                 "cta": "Get Premium"
             },
             "enterprise": {
@@ -166,7 +169,9 @@
     },
     "button": {
         "submit": "Submit",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "close": "Close"
     },
     "login": {
         "title": "Login",
@@ -342,6 +347,78 @@
                 "question": "Do you offer an API for developers?",
                 "answer": "Yes, we offer an API for developers as part of our Enterprise offering. If you are interested, please contact us to discuss your specific needs and integration options."
             }
+        }
+    },
+    "session": {
+        "create": {
+            "title": "Create Session",
+            "button": "Create Session",
+            "success": "Session created successfully!",
+            "error": "Error creating session"
+        },
+        "form": {
+            "name": "Name",
+            "name_placeholder": "Session name",
+            "participants_limit": "With your {plan} plan, you can invite up to {limit} participants",
+            "validation": {
+                "name_required": "Name is required",
+                "name_min": "Name must be at least 3 characters",
+                "name_max": "Name cannot exceed 50 characters"
+            }
+        },
+        "share": {
+            "title": "Share Session",
+            "success_title": "Session Created!",
+            "success_description": "Your session has been created successfully. Share the link or code with your friends.",
+            "share_with_friends": "Share with friends",
+            "share_link": "Share link",
+            "session_code": "Session code",
+            "copy": "Copy",
+            "copied": "Link copied!",
+            "copied_short": "Copied",
+            "copy_error": "Error copying",
+            "join_session": "Join Session"
+        },
+        "info": {
+            "name": "Name",
+            "code": "Code",
+            "description": "Description"
+        },
+        "participants": {
+            "title": "Participants",
+            "host": "Host",
+            "guest": "Guest",
+            "waiting": "Waiting for participants..."
+        },
+        "playlist": {
+            "title": "Collaborative Playlist",
+            "empty": "No music added",
+            "empty_description": "Start adding tracks to the collaborative playlist!"
+        },
+        "join": {
+            "title": "Join Session",
+            "description": "Enter your nickname to join the session",
+            "pseudo_placeholder": "Your nickname",
+            "pseudo_required": "Nickname is required",
+            "button": "Join"
+        },
+        "leave": {
+            "title": "Leave Session",
+            "confirmation": "Are you sure you want to leave this session?",
+            "confirm": "Leave",
+            "button": "Leave"
+        },
+        "end": {
+            "title": "End Session",
+            "confirmation": "Are you sure you want to end this session? This action is irreversible.",
+            "confirm": "End",
+            "button": "End Session",
+            "success": "Session ended successfully",
+            "error": "Error ending session"
+        },
+        "error": {
+            "not_found_description": "This session does not exist or has been ended",
+            "back_home": "Back to Home"
         }
     }
 }

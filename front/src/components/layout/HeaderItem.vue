@@ -1,10 +1,11 @@
 <script setup>
     import { isDark } from '@/composables/dark';
     import HeaderMobile from '@/components/layout/HeaderMobile.vue';
+    import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
     import { useMediaQuery } from '@vueuse/core';
     import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
-    import { computed } from 'vue';
+    import { computed, ref } from 'vue';
     import TranslateIcon from 'vue-material-design-icons/Translate.vue';
     import SunIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue';
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
@@ -17,8 +18,14 @@
 
     const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
+    const createSessionModalRef = ref(null);
+
     function changeLanguage(lang) {
         locale.value = lang;
+    }
+
+    function openCreateSessionModal() {
+        createSessionModalRef.value.showDialog();
     }
 </script>
 <template>
@@ -28,7 +35,7 @@
                 <el-row>
                     <el-link :underline="false" href="/">
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
-                        <el-image :src="isDark ? 'logo-dark.svg' : 'logo.svg'" alt="mixlink" style="width: 40px; height: 40px" />
+                        <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" style="width: 40px; height: 40px" fit="contain" />
                         <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>
                     </el-link>
                 </el-row>
@@ -58,6 +65,9 @@
                         />
 
                         <template v-if="authStore.isAuthenticated">
+                            <el-button type="primary" @click="openCreateSessionModal" style="margin-right: 15px">
+                                {{ $t('header.create_session') }}
+                            </el-button>
                             <el-dropdown>
                                 <el-avatar :size="40" :src="authStore.user?.profilePicture" :icon="authStore.user?.profilePicture ? null : UserIcon">
                                     <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
@@ -81,5 +91,7 @@
                 </el-row>
             </el-col>
         </el-row>
+
+        <CreateSessionModal ref="createSessionModalRef" />
     </el-header>
 </template>
