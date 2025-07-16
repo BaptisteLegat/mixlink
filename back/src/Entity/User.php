@@ -56,9 +56,16 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: Subscription::class, cascade: ['persist', 'remove'])]
     private ?Subscription $subscription = null;
 
+    /**
+     * @var Collection|Session[]
+     */
+    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'host', cascade: ['persist', 'remove'])]
+    private Collection $sessions;
+
     public function __construct()
     {
         $this->providers = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -183,5 +190,16 @@ class User implements BlameableInterface, TimestampableInterface
         $this->subscription = $subscription;
 
         return $this;
+    }
+
+    public function getCurrentSession(): ?Session
+    {
+        foreach ($this->sessions as $session) {
+            if ($session->getEndedAt() === null) {
+                return $session;
+            }
+        }
+
+        return null;
     }
 }

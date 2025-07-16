@@ -38,18 +38,6 @@ class SessionRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOldInactiveSessions(DateTimeImmutable $cutoffDate): array
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.isActive = :isActive')
-            ->andWhere('s.endedAt IS NOT NULL')
-            ->andWhere('s.endedAt < :cutoffDate')
-            ->setParameter('isActive', false)
-            ->setParameter('cutoffDate', $cutoffDate)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
 
     public function generateUniqueCode(): string
     {

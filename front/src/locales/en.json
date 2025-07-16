@@ -5,7 +5,8 @@
         "logout": "Logout",
         "dark_mode": "Dark mode",
         "light_mode": "Light mode",
-        "create_session": "Create Session"
+        "create_session": "Create Session",
+        "join_session": "Join Session"
     },
     "profile": {
         "title": "My Profile",
@@ -398,9 +399,30 @@
         "join": {
             "title": "Join Session",
             "description": "Enter your nickname to join the session",
+            "code": "Session code",
+            "code_placeholder": "Enter the session code",
+            "pseudo": "Nickname",
             "pseudo_placeholder": "Your nickname",
-            "pseudo_required": "Nickname is required",
-            "button": "Join"
+            "button": "Join",
+            "join_button": "Join",
+            "success": "You have joined the session successfully!",
+            "error": "Error joining the session",
+            "session_not_found": "Session not found",
+            "session_inactive": "This session is no longer active",
+            "validation": {
+                "code_required": "Session code is required",
+                "code_length": "The code must be exactly 8 characters",
+                "pseudo_required": "Nickname is required",
+                "pseudo_length": "Nickname must be between 2 and 20 characters"
+            }
+        },
+        "rejoin": {
+            "title": "Rejoin existing session",
+            "button": "Rejoin session",
+            "success": "You have joined the session successfully!",
+            "error": "Error rejoining the session",
+            "alert_title": "Active session detected",
+            "alert_description": "You already have an active session: {name}. Do you want to join it?"
         },
         "leave": {
             "title": "Leave Session",
@@ -419,6 +441,9 @@
         "error": {
             "not_found_description": "This session does not exist or has been ended",
             "back_home": "Back to Home"
+        },
+        "counter": {
+            "participants": "{current}/{max} participants"
         }
     }
 }

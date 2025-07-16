@@ -4,6 +4,7 @@ namespace App\User;
 
 use App\Provider\ProviderModel;
 use App\Subscription\SubscriptionModel;
+use App\Session\SessionModel;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -20,6 +21,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string'), description: 'User roles', example: ['ROLE_USER']),
         new OA\Property(property: 'providers', type: 'array', items: new OA\Items(ref: '#/components/schemas/ProviderModel'), description: 'Connected OAuth providers'),
         new OA\Property(property: 'subscription', ref: '#/components/schemas/SubscriptionModel', nullable: true, description: 'User subscription'),
+        new OA\Property(property: 'currentSession', ref: '#/components/schemas/SessionModel', nullable: true, description: 'Current active session'),
     ]
 )]
 class UserModel
@@ -36,6 +38,7 @@ class UserModel
     /** @var array<ProviderModel> */
     private array $providers = [];
     private ?SubscriptionModel $subscription = null;
+    private ?SessionModel $currentSession = null;
 
     public function getId(): string
     {
@@ -145,6 +148,18 @@ class UserModel
         return $this;
     }
 
+    public function getCurrentSession(): ?SessionModel
+    {
+        return $this->currentSession;
+    }
+
+    public function setCurrentSession(?SessionModel $currentSession): self
+    {
+        $this->currentSession = $currentSession;
+
+        return $this;
+    }
+
     /**
      * Convert the model to an array.
      *
@@ -161,6 +176,7 @@ class UserModel
             'roles' => $this->roles,
             'providers' => array_map(fn (ProviderModel $provider) => $provider->toArray(), $this->providers),
             'subscription' => $this->subscription ? $this->subscription->toArray() : null,
+            'currentSession' => $this->currentSession ? $this->currentSession->toArray() : null,
         ];
     }
 }

@@ -61,13 +61,6 @@
                 return;
             }
 
-            const session = await sessionResponse.json();
-
-            if (!session.isActive) {
-                ElMessage.error(t('session.join.session_inactive'));
-                return;
-            }
-
             const joinResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${form.code}/join`, {
                 method: 'POST',
                 credentials: 'include',
@@ -86,8 +79,8 @@
             }
 
             ElMessage.success(t('session.join.success'));
-            router.push(`/session/${form.code}`);
             handleClose();
+            router.push(`/session/${form.code}`);
         } catch (error) {
             console.error('Error joining session:', error);
             ElMessage.error(t('session.join.error'));
@@ -102,7 +95,7 @@
 </script>
 <template>
     <el-dialog v-model="dialogVisible" :title="t('session.join.title')" width="400px" :before-close="handleClose" append-to-body>
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+        <el-form ref="formRef" :model="form" :rules="rules">
             <el-form-item :label="t('session.join.code')" prop="code">
                 <el-input
                     v-model="form.code"

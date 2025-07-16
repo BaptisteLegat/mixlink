@@ -1,19 +1,25 @@
 <script setup>
     import { ref, computed } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import { useRouter } from 'vue-router';
+    import { useRouter, useRoute } from 'vue-router';
     import { useAuthStore } from '@/stores/authStore';
     import { isDark } from '@/composables/dark';
     import MenuIcon from 'vue-material-design-icons/Menu.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
     import { useUserDisplay } from '@/composables/useUserDisplay';
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
+    import JoinSessionModal from '@/components/session/JoinSessionModal.vue';
+    import { useSessionStore } from '@/stores/sessionStore';
 
     const router = useRouter();
+    const route = useRoute();
     const { locale, t } = useI18n();
     const authStore = useAuthStore();
+    const sessionStore = useSessionStore();
     const drawerVisible = ref(false);
     const createSessionModalRef = ref(null);
+    const joinSessionModalRef = ref(null);
+    const hasGuestJoined = ref(false);
 
     const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
@@ -52,6 +58,19 @@
         createSessionModalRef.value.showDialog();
         drawerVisible.value = false;
     };
+
+    const openJoinSessionModal = () => {
+        joinSessionModalRef.value.show();
+        drawerVisible.value = false;
+    };
+
+    function isOnCurrentSession() {
+        return (
+            sessionStore.currentSession &&
+            (route.name === 'session' || route.name === 'session-join') &&
+            route.params.code === sessionStore.currentSession.code
+        );
+    }
 </script>
 
 <template>
@@ -80,7 +99,13 @@
                     {{ getThemeText }}
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
-                    <el-menu-item @click="openCreateSessionModal">
+                    <el-menu-item
+                        v-if="sessionStore.currentSession && !isOnCurrentSession()"
+                        @click="() => router.push(`/session/${sessionStore.currentSession.code}`)"
+                    >
+                        {{ t('session.rejoin.button') }}
+                    </el-menu-item>
+                    <el-menu-item v-else-if="!sessionStore.currentSession" @click="openCreateSessionModal">
                         {{ t('header.create_session') }}
                     </el-menu-item>
                     <el-menu-item @click="handleProfile">
@@ -90,12 +115,17 @@
                         {{ t('header.logout') }}
                     </el-menu-item>
                 </template>
-                <el-menu-item v-else @click="handleLogin">
-                    {{ t('header.login') }}
-                </el-menu-item>
+                <template v-else>
+                    <el-menu-item v-if="!hasGuestJoined" @click="openJoinSessionModal">
+                        {{ t('header.join_session') }}
+                    </el-menu-item>
+                    <el-menu-item @click="handleLogin">
+                        {{ t('header.login') }}
+                    </el-menu-item>
+                </template>
             </el-menu>
         </el-drawer>
-
         <CreateSessionModal ref="createSessionModalRef" />
+        <JoinSessionModal ref="joinSessionModalRef" />
     </div>
 </template>

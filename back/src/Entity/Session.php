@@ -30,12 +30,6 @@ class Session implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 8, unique: true)]
     private string $code;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $isActive = true;
-
     #[ORM\Column(type: 'integer')]
     private int $maxParticipants = 50;
 
@@ -75,17 +69,6 @@ class Session implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
 
     public function getMaxParticipants(): int
     {

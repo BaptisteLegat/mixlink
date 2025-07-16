@@ -1,25 +1,26 @@
 <script setup>
-    import { ref, computed, onMounted } from 'vue';
+    import { ref, computed, onMounted, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useSessionStore } from '@/stores/sessionStore';
     import { useAuthStore } from '@/stores/authStore';
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
     import JoinSessionModal from '@/components/session/JoinSessionModal.vue';
+    import { useRoute } from 'vue-router';
 
     const { t } = useI18n();
     const sessionStore = useSessionStore();
     const authStore = useAuthStore();
+    const route = useRoute();
 
     const createSessionModalRef = ref(null);
     const joinSessionModalRef = ref(null);
-    const existingSession = ref(null);
     const isLoading = ref(false);
 
     const buttonText = computed(() => {
         if (!authStore.isAuthenticated) {
             return t('session.join.button');
         }
-        if (existingSession.value) {
+        if (sessionStore.currentSession) {
             return t('session.rejoin.button');
         }
         return t('session.create.button');
@@ -29,43 +30,41 @@
         if (!authStore.isAuthenticated) {
             return 'Connection';
         }
-        if (existingSession.value) {
+        if (sessionStore.currentSession) {
             return 'Refresh';
         }
         return 'Plus';
     });
 
-    onMounted(() => {
-        if (authStore.isAuthenticated) {
-            checkForExistingSession();
+    const showButton = computed(() => {
+        if (!authStore.isAuthenticated) {
+            const guestSessionCode = localStorage.getItem('guestSessionCode');
+            const guestSessionKey = guestSessionCode ? `guestSession_${guestSessionCode}` : null;
+            const guestPseudo = guestSessionKey ? localStorage.getItem(guestSessionKey) : null;
+
+            if (guestSessionCode && (route.name === 'session' || route.name === 'session-join') && route.params.code === guestSessionCode) {
+                if (guestPseudo) {
+                    return false;
+                }
+            }
+            return true;
         }
+        if (sessionStore.currentSession) {
+            return !((route.name === 'session' || route.name === 'session-join') && route.params.code === sessionStore.currentSession.code);
+        }
+        return true;
     });
-
-    async function checkForExistingSession() {
-        if (!authStore.isAuthenticated) return;
-
-        try {
-            isLoading.value = true;
-            const sessions = await sessionStore.getMySessions();
-            existingSession.value = sessions.find((session) => session.isActive) || null;
-        } catch (error) {
-            console.error('Error checking for existing session:', error);
-            existingSession.value = null;
-        } finally {
-            isLoading.value = false;
-        }
-    }
 
     async function handleButtonClick() {
         if (!authStore.isAuthenticated) {
             joinSessionModalRef.value?.show();
-        } else if (existingSession.value) {
+        } else if (sessionStore.currentSession) {
             try {
-                await sessionStore.getSessionByCode(existingSession.value.code);
-                window.location.href = `/session/${existingSession.value.code}`;
+                await sessionStore.getSessionByCode(sessionStore.currentSession.code);
+                window.location.href = `/session/${sessionStore.currentSession.code}`;
             } catch (error) {
-                console.error('Error rejoining session:', error);
-                existingSession.value = null;
+                console.error('Failed to rejoin session:', error);
+                sessionStore.leaveCurrentSession();
                 createSessionModalRef.value?.showDialog();
             }
         } else {
@@ -73,22 +72,45 @@
         }
     }
 
-    async function handleSessionCreated() {
-        await checkForExistingSession();
+    onMounted(async () => {
+        if (authStore.isAuthenticated) {
+            await refreshCurrentSession();
+        }
+    });
+
+    watch(
+        () => route.name,
+        async (newName) => {
+            if (authStore.isAuthenticated && shouldRefreshSession(newName)) {
+                await refreshCurrentSession();
+            }
+        },
+        { immediate: true }
+    );
+
+    function shouldRefreshSession(routeName) {
+        return routeName === 'home' || routeName === undefined;
     }
 
-    defineExpose({
-        checkForExistingSession,
-    });
+    async function refreshCurrentSession() {
+        try {
+            await sessionStore.getMySessions();
+            if (sessionStore.mySessions.length > 0 && !sessionStore.currentSession) {
+                sessionStore.setCurrentSession(sessionStore.mySessions[0]);
+            }
+        } catch (error) {
+            console.error('Failed to refresh sessions:', error);
+            sessionStore.leaveCurrentSession();
+        }
+    }
 </script>
 
 <template>
-    <div class="session-action">
+    <div class="session-action" v-if="showButton">
         <el-button type="primary" size="large" :icon="buttonIcon" :loading="isLoading" @click="handleButtonClick" class="session-action-button">
             {{ buttonText }}
         </el-button>
-
-        <CreateSessionModal ref="createSessionModalRef" @session-created="handleSessionCreated" />
+        <CreateSessionModal ref="createSessionModalRef" />
         <JoinSessionModal ref="joinSessionModalRef" />
     </div>
 </template>

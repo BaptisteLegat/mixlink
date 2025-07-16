@@ -31,8 +31,6 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 50)]
     private string $pseudo;
 
-    #[ORM\Column(type: 'boolean')]
-    private bool $isActive = true;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $leftAt = null;
@@ -66,17 +64,6 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
 
     public function getLeftAt(): ?DateTimeImmutable
     {

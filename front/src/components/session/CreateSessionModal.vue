@@ -16,7 +16,6 @@
     const createdSession = ref(null);
     const copiedLink = ref(false);
     const copiedCode = ref(false);
-    const existingSession = ref(null);
 
     const form = ref({
         name: '',
@@ -32,14 +31,14 @@
     });
 
     const buttonText = computed(() => {
-        if (existingSession.value) {
+        if (sessionStore.currentSession) {
             return t('session.rejoin.button');
         }
         return t('session.create.button');
     });
 
     const modalTitle = computed(() => {
-        if (existingSession.value) {
+        if (sessionStore.currentSession) {
             return t('session.rejoin.title');
         }
         return createdSession.value ? t('session.share.title') : t('session.create.title');
@@ -61,20 +60,9 @@
     });
 
     function showDialog() {
-        checkForExistingSession();
         dialogVisible.value = true;
         createdSession.value = null;
         resetForm();
-    }
-
-    async function checkForExistingSession() {
-        try {
-            const sessions = await sessionStore.getMySessions();
-            existingSession.value = sessions.find((session) => session.isActive) || null;
-        } catch (error) {
-            console.error('Error checking for existing session:', error);
-            existingSession.value = null;
-        }
     }
 
     function resetForm() {
@@ -88,11 +76,12 @@
     }
 
     async function handleSubmit() {
-        if (!formRef.value) return;
+        if (!formRef.value) {
+            return;
+        }
 
-        if (existingSession.value) {
+        if (sessionStore.currentSession) {
             await handleRejoinSession();
-
             return;
         }
 
@@ -102,6 +91,7 @@
                 try {
                     const session = await sessionStore.createSession(form.value);
                     createdSession.value = session;
+
                     ElMessage.success(t('session.create.success'));
                 } catch (error) {
                     console.error('Error creating session:', error);
@@ -116,10 +106,10 @@
     async function handleRejoinSession() {
         loading.value = true;
         try {
-            await sessionStore.getSessionByCode(existingSession.value.code);
+            await sessionStore.getSessionByCode(sessionStore.currentSession.code);
             ElMessage.success(t('session.rejoin.success'));
 
-            window.location.href = `/session/${existingSession.value.code}`;
+            window.location.href = `/session/${sessionStore.currentSession.code}`;
         } catch (error) {
             console.error('Error rejoining session:', error);
             ElMessage.error(t('session.rejoin.error'));
@@ -168,48 +158,8 @@
 
 <template>
     <el-dialog v-model="dialogVisible" :title="modalTitle" width="500px" center destroy-on-close @close="handleClose">
-        <div v-if="existingSession" class="existing-session">
-            <el-alert
-                :title="t('session.rejoin.alert_title')"
-                type="warning"
-                :description="t('session.rejoin.alert_description', { name: existingSession.name })"
-                show-icon
-                :closable="false"
-                style="margin-bottom: 20px"
-            />
-
-            <div class="session-info">
-                <el-descriptions :column="1" border>
-                    <el-descriptions-item :label="t('session.info.name')">
-                        {{ existingSession.name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item :label="t('session.info.code')">
-                        <el-tag type="primary" size="large">{{ existingSession.code }}</el-tag>
-                    </el-descriptions-item>
-                    <el-descriptions-item :label="t('session.info.max_participants')">
-                        {{ existingSession.maxParticipants }} {{ t('session.info.participants') }}
-                    </el-descriptions-item>
-                </el-descriptions>
-            </div>
-        </div>
-
-        <div v-else-if="!createdSession" class="create-session-form">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-                <el-form-item :label="t('session.form.name')" prop="name">
-                    <el-input v-model="form.name" :placeholder="t('session.form.name_placeholder')" maxlength="50" show-word-limit />
-                </el-form-item>
-
-                <el-alert
-                    :title="t('session.form.participants_limit', { limit: maxParticipantsLimit, plan: planTitle })"
-                    type="info"
-                    show-icon
-                    :closable="false"
-                    style="margin-bottom: 20px"
-                />
-            </el-form>
-        </div>
-
-        <div v-else class="share-session">
+        <!-- Priorité à la vue de partage si createdSession existe -->
+        <div v-if="createdSession" class="share-session">
             <el-alert
                 :title="t('session.share.success_title')"
                 type="success"
@@ -268,24 +218,65 @@
             </div>
         </div>
 
+        <div v-else-if="sessionStore.currentSession" class="existing-session">
+            <el-alert
+                :title="t('session.rejoin.alert_title')"
+                type="warning"
+                :description="t('session.rejoin.alert_description', { name: sessionStore.currentSession.name })"
+                show-icon
+                :closable="false"
+                style="margin-bottom: 20px"
+            />
+
+            <div class="session-info">
+                <el-descriptions :column="1" border>
+                    <el-descriptions-item :label="t('session.info.name')">
+                        {{ sessionStore.currentSession.name }}
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="t('session.info.code')">
+                        <el-tag type="primary" size="large">{{ sessionStore.currentSession.code }}</el-tag>
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="t('session.info.max_participants')">
+                        {{ sessionStore.currentSession.maxParticipants }} {{ t('session.info.participants') }}
+                    </el-descriptions-item>
+                </el-descriptions>
+            </div>
+        </div>
+
+        <div v-else class="create-session-form">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+                <el-form-item :label="t('session.form.name')" prop="name">
+                    <el-input v-model="form.name" :placeholder="t('session.form.name_placeholder')" maxlength="50" show-word-limit />
+                </el-form-item>
+
+                <el-alert
+                    :title="t('session.form.participants_limit', { limit: maxParticipantsLimit, plan: planTitle })"
+                    type="info"
+                    show-icon
+                    :closable="false"
+                    style="margin-bottom: 20px"
+                />
+            </el-form>
+        </div>
+
         <template #footer>
             <div class="dialog-footer">
-                <template v-if="existingSession">
+                <template v-if="createdSession">
+                    <el-button @click="handleClose">{{ t('common.close') }}</el-button>
+                    <el-button type="primary" @click="navigateToSession">
+                        {{ t('session.share.join_session') }}
+                    </el-button>
+                </template>
+                <template v-else-if="sessionStore.currentSession">
                     <el-button @click="handleClose">{{ t('common.cancel') }}</el-button>
                     <el-button type="primary" @click="handleSubmit" :loading="loading">
                         {{ buttonText }}
                     </el-button>
                 </template>
-                <template v-else-if="!createdSession">
+                <template v-else>
                     <el-button @click="handleClose">{{ t('common.cancel') }}</el-button>
                     <el-button type="primary" @click="handleSubmit" :loading="loading">
                         {{ t('session.create.button') }}
-                    </el-button>
-                </template>
-                <template v-else>
-                    <el-button @click="handleClose">{{ t('common.close') }}</el-button>
-                    <el-button type="primary" @click="navigateToSession">
-                        {{ t('session.share.join_session') }}
                     </el-button>
                 </template>
             </div>

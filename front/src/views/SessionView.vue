@@ -27,9 +27,23 @@
 
     const mercureConnection = ref(null);
 
-    const participantCount = computed(() => participants.value.length);
+    const participantCount = computed(() => 1 + participants.value.length);
+
+    function checkGuestJoined() {
+        if (authStore.isAuthenticated) {
+            hasJoined.value = false;
+            return;
+        }
+        const guestSessionCode = localStorage.getItem('guestSessionCode');
+        const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
+        hasJoined.value = !!guestSessionCode && !!guestPseudo && sessionCode.value === guestSessionCode;
+        if (hasJoined.value && guestPseudo) {
+            currentUserPseudo.value = guestPseudo;
+        }
+    }
 
     onMounted(async () => {
+        checkGuestJoined();
         await loadSession();
         if (session.value) {
             setupMercureConnection();
@@ -188,6 +202,7 @@
 
             if (!isHost.value && currentUserPseudo.value) {
                 await sessionStore.leaveSession(sessionCode.value, currentUserPseudo.value);
+                localStorage.removeItem('guestSessionCode');
             }
 
             sessionStore.leaveCurrentSession();
@@ -227,7 +242,7 @@
     async function joinSession() {
         try {
             const result = await sessionStore.joinSession(sessionCode.value, currentUserPseudo.value.trim());
-            hasJoined.value = true;
+
             ElMessage.success(result.message);
             await loadParticipants();
         } catch (error) {
@@ -497,18 +512,62 @@
                         gap: 10px;
                     }
                 }
-
                 .session-actions {
-                    justify-content: center;
+                    margin-top: 10px;
                 }
             }
 
             .guest-join-card {
                 .guest-join-content {
+                    h3 {
+                        font-size: 18px;
+                    }
+
+                    p {
+                        font-size: 14px;
+                    }
+
                     .pseudo-input-group {
                         flex-direction: column;
-                        max-width: 100%;
+
+                        .el-input {
+                            width: 100%;
+                        }
                     }
+                }
+            }
+
+            .participants-card {
+                .participants-header {
+                    font-size: 16px;
+
+                    .participants-count {
+                        font-size: 14px;
+                    }
+                }
+
+                .participants-list {
+                    .participant-item {
+                        padding: 8px 0;
+
+                        .participant-name {
+                            font-size: 14px;
+                        }
+                    }
+                }
+
+                .no-participants {
+                    font-size: 14px;
+                }
+            }
+
+            .playlist-card {
+                .playlist-header {
+                    font-size: 16px;
+                }
+
+                .playlist-content {
+                    min-height: 200px;
                 }
             }
         }

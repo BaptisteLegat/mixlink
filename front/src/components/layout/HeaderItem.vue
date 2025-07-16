@@ -2,6 +2,7 @@
     import { isDark } from '@/composables/dark';
     import HeaderMobile from '@/components/layout/HeaderMobile.vue';
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
+    import JoinSessionModal from '@/components/session/JoinSessionModal.vue';
     import { useMediaQuery } from '@vueuse/core';
     import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
@@ -11,6 +12,8 @@
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
     import { useUserDisplay } from '@/composables/useUserDisplay';
+    import { useRoute } from 'vue-router';
+    import { useSessionStore } from '@/stores/sessionStore';
 
     const { locale } = useI18n();
     const authStore = useAuthStore();
@@ -19,6 +22,10 @@
     const { userInitials } = useUserDisplay(computed(() => authStore.user));
 
     const createSessionModalRef = ref(null);
+    const joinSessionModalRef = ref(null);
+    const route = useRoute();
+    const sessionStore = useSessionStore();
+    const hasGuestJoined = ref(false);
 
     function changeLanguage(lang) {
         locale.value = lang;
@@ -26,6 +33,18 @@
 
     function openCreateSessionModal() {
         createSessionModalRef.value.showDialog();
+    }
+
+    function openJoinSessionModal() {
+        joinSessionModalRef.value.show();
+    }
+
+    function isOnCurrentSession() {
+        return (
+            sessionStore.currentSession &&
+            (route.name === 'session' || route.name === 'session-join') &&
+            route.params.code === sessionStore.currentSession.code
+        );
     }
 </script>
 <template>
@@ -65,7 +84,20 @@
                         />
 
                         <template v-if="authStore.isAuthenticated">
-                            <el-button type="primary" @click="openCreateSessionModal" style="margin-right: 15px">
+                            <el-button
+                                v-if="sessionStore.currentSession && !isOnCurrentSession()"
+                                type="primary"
+                                @click="$router.push(`/session/${sessionStore.currentSession.code}`)"
+                                style="margin-right: 15px"
+                            >
+                                {{ $t('session.rejoin.button') }}
+                            </el-button>
+                            <el-button
+                                v-else-if="!sessionStore.currentSession"
+                                type="primary"
+                                @click="openCreateSessionModal"
+                                style="margin-right: 15px"
+                            >
                                 {{ $t('header.create_session') }}
                             </el-button>
                             <el-dropdown>
@@ -84,14 +116,19 @@
                                 </template>
                             </el-dropdown>
                         </template>
-                        <el-button v-else type="primary" @click="$router.push('/login')">
-                            {{ $t('header.login') }}
-                        </el-button>
+                        <template v-if="!authStore.isAuthenticated">
+                            <el-button type="primary" @click="openJoinSessionModal" style="margin-right: 10px" v-if="!hasGuestJoined">
+                                {{ $t('header.join_session') }}
+                            </el-button>
+                            <el-button type="primary" @click="$router.push('/login')">
+                                {{ $t('header.login') }}
+                            </el-button>
+                        </template>
                     </template>
                 </el-row>
             </el-col>
         </el-row>
-
         <CreateSessionModal ref="createSessionModalRef" />
+        <JoinSessionModal ref="joinSessionModalRef" />
     </el-header>
 </template>

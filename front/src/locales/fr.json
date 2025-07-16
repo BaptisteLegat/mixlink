@@ -5,7 +5,8 @@
         "logout": "Déconnexion",
         "dark_mode": "Mode sombre",
         "light_mode": "Mode clair",
-        "create_session": "Créer une session"
+        "create_session": "Créer une session",
+        "join_session": "Rejoindre la session"
     },
     "profile": {
         "title": "Mon Profil",
@@ -413,7 +414,7 @@
             "session_inactive": "Cette session n'est plus active",
             "validation": {
                 "code_required": "Le code de session est requis",
-                "code_length": "Le code doit contenir entre 6 et 8 caractères",
+                "code_length": "Le code doit contenir exactement 8 caractères",
                 "pseudo_required": "Le pseudo est requis",
                 "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
             }
@@ -443,6 +444,9 @@
         "error": {
             "not_found_description": "Cette session n'existe pas ou a été terminée",
             "back_home": "Retour à l'accueil"
+        },
+        "counter": {
+            "participants": "{current}/{max} participants"
         }
     }
 }

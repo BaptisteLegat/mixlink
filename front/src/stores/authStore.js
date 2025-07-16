@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { fetchUserProfile, apiLogout, apiDeleteAccount, apiDisconnectProvider } from '@/api';
 import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
+import { useSessionStore } from '@/stores/sessionStore';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
@@ -28,6 +29,13 @@ export const useAuthStore = defineStore('auth', () => {
                 isAuthenticated.value = true;
                 subscription.value = response.subscription || null;
                 providers.value = response.providers || [];
+
+                const sessionStore = useSessionStore();
+                if (response.currentSession) {
+                    sessionStore.setCurrentSession(response.currentSession);
+                } else {
+                    sessionStore.leaveCurrentSession();
+                }
 
                 return true;
             } else {

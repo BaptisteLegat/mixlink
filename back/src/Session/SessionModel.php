@@ -13,7 +13,6 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
         new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
         new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-        new OA\Property(property: 'isActive', type: 'boolean', description: 'Session is active', example: true),
         new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
         new OA\Property(property: 'host', ref: '#/components/schemas/UserModel', description: 'Session host'),
         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
@@ -25,7 +24,6 @@ class SessionModel
     private string $id = '';
     private string $name = '';
     private string $code = '';
-    private bool $isActive = true;
     private int $maxParticipants = 50;
     /** @var array<string, mixed> */
     private array $host = [];
@@ -64,18 +62,6 @@ class SessionModel
     public function setCode(string $code): self
     {
         $this->code = $code;
-
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
 
         return $this;
     }
@@ -143,7 +129,6 @@ class SessionModel
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
-            'isActive' => $this->isActive,
             'maxParticipants' => $this->maxParticipants,
             'host' => $this->host,
             'createdAt' => $this->createdAt,

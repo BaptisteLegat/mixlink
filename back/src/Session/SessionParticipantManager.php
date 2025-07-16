@@ -40,7 +40,6 @@ class SessionParticipantManager
         $participant = new SessionParticipant();
         $participant->setSession($session);
         $participant->setPseudo($pseudo);
-        $participant->setIsActive(true);
 
         $this->setTimestampable($participant, false);
         $this->setBlameable($participant, $pseudo, false);
@@ -60,21 +59,19 @@ class SessionParticipantManager
 
     public function leaveSession(SessionParticipant $participant): void
     {
-        $participant->setIsActive(false);
-        $participant->setLeftAt(new DateTimeImmutable());
-
-        $this->setTimestampable($participant, true);
-        $this->setBlameable($participant, $participant->getPseudo(), true);
-
-        $this->participantRepository->save($participant, true);
+        $session = $participant->getSession();
+        $pseudo = $participant->getPseudo();
+        $participantId = $participant->getId()?->toRfc4122();
 
         $this->logger->info('Participant left session', [
-            'sessionId' => $participant->getSession()->getId()?->toRfc4122(),
-            'participantId' => $participant->getId()?->toRfc4122(),
-            'pseudo' => $participant->getPseudo(),
+            'sessionId' => $session->getId()?->toRfc4122(),
+            'participantId' => $participantId,
+            'pseudo' => $pseudo,
         ]);
 
-        $this->publishParticipantUpdate($participant->getSession(), 'participant_left', $participant);
+        $this->participantRepository->remove($participant, true);
+
+        $this->publishParticipantUpdate($session, 'participant_left', $participant);
     }
 
     /**
@@ -82,7 +79,7 @@ class SessionParticipantManager
      */
     public function getActiveParticipants(Session $session): array
     {
-        return $this->participantRepository->findActiveBySession($session);
+        return $this->participantRepository->findBy(['session' => $session]);
     }
 
     public function getParticipantBySessionAndPseudo(Session $session, string $pseudo): ?SessionParticipant
@@ -98,7 +95,6 @@ class SessionParticipantManager
                 'participant' => [
                     'id' => $participant->getId()?->toRfc4122(),
                     'pseudo' => $participant->getPseudo(),
-                    'isActive' => $participant->isActive(),
                     'joinedAt' => $participant->getCreatedAt()?->format('c'),
                 ],
                 'session' => [

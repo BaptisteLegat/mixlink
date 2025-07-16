@@ -56,15 +56,9 @@ class SessionManager
 
         $this->publishSessionUpdate($session, 'session_ended');
 
-        $session->setIsActive(false);
-        $session->setEndedAt(new DateTimeImmutable());
+        $this->sessionRepository->remove($session, true);
 
-        $this->setTimestampable($session, true);
-        $this->setBlameable($session, $user->getEmail(), true);
-
-        $this->sessionRepository->save($session, true);
-
-        $this->logger->info('Session ended', [
+        $this->logger->info('Session ended and deleted', [
             'sessionId' => $sessionId,
             'hostId' => $user->getId()?->toRfc4122(),
             'sessionCode' => $sessionCode,
@@ -98,7 +92,6 @@ class SessionManager
                     'id' => $session->getId()?->toRfc4122(),
                     'code' => $session->getCode(),
                     'name' => $session->getName(),
-                    'isActive' => $session->isActive(),
                 ],
             ];
 
@@ -124,7 +117,7 @@ class SessionManager
 
     public function findSessionByCode(string $code): ?Session
     {
-        return $this->sessionRepository->findOneBy(['code' => $code, 'isActive' => true]);
+        return $this->sessionRepository->findOneBy(['code' => $code]);
     }
 
     /**
@@ -132,6 +125,6 @@ class SessionManager
      */
     public function getActiveSessionsByHost(User $host): array
     {
-        return $this->sessionRepository->findBy(['host' => $host, 'isActive' => true]);
+        return $this->sessionRepository->findBy(['host' => $host]);
     }
 }

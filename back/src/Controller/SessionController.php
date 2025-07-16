@@ -64,7 +64,6 @@ class SessionController extends AbstractController
                         new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                         new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                         new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                        new OA\Property(property: 'isActive', type: 'boolean', description: 'Session is active', example: true),
                         new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
                         new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
@@ -135,7 +134,6 @@ class SessionController extends AbstractController
                         new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                         new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                         new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                        new OA\Property(property: 'isActive', type: 'boolean', description: 'Session is active', example: true),
                         new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
                         new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
@@ -181,7 +179,6 @@ class SessionController extends AbstractController
                             new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                             new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                             new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                            new OA\Property(property: 'isActive', type: 'boolean', description: 'Session is active', example: true),
                             new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
                             new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                             new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
@@ -206,7 +203,7 @@ class SessionController extends AbstractController
         $sessions = $this->sessionManager->getActiveSessionsByHost($user);
         $sessionModels = $this->sessionMapper->toModels($sessions);
 
-        return new JsonResponse(array_map(fn ($model) => $model->toArray(), $sessionModels));
+        return new JsonResponse(array_map(fn ($model) => $model->toArray(), $sessionModels), Response::HTTP_OK);
     }
 
     #[Route('/{code}/end', name: 'end', methods: ['POST'])]
@@ -464,7 +461,7 @@ class SessionController extends AbstractController
             }
 
             $participant = $this->participantManager->getParticipantBySessionAndPseudo($session, trim((string) $data['pseudo']));
-            if (!$participant || !$participant->isActive()) {
+            if (!$participant) {
                 return new JsonResponse(['error' => 'Participant not found'], Response::HTTP_NOT_FOUND);
             }
 
