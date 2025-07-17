@@ -6,7 +6,7 @@
     import { useMediaQuery } from '@vueuse/core';
     import { useAuthStore } from '@/stores/authStore';
     import { useI18n } from 'vue-i18n';
-    import { computed, ref } from 'vue';
+    import { computed, ref, watch } from 'vue';
     import TranslateIcon from 'vue-material-design-icons/Translate.vue';
     import SunIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue';
     import MoonIcon from 'vue-material-design-icons/MoonWaningCrescent.vue';
@@ -14,6 +14,7 @@
     import { useUserDisplay } from '@/composables/useUserDisplay';
     import { useRoute } from 'vue-router';
     import { useSessionStore } from '@/stores/sessionStore';
+    import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
 
     const { locale } = useI18n();
     const authStore = useAuthStore();
@@ -26,6 +27,7 @@
     const route = useRoute();
     const sessionStore = useSessionStore();
     const hasGuestJoined = ref(false);
+    const { hasActiveSubscription } = useSubscriptionStatus();
 
     function changeLanguage(lang) {
         locale.value = lang;
@@ -46,6 +48,37 @@
             route.params.code === sessionStore.currentSession.code
         );
     }
+
+    const guestSessionCode = computed(() => localStorage.getItem('guestSessionCode'));
+    const guestPseudo = computed(() => guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null);
+
+    function isGuestOnCurrentSession() {
+        return route.name === 'session' && route.params.code === guestSessionCode.value;
+    }
+
+    function updateHasGuestJoined() {
+        if (authStore.isAuthenticated) {
+            hasGuestJoined.value = false;
+            return;
+        }
+        const guestSessionCode = localStorage.getItem('guestSessionCode');
+        const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
+
+        hasGuestJoined.value =
+            !!guestSessionCode &&
+            !!guestPseudo &&
+            route.name === 'session' &&
+            route.params.code === guestSessionCode
+        ;
+    }
+
+    watch(
+        () => [route.name, route.params.code],
+        updateHasGuestJoined,
+        { immediate: true }
+    );
+
+    window.addEventListener('guest-joined', updateHasGuestJoined);
 </script>
 <template>
     <el-header style="border-bottom: 1px solid #ebeef5" height="80px">
@@ -85,7 +118,7 @@
 
                         <template v-if="authStore.isAuthenticated">
                             <el-button
-                                v-if="sessionStore.currentSession && !isOnCurrentSession()"
+                                v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
                                 type="primary"
                                 @click="$router.push(`/session/${sessionStore.currentSession.code}`)"
                                 style="margin-right: 15px"
@@ -93,7 +126,7 @@
                                 {{ $t('session.rejoin.button') }}
                             </el-button>
                             <el-button
-                                v-else-if="!sessionStore.currentSession"
+                                v-else-if="!sessionStore.currentSession && hasActiveSubscription"
                                 type="primary"
                                 @click="openCreateSessionModal"
                                 style="margin-right: 15px"
@@ -117,7 +150,20 @@
                             </el-dropdown>
                         </template>
                         <template v-if="!authStore.isAuthenticated">
-                            <el-button type="primary" @click="openJoinSessionModal" style="margin-right: 10px" v-if="!hasGuestJoined">
+                            <el-button
+                                v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
+                                type="primary"
+                                style="margin-right: 10px"
+                                @click="$router.push(`/session/${guestSessionCode}`)"
+                            >
+                                {{ $t('header.join_current_session') }}
+                            </el-button>
+                            <el-button
+                                v-else-if="(!guestSessionCode || !guestPseudo) && route.name !== 'session'"
+                                type="primary"
+                                @click="openJoinSessionModal"
+                                style="margin-right: 10px"
+                            >
                                 {{ $t('header.join_session') }}
                             </el-button>
                             <el-button type="primary" @click="$router.push('/login')">
@@ -129,6 +175,6 @@
             </el-col>
         </el-row>
         <CreateSessionModal ref="createSessionModalRef" />
-        <JoinSessionModal ref="joinSessionModalRef" />
+        <JoinSessionModal ref="joinSessionModalRef" v-if="route.name !== 'session'" />
     </el-header>
 </template>

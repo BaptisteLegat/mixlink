@@ -6,7 +6,6 @@ use App\Entity\Session;
 use App\Entity\SessionParticipant;
 use App\Repository\SessionParticipantRepository;
 use App\Trait\TraceableTrait;
-use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -29,12 +28,12 @@ class SessionParticipantManager
     {
         $existingParticipant = $this->participantRepository->findBySessionAndPseudo($session, $pseudo);
         if ($existingParticipant) {
-            throw new InvalidArgumentException('Ce pseudo est déjà pris dans cette session');
+            throw new InvalidArgumentException('session.join.errors.pseudo_taken');
         }
 
         $currentCount = $this->participantRepository->countActiveBySession($session);
         if ($currentCount >= $session->getMaxParticipants()) {
-            throw new InvalidArgumentException('La session est pleine');
+            throw new InvalidArgumentException('session.join.errors.session_full');
         }
 
         $participant = new SessionParticipant();
@@ -52,26 +51,34 @@ class SessionParticipantManager
             'pseudo' => $pseudo,
         ]);
 
-        $this->publishParticipantUpdate($session, 'participant_joined', $participant);
+        $this->publishParticipantUpdate($session, 'participant_joined', [
+            'id' => $participant->getId()?->toRfc4122(),
+            'pseudo' => $participant->getPseudo(),
+        ]);
 
         return $participant;
     }
 
-    public function leaveSession(SessionParticipant $participant): void
+    public function removeParticipant(SessionParticipant $participant, string $reason = 'leave'): void
     {
         $session = $participant->getSession();
         $pseudo = $participant->getPseudo();
         $participantId = $participant->getId()?->toRfc4122();
 
-        $this->logger->info('Participant left session', [
+        $this->logger->info('Participant removed from session', [
             'sessionId' => $session->getId()?->toRfc4122(),
             'participantId' => $participantId,
             'pseudo' => $pseudo,
+            'reason' => $reason,
+        ]);
+
+        $this->publishParticipantUpdate($session, 'participant_removed', [
+            'id' => $participant->getId()?->toRfc4122(),
+            'pseudo' => $participant->getPseudo(),
+            'reason' => $reason,
         ]);
 
         $this->participantRepository->remove($participant, true);
-
-        $this->publishParticipantUpdate($session, 'participant_left', $participant);
     }
 
     /**
@@ -87,24 +94,23 @@ class SessionParticipantManager
         return $this->participantRepository->findBySessionAndPseudo($session, $pseudo);
     }
 
-    private function publishParticipantUpdate(Session $session, string $event, SessionParticipant $participant): void
+    /**
+     * @param array<string, mixed> $participantData
+     */
+    private function publishParticipantUpdate(Session $session, string $event, array $participantData): void
     {
         try {
             $data = [
                 'event' => $event,
-                'participant' => [
-                    'id' => $participant->getId()?->toRfc4122(),
-                    'pseudo' => $participant->getPseudo(),
-                    'joinedAt' => $participant->getCreatedAt()?->format('c'),
-                ],
+                'participant' => $participantData,
                 'session' => [
                     'code' => $session->getCode(),
-                    'participantCount' => $this->participantRepository->countActiveBySession($session),
+                    'participants_count' => count($session->getParticipants()),
                 ],
             ];
 
             $jsonData = json_encode($data);
-            if ($jsonData === false) {
+            if (false === $jsonData) {
                 throw new RuntimeException('Failed to encode participant data to JSON');
             }
 

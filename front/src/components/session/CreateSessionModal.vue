@@ -158,7 +158,6 @@
 
 <template>
     <el-dialog v-model="dialogVisible" :title="modalTitle" width="500px" center destroy-on-close @close="handleClose">
-        <!-- Priorité à la vue de partage si createdSession existe -->
         <div v-if="createdSession" class="share-session">
             <el-alert
                 :title="t('session.share.success_title')"

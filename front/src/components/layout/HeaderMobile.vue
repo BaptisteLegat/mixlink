@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref, computed, watch, watchEffect } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useRouter, useRoute } from 'vue-router';
     import { useAuthStore } from '@/stores/authStore';
@@ -10,6 +10,7 @@
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
     import JoinSessionModal from '@/components/session/JoinSessionModal.vue';
     import { useSessionStore } from '@/stores/sessionStore';
+    import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
 
     const router = useRouter();
     const route = useRoute();
@@ -22,6 +23,7 @@
     const hasGuestJoined = ref(false);
 
     const { userInitials } = useUserDisplay(computed(() => authStore.user));
+    const { hasActiveSubscription } = useSubscriptionStatus();
 
     const toggleLanguage = () => {
         locale.value = locale.value === 'en' ? 'fr' : 'en';
@@ -71,6 +73,39 @@
             route.params.code === sessionStore.currentSession.code
         );
     }
+
+    const guestSessionCode = computed(() => localStorage.getItem('guestSessionCode'));
+    const guestPseudo = computed(() => guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null);
+
+    function isGuestOnCurrentSession() {
+        return route.name === 'session' && route.params.code === guestSessionCode.value;
+    }
+
+    function updateHasGuestJoined() {
+        if (authStore.isAuthenticated) {
+            hasGuestJoined.value = false;
+            return;
+        }
+        const guestSessionCode = localStorage.getItem('guestSessionCode');
+        const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
+        hasGuestJoined.value =
+            !!guestSessionCode &&
+            !!guestPseudo &&
+            route.name === 'session' &&
+            route.params.code === guestSessionCode;
+    }
+
+    watch(
+        () => [route.name, route.params.code],
+        updateHasGuestJoined,
+        { immediate: true }
+    );
+
+    watchEffect(() => {
+        updateHasGuestJoined();
+    });
+
+    window.addEventListener('guest-joined', updateHasGuestJoined);
 </script>
 
 <template>
@@ -100,12 +135,12 @@
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
                     <el-menu-item
-                        v-if="sessionStore.currentSession && !isOnCurrentSession()"
+                        v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
                         @click="() => router.push(`/session/${sessionStore.currentSession.code}`)"
                     >
                         {{ t('session.rejoin.button') }}
                     </el-menu-item>
-                    <el-menu-item v-else-if="!sessionStore.currentSession" @click="openCreateSessionModal">
+                    <el-menu-item v-else-if="!sessionStore.currentSession && hasActiveSubscription" @click="openCreateSessionModal">
                         {{ t('header.create_session') }}
                     </el-menu-item>
                     <el-menu-item @click="handleProfile">
@@ -116,7 +151,16 @@
                     </el-menu-item>
                 </template>
                 <template v-else>
-                    <el-menu-item v-if="!hasGuestJoined" @click="openJoinSessionModal">
+                    <el-menu-item
+                        v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
+                        @click="() => { router.push(`/session/${guestSessionCode}`); drawerVisible = false; }"
+                    >
+                        {{ t('header.join_current_session') }}
+                    </el-menu-item>
+                    <el-menu-item
+                        v-else-if="!guestSessionCode || !guestPseudo"
+                        @click="openJoinSessionModal"
+                    >
                         {{ t('header.join_session') }}
                     </el-menu-item>
                     <el-menu-item @click="handleLogin">
@@ -126,6 +170,6 @@
             </el-menu>
         </el-drawer>
         <CreateSessionModal ref="createSessionModalRef" />
-        <JoinSessionModal ref="joinSessionModalRef" />
+        <JoinSessionModal ref="joinSessionModalRef" v-if="route.name !== 'session'" />
     </div>
 </template>

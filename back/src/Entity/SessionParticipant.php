@@ -31,7 +31,6 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 50)]
     private string $pseudo;
 
-
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $leftAt = null;
 
@@ -63,7 +62,6 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
 
         return $this;
     }
-
 
     public function getLeftAt(): ?DateTimeImmutable
     {

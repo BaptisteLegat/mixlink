@@ -6,19 +6,51 @@
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
     import JoinSessionModal from '@/components/session/JoinSessionModal.vue';
     import { useRoute } from 'vue-router';
+    import { useSubscriptionStatus } from '@/composables/useSubscriptionStatus';
 
     const { t } = useI18n();
     const sessionStore = useSessionStore();
     const authStore = useAuthStore();
     const route = useRoute();
+    const { hasActiveSubscription } = useSubscriptionStatus();
 
     const createSessionModalRef = ref(null);
     const joinSessionModalRef = ref(null);
     const isLoading = ref(false);
 
+    const guestSessionCode = ref(localStorage.getItem('guestSessionCode'));
+    const guestPseudo = ref(guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null);
+
+    async function checkGuestSession() {
+        const code = localStorage.getItem('guestSessionCode');
+        const pseudo = code ? localStorage.getItem(`guestSession_${code}`) : null;
+
+        guestSessionCode.value = code;
+        guestPseudo.value = pseudo;
+
+        if (code && pseudo) {
+            isGuestInSession.value = await sessionStore.checkGuestSession(code, pseudo);
+        } else {
+            isGuestInSession.value = false;
+        }
+    }
+
+    watch(
+        () => [route.name, route.params.code, localStorage.getItem('guestSessionCode'), localStorage.getItem(`guestSession_${localStorage.getItem('guestSessionCode')}`)],
+        () => { checkGuestSession(); },
+        { immediate: true }
+    );
+
+    const isGuestInSession = computed(() => {
+        return !!guestSessionCode.value && !!guestPseudo.value;
+    });
+
     const buttonText = computed(() => {
         if (!authStore.isAuthenticated) {
-            return t('session.join.button');
+            if (isGuestInSession.value) {
+                return t('session.join_current_session');
+            }
+            return t('header.join_session');
         }
         if (sessionStore.currentSession) {
             return t('session.rejoin.button');
@@ -28,6 +60,9 @@
 
     const buttonIcon = computed(() => {
         if (!authStore.isAuthenticated) {
+            if (isGuestInSession.value) {
+                return 'Refresh';
+            }
             return 'Connection';
         }
         if (sessionStore.currentSession) {
@@ -49,15 +84,24 @@
             }
             return true;
         }
+        if (!hasActiveSubscription.value) {
+            return false;
+        }
+
         if (sessionStore.currentSession) {
             return !((route.name === 'session' || route.name === 'session-join') && route.params.code === sessionStore.currentSession.code);
         }
+
         return true;
     });
 
     async function handleButtonClick() {
         if (!authStore.isAuthenticated) {
-            joinSessionModalRef.value?.show();
+            if (isGuestInSession.value && guestSessionCode.value) {
+                window.location.href = `/session/${guestSessionCode.value}`;
+            } else {
+                joinSessionModalRef.value?.show();
+            }
         } else if (sessionStore.currentSession) {
             try {
                 await sessionStore.getSessionByCode(sessionStore.currentSession.code);

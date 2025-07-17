@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Interface\BlameableInterface;
 use App\Interface\TimestampableInterface;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -40,6 +42,17 @@ class Session implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $endedAt = null;
 
+    /**
+     * @var Collection|SessionParticipant[]
+     */
+    #[ORM\OneToMany(mappedBy: 'session', targetEntity: SessionParticipant::class)]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -68,7 +81,6 @@ class Session implements BlameableInterface, TimestampableInterface
 
         return $this;
     }
-
 
     public function getMaxParticipants(): int
     {
@@ -104,5 +116,13 @@ class Session implements BlameableInterface, TimestampableInterface
         $this->endedAt = $endedAt;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|SessionParticipant[]
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
     }
 }

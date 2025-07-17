@@ -113,6 +113,26 @@ export const useSessionStore = defineStore('session', () => {
         }
     }
 
+    async function removeParticipant(code, pseudo, reason = 'leave') {
+        isLoading.value = true;
+        try {
+            const response = await fetchWithAuth(`/api/session/${code}/remove`, {
+                method: 'POST',
+                body: JSON.stringify({ pseudo, reason }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'session.remove.error.generic');
+            }
+
+            return result;
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     async function joinSession(code, pseudo) {
         isLoading.value = true;
         try {
@@ -125,38 +145,40 @@ export const useSessionStore = defineStore('session', () => {
                 body: JSON.stringify({ pseudo }),
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to join session');
+                throw new Error(result.error || 'session.join.error.generic');
             }
 
-            const result = await response.json();
             return result;
         } finally {
             isLoading.value = false;
         }
     }
 
-    async function leaveSession(code, pseudo) {
+    async function getParticipants(code) {
         isLoading.value = true;
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${code}/leave`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ pseudo }),
+            const response = await fetchWithAuth(`/api/session/${code}/participants`, {
+                method: 'GET',
             });
-
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to leave session');
+                throw new Error('Failed to fetch participants');
             }
-
-            return true;
+            const data = await response.json();
+            return data.participants || [];
         } finally {
             isLoading.value = false;
+        }
+    }
+
+    async function checkGuestSession(code, pseudo) {
+        try {
+            const participants = await getParticipants(code);
+            return participants.some(p => p.pseudo === pseudo);
+        } catch {
+            return false;
         }
     }
 
@@ -178,9 +200,11 @@ export const useSessionStore = defineStore('session', () => {
         getMySessions,
         endSession,
         joinSession,
-        leaveSession,
+        removeParticipant,
         leaveCurrentSession,
         setCurrentSession,
         initCurrentSessionFromProfile,
+        getParticipants,
+        checkGuestSession,
     };
 });

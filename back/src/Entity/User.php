@@ -195,7 +195,7 @@ class User implements BlameableInterface, TimestampableInterface
     public function getCurrentSession(): ?Session
     {
         foreach ($this->sessions as $session) {
-            if ($session->getEndedAt() === null) {
+            if (null === $session->getEndedAt()) {
                 return $session;
             }
         }

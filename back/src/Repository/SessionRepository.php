@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Session;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,7 +36,6 @@ class SessionRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 
     public function generateUniqueCode(): string
     {

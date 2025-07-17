@@ -9,6 +9,7 @@
     import StopIcon from 'vue-material-design-icons/Stop.vue';
     import GroupIcon from 'vue-material-design-icons/AccountGroup.vue';
     import MusicIcon from 'vue-material-design-icons/Music.vue';
+    import DeleteIcon from 'vue-material-design-icons/Delete.vue';
 
     const { t } = useI18n();
     const route = useRoute();
@@ -27,7 +28,15 @@
 
     const mercureConnection = ref(null);
 
-    const participantCount = computed(() => 1 + participants.value.length);
+    const participantCount = computed(() => participants.value.length);
+
+    const filteredParticipants = computed(() => {
+        if (!session.value) return participants.value;
+
+        return participants.value.filter(
+            p => p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email
+        );
+    });
 
     function checkGuestJoined() {
         if (authStore.isAuthenticated) {
@@ -83,17 +92,21 @@
 
     async function loadParticipants() {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${sessionCode.value}/participants`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                participants.value = data.participants || [];
-            } else {
-                console.error('Error loading participants:', await response.text());
+            const participantsList = await sessionStore.getParticipants(sessionCode.value);
+            participants.value = participantsList;
+
+            if (!authStore.isAuthenticated) {
+                const guestSessionCode = localStorage.getItem('guestSessionCode');
+                const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
+
+                hasJoined.value = !!guestPseudo && participants.value.some(
+                    p => p.pseudo === guestPseudo &&
+                        p.pseudo !== session.value.host.firstName &&
+                        p.pseudo !== session.value.host.email
+                );
+                if (hasJoined.value && guestPseudo) {
+                    currentUserPseudo.value = guestPseudo;
+                }
             }
         } catch (err) {
             console.error('Error loading participants:', err);
@@ -140,56 +153,23 @@
         }
     }
 
-    function handleMercureMessage(data) {
-        console.log('Received Mercure message:', data);
-
-        switch (data.event) {
-            case 'participant_joined':
-                handleParticipantJoined(data.participant);
-                break;
-            case 'participant_left':
-                handleParticipantLeft(data.participant);
-                break;
-            case 'session_ended':
-                handleSessionEnded();
-                break;
-            default:
-                console.log('Unknown Mercure event:', data.event);
+    async function kickParticipant(pseudo) {
+        try {
+            await ElMessageBox.confirm(
+                t('session.kick.confirmation', { pseudo }),
+                t('session.kick.title'),
+                {
+                    confirmButtonText: t('session.kick.confirm'),
+                    cancelButtonText: t('common.cancel'),
+                    type: 'warning',
+                }
+            );
+            const result = await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
+            ElMessage.success(t(result.message, { pseudo }));
+            await loadParticipants();
+        } catch (error) {
+            ElMessage.error(t(error.message));
         }
-    }
-
-    function handleParticipantJoined(participant) {
-        if (!participants.value.find((p) => p.id === participant.id)) {
-            participants.value.push(participant);
-        }
-
-        ElMessage({
-            message: `${participant.pseudo} a rejoint la session`,
-            type: 'success',
-            duration: 3000,
-        });
-    }
-
-    function handleParticipantLeft(participant) {
-        participants.value = participants.value.filter((p) => p.id !== participant.id);
-
-        ElMessage({
-            message: `${participant.pseudo} a quitté la session`,
-            type: 'info',
-            duration: 3000,
-        });
-    }
-
-    function handleSessionEnded() {
-        ElMessage({
-            message: "La session a été terminée par l'hôte",
-            type: 'warning',
-            duration: 5000,
-        });
-
-        setTimeout(() => {
-            router.push('/');
-        }, 3000);
     }
 
     async function leaveSession() {
@@ -201,14 +181,16 @@
             });
 
             if (!isHost.value && currentUserPseudo.value) {
-                await sessionStore.leaveSession(sessionCode.value, currentUserPseudo.value);
+                const result = await sessionStore.removeParticipant(sessionCode.value, currentUserPseudo.value, 'leave');
                 localStorage.removeItem('guestSessionCode');
+                ElMessage.success(t(result.message));
             }
 
+            mercureConnection.value?.close();
             sessionStore.leaveCurrentSession();
             router.push('/');
-        } catch {
-            // User canceled
+        } catch (error) {
+            ElMessage.error(t(error.message));
         }
     }
 
@@ -220,6 +202,7 @@
                 type: 'warning',
             });
 
+            mercureConnection.value?.close();
             await sessionStore.endSession(sessionCode.value);
             ElMessage.success(t('session.end.success'));
             router.push('/');
@@ -241,13 +224,78 @@
 
     async function joinSession() {
         try {
+            const alreadyIn = await sessionStore.checkGuestSession(sessionCode.value, currentUserPseudo.value.trim());
+            if (alreadyIn) {
+                ElMessage.error(t('session.join.already_joined'));
+                return;
+            }
+
             const result = await sessionStore.joinSession(sessionCode.value, currentUserPseudo.value.trim());
 
-            ElMessage.success(result.message);
+            ElMessage.success(t(result.message));
+            localStorage.setItem('guestSessionCode', sessionCode.value);
+            localStorage.setItem(`guestSession_${sessionCode.value}`, currentUserPseudo.value.trim());
+
+            window.dispatchEvent(new Event('guest-joined'));
+
             await loadParticipants();
         } catch (error) {
-            console.error('Error joining session:', error);
-            ElMessage.error(error.message || 'Erreur lors de la connexion à la session');
+            ElMessage.error(t(error.message));
+        }
+    }
+
+    function handleMercureMessage(data) {
+        console.log('Received Mercure message:', data);
+
+        switch (data.event) {
+            case 'participant_joined':
+            case 'participant_removed':
+                reloadParticipantsWithNotification(data);
+                break;
+            case 'session_ended':
+                ElMessage.success(t('session.end.success'));
+                mercureConnection.value?.close();
+                sessionStore.leaveCurrentSession();
+                router.push('/');
+                break;
+            default:
+                console.log('Unknown Mercure event:', data.event);
+        }
+    }
+
+    function reloadParticipantsWithNotification(data) {
+        loadParticipants();
+        if (data.event === 'participant_joined') {
+            ElMessage({
+                message: `${data.participant.pseudo} a rejoint la session`,
+                type: 'success',
+                duration: 3000,
+            });
+        } else if (data.event === 'participant_removed') {
+            if (data.participant.reason === 'kick') {
+                handleParticipantKicked(data);
+            } else {
+                ElMessage({
+                    message: `${data.participant.pseudo} a quitté la session`,
+                    type: 'info',
+                    duration: 3000,
+                });
+            }
+        }
+    }
+
+    function handleParticipantKicked(data) {
+        const kickedPseudo = data.participant.pseudo;
+        const guestSessionCode = localStorage.getItem('guestSessionCode');
+        const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
+        if (!authStore.isAuthenticated && kickedPseudo === guestPseudo && sessionCode.value === guestSessionCode) {
+            localStorage.removeItem('guestSessionCode');
+            localStorage.removeItem(`guestSession_${guestSessionCode}`);
+            ElMessage.warning(t('session.kick.kicked_notification'));
+            router.push('/');
+        } else {
+            ElMessage.info(t('session.kick.success', { pseudo: kickedPseudo }));
+            loadParticipants();
         }
     }
 </script>
@@ -290,7 +338,7 @@
                 </div>
             </el-card>
 
-            <el-card v-if="!authStore.isAuthenticated && !hasJoined" class="guest-join-card">
+            <el-card v-if="!hasJoined" class="guest-join-card">
                 <div class="guest-join-content">
                     <h3>{{ t('session.join.title') }}</h3>
                     <p>{{ t('session.join.description') }}</p>
@@ -328,12 +376,21 @@
                         <el-tag type="success" size="small">{{ t('session.participants.host') }}</el-tag>
                     </div>
 
-                    <div v-for="participant in participants" :key="participant.id" class="participant-item">
+                    <div v-for="participant in filteredParticipants" :key="participant.id" class="participant-item">
                         <el-avatar size="small">
                             {{ participant.pseudo?.charAt(0) || 'G' }}
                         </el-avatar>
                         <span class="participant-name">{{ participant.pseudo }}</span>
                         <el-tag type="info" size="small">{{ t('session.participants.guest') }}</el-tag>
+                        <el-button
+                            v-if="isHost"
+                            type="danger"
+                            size="small"
+                            :icon="DeleteIcon"
+                            @click="kickParticipant(participant.pseudo)"
+                        >
+                            {{ t('session.kick.button') }}
+                        </el-button>
                     </div>
                 </div>
 
@@ -497,7 +554,6 @@
         }
     }
 
-    // Responsive design
     @media (max-width: 768px) {
         .session-page {
             padding: 10px;
@@ -506,7 +562,7 @@
         .session-container {
             .session-header {
                 .session-info {
-                    .session-main-info {
+                                     .session-main-info {
                         flex-direction: column;
                         align-items: flex-start;
                         gap: 10px;

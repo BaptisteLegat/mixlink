@@ -3,9 +3,11 @@
     import { useI18n } from 'vue-i18n';
     import { useRouter } from 'vue-router';
     import { ElMessage } from 'element-plus';
+    import { useSessionStore } from '@/stores/sessionStore';
 
     const { t } = useI18n();
     const router = useRouter();
+    const sessionStore = useSessionStore();
 
     const dialogVisible = ref(false);
     const loading = ref(false);
@@ -61,26 +63,19 @@
                 return;
             }
 
-            const joinResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${form.code}/join`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    pseudo: form.pseudo,
-                }),
-            });
+            try {
+                await sessionStore.joinSession(form.code, form.pseudo);
 
-            if (!joinResponse.ok) {
-                const errorData = await joinResponse.json();
-                ElMessage.error(errorData.error || t('session.join.error'));
+                ElMessage.success(t('session.join.success'));
+                localStorage.setItem('guestSessionCode', form.code);
+                localStorage.setItem(`guestSession_${form.code}`, form.pseudo);
+
+                router.push(`/session/${form.code}`);
+                handleClose();
+            } catch (err) {
+                ElMessage.error(t(err.message) || t('session.join.error'));
                 return;
             }
-
-            ElMessage.success(t('session.join.success'));
-            handleClose();
-            router.push(`/session/${form.code}`);
         } catch (error) {
             console.error('Error joining session:', error);
             ElMessage.error(t('session.join.error'));
@@ -126,6 +121,13 @@
         </template>
     </el-dialog>
 </template>
+<style scoped>
+    .dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
 <style scoped>
     .dialog-footer {
         display: flex;

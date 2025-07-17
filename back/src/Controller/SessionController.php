@@ -317,26 +317,29 @@ class SessionController extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             if (!isset($data['pseudo']) || !is_string($data['pseudo']) || empty(trim((string) $data['pseudo']))) {
-                return new JsonResponse(['error' => 'Le pseudo est requis'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['error' => 'session.join.error.pseudo_required'], Response::HTTP_BAD_REQUEST);
             }
 
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
-                return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.join.error.session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
-            $participant = $this->participantManager->joinSession($session, trim((string) $data['pseudo']));
+            try {
+                $participant = $this->participantManager->joinSession($session, trim((string) $data['pseudo']));
+            } catch (InvalidArgumentException $e) {
+                return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
 
             return new JsonResponse([
-                'message' => 'Vous avez rejoint la session avec succès',
                 'participant' => [
                     'id' => $participant->getId()?->toRfc4122(),
                     'pseudo' => $participant->getPseudo(),
                     'joinedAt' => $participant->getCreatedAt()?->format('c'),
                 ],
+                'success' => true,
+                'message' => 'session.join.success',
             ]);
-        } catch (InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             $this->logger->error('Error joining session', [
                 'error' => $e->getMessage(),
@@ -344,7 +347,7 @@ class SessionController extends AbstractController
                 'pseudo' => $data['pseudo'] ?? 'unknown',
             ]);
 
-            return new JsonResponse(['error' => 'Unable to join session'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'session.join.error.generic'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -403,24 +406,11 @@ class SessionController extends AbstractController
         ]);
     }
 
-    #[Route('/{code}/leave', name: 'leave', methods: ['POST'])]
+    #[Route('/{code}/remove', name: 'remove', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/session/{code}/leave',
-        summary: 'Leave a session',
-        description: 'Leave a session as a participant',
-        requestBody: new OA\RequestBody(
-            description: 'Leave session data',
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    'pseudo' => new OA\Property(
-                        property: 'pseudo',
-                        type: 'string',
-                        example: 'MonPseudo'
-                    ),
-                ]
-            )
-        ),
+        path: '/api/session/{code}/remove',
+        summary: 'Remove a participant from a session',
+        description: 'Remove a participant from a session',
         tags: ['Session'],
         parameters: [
             new OA\Parameter(
@@ -431,53 +421,88 @@ class SessionController extends AbstractController
                 schema: new OA\Schema(type: 'string', example: 'ABC12345')
             ),
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: [
+                new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'pseudo',
+                            type: 'string',
+                            example: 'JohnDoe'
+                        ),
+                        new OA\Property(
+                            property: 'reason',
+                            type: 'string',
+                            example: 'leave'
+                        ),
+                    ]
+                ),
+            ]
+        ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Left session successfully'
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Invalid request'
+                description: 'Participant removed successfully'
             ),
             new OA\Response(
                 response: 404,
                 description: 'Session or participant not found'
             ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden'
+            ),
         ]
     )]
-    public function leaveSession(string $code, Request $request): JsonResponse
+    public function removeParticipant(string $code, Request $request): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
 
             if (!isset($data['pseudo']) || !is_string($data['pseudo']) || empty(trim((string) $data['pseudo']))) {
-                return new JsonResponse(['error' => 'Le pseudo est requis'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['error' => 'session.remove.error.pseudo_required'], Response::HTTP_BAD_REQUEST);
+            }
+            $reason = isset($data['reason']) && is_string($data['reason']) ? $data['reason'] : 'leave';
+            if (!in_array($reason, ['leave', 'kick'], true)) {
+                $reason = 'leave';
             }
 
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
-                return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.remove.error.session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             $participant = $this->participantManager->getParticipantBySessionAndPseudo($session, trim((string) $data['pseudo']));
             if (!$participant) {
-                return new JsonResponse(['error' => 'Participant not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.remove.error.participant_not_found'], Response::HTTP_NOT_FOUND);
             }
 
-            $this->participantManager->leaveSession($participant);
+            if ('kick' === $reason) {
+                /** @var string $accessToken */
+                $accessToken = $request->cookies->get('AUTH_TOKEN');
+                /** @var User $user */
+                $user = $this->providerManager->findByAccessToken($accessToken);
+
+                if ($session->getHost()->getId() !== $user->getId()) {
+                    return new JsonResponse(['error' => 'session.remove.error.only_host_can_kick'], Response::HTTP_FORBIDDEN);
+                }
+            }
+
+            $this->participantManager->removeParticipant($participant, $reason);
 
             return new JsonResponse([
-                'message' => 'Vous avez quitté la session avec succès',
+                'success' => true,
+                'message' => 'session.remove.success',
             ]);
         } catch (Exception $e) {
-            $this->logger->error('Error leaving session', [
+            $this->logger->error('Error removing participant', [
                 'error' => $e->getMessage(),
                 'sessionCode' => $code,
                 'pseudo' => $data['pseudo'] ?? 'unknown',
             ]);
 
-            return new JsonResponse(['error' => 'Unable to leave session'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'session.remove.error.generic'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

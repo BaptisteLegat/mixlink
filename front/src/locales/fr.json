@@ -6,7 +6,8 @@
         "dark_mode": "Mode sombre",
         "light_mode": "Mode clair",
         "create_session": "Créer une session",
-        "join_session": "Rejoindre la session"
+        "join_session": "Rejoindre la session",
+        "join_current_session": "Rejoindre la session en cours"
     },
     "profile": {
         "title": "Mon Profil",
@@ -283,7 +284,7 @@
         }
     },
     "faq": {
-        "title": "Foire Aux Questions",
+        "title": "Foire aux questions",
         "description": "Trouvez des réponses aux questions les plus fréquemment posées sur mixlink et ses fonctionnalités.",
         "didnt_find": "Vous n'avez pas trouvé la réponse à votre question ?",
         "contact_us": "Contactez-nous directement et nous serons ravis de vous aider.",
@@ -411,12 +412,16 @@
             "success": "Vous avez rejoint la session avec succès !",
             "error": "Erreur lors de la connexion à la session",
             "session_not_found": "Session introuvable",
-            "session_inactive": "Cette session n'est plus active",
+            "already_joined": "Vous avez déjà rejoint cette session",
             "validation": {
                 "code_required": "Le code de session est requis",
                 "code_length": "Le code doit contenir exactement 8 caractères",
                 "pseudo_required": "Le pseudo est requis",
                 "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
+            },
+            "errors": {
+                "pseudo_taken": "Ce pseudo est déjà pris",
+                "session_full": "La session est pleine"
             }
         },
         "rejoin": {
@@ -447,6 +452,15 @@
         },
         "counter": {
             "participants": "{current}/{max} participants"
+        },
+        "kick": {
+            "title": "Exclure un participant",
+            "button": "Supprimer",
+            "confirmation": "Êtes-vous sûr de vouloir exclure \"{pseudo}\" de la session ?",
+            "confirm": "Exclure",
+            "success": "\"{pseudo}\" a été exclu de la session",
+            "error": "Erreur lors de l'exclusion du participant",
+            "kicked_notification": "Vous avez été exclu de la session par l'hôte."
         }
     }
 }

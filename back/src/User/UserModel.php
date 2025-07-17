@@ -3,8 +3,8 @@
 namespace App\User;
 
 use App\Provider\ProviderModel;
-use App\Subscription\SubscriptionModel;
 use App\Session\SessionModel;
+use App\Subscription\SubscriptionModel;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(

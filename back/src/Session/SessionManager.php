@@ -6,7 +6,6 @@ use App\Entity\Session;
 use App\Entity\User;
 use App\Repository\SessionRepository;
 use App\Trait\TraceableTrait;
-use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -23,6 +22,7 @@ class SessionManager
         private LoggerInterface $logger,
         private SessionMapper $sessionMapper,
         private HubInterface $mercureHub,
+        private SessionParticipantManager $sessionParticipantManager,
     ) {
     }
 
@@ -35,6 +35,8 @@ class SessionManager
         $this->setBlameable($session, $host->getEmail(), false);
 
         $this->sessionRepository->save($session, true);
+
+        $this->sessionParticipantManager->joinSession($session, $host->getFirstName() ?: $host->getEmail());
 
         $this->logger->info('Session created', [
             'sessionId' => $session->getId()?->toRfc4122(),
@@ -96,7 +98,7 @@ class SessionManager
             ];
 
             $jsonData = json_encode($data);
-            if ($jsonData === false) {
+            if (false === $jsonData) {
                 throw new RuntimeException('Failed to encode session data to JSON');
             }
 

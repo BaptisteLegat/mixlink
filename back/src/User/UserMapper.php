@@ -16,7 +16,7 @@ class UserMapper
 {
     public function __construct(
         private ProviderMapper $providerMapper,
-        private SubscriptionMapper $subscriptionMapper
+        private SubscriptionMapper $subscriptionMapper,
     ) {
     }
 
