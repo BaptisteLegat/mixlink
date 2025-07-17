@@ -458,6 +458,17 @@
             "success": "\"{pseudo}\" has been removed from the session",
             "error": "Error removing participant",
             "kicked_notification": "You have been removed from the session by the host."
+        },
+        "remove": {
+            "success": "Participant removed successfully",
+            "error": "Error removing participant",
+            "errors": {
+                "pseudo_required": "Pseudo is required",
+                "pseudo_length": "Pseudo must be between 2 and 20 characters",
+                "session_not_found": "Session not found",
+                "participant_not_found": "Participant not found",
+                "only_host_can_kick": "Only the host can remove participants"
+            }
         }
     }
 }

@@ -65,16 +65,20 @@ class MercureController extends AbstractController
             ),
         ]
     )]
-    public function generateToken(string $sessionCode, Request $request): JsonResponse
+    public function generateToken(string $sessionCode): JsonResponse
     {
         $session = $this->sessionManager->findSessionByCode($sessionCode);
         if (!$session) {
             return new JsonResponse(['error' => 'Session not found'], 404);
         }
 
+        $jwtKey = $_ENV['MERCURE_PUBLISHER_JWT_KEY'];
+        if (empty($jwtKey)) {
+            return new JsonResponse(['error' => 'MERCURE_PUBLISHER_JWT_KEY is not set'], 500);
+        }
         $config = Configuration::forSymmetricSigner(
             new Sha256(),
-            InMemory::plainText('aVerySecretKey!ForMercureJWT123456789')
+            InMemory::plainText($jwtKey)
         );
 
         $token = $config->builder()
@@ -85,7 +89,7 @@ class MercureController extends AbstractController
 
         return new JsonResponse([
             'token' => $token->toString(),
-            'mercureUrl' => 'http://localhost:3001/.well-known/mercure',
+            'mercureUrl' => $_ENV['MERCURE_PUBLIC_URL']
         ]);
     }
 
@@ -150,9 +154,14 @@ class MercureController extends AbstractController
             return new JsonResponse(['error' => 'Not the session host'], 403);
         }
 
+        $jwtKey = $_ENV['MERCURE_PUBLISHER_JWT_KEY'];
+        if (empty($jwtKey)) {
+            return new JsonResponse(['error' => 'MERCURE_PUBLISHER_JWT_KEY is not set'], 500);
+        }
+
         $config = Configuration::forSymmetricSigner(
             new Sha256(),
-            InMemory::plainText('aVerySecretKey!ForMercureJWT123456789')
+            InMemory::plainText($jwtKey)
         );
 
         $token = $config->builder()
@@ -165,7 +174,7 @@ class MercureController extends AbstractController
 
         return new JsonResponse([
             'token' => $token->toString(),
-            'mercureUrl' => 'http://localhost:3001/.well-known/mercure',
+            'mercureUrl' => $_ENV['MERCURE_PUBLIC_URL']
         ]);
     }
 }

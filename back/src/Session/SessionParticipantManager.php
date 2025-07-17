@@ -86,7 +86,7 @@ class SessionParticipantManager
      */
     public function getActiveParticipants(Session $session): array
     {
-        return $this->participantRepository->findBy(['session' => $session]);
+        return $this->participantRepository->findActiveBySession($session);
     }
 
     public function getParticipantBySessionAndPseudo(Session $session, string $pseudo): ?SessionParticipant

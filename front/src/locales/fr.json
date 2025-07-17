@@ -438,6 +438,17 @@
             "confirm": "Quitter",
             "button": "Quitter"
         },
+        "remove": {
+            "success": "Participant supprimé avec succès",
+            "error": "Erreur lors de la suppression du participant",
+            "errors": {
+                "pseudo_required": "Le pseudo est requis",
+                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères",
+                "session_not_found": "Session introuvable",
+                "participant_not_found": "Participant introuvable",
+                "only_host_can_kick": "Seul l'hôte peut exclure des participants"
+            }
+        },
         "end": {
             "title": "Terminer la session",
             "confirmation": "Êtes-vous sûr de vouloir terminer cette session ? Cette action est irréversible.",

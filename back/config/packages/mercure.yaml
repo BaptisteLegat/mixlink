@@ -5,6 +5,6 @@ mercure:
             url: '%env(MERCURE_URL)%'
             public_url: '%env(MERCURE_PUBLIC_URL)%'
             jwt:
-                secret: '%env(MERCURE_JWT_SECRET)%'
+                secret: '%env(MERCURE_PUBLISHER_JWT_KEY)%'
                 publish: ['*']
                 subscribe: ['*']

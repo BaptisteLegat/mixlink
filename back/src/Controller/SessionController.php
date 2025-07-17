@@ -461,7 +461,7 @@ class SessionController extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             if (!isset($data['pseudo']) || !is_string($data['pseudo']) || empty(trim((string) $data['pseudo']))) {
-                return new JsonResponse(['error' => 'session.remove.error.pseudo_required'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['error' => 'session.remove.errors.pseudo_required'], Response::HTTP_BAD_REQUEST);
             }
             $reason = isset($data['reason']) && is_string($data['reason']) ? $data['reason'] : 'leave';
             if (!in_array($reason, ['leave', 'kick'], true)) {
@@ -470,12 +470,12 @@ class SessionController extends AbstractController
 
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
-                return new JsonResponse(['error' => 'session.remove.error.session_not_found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.remove.errors.session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             $participant = $this->participantManager->getParticipantBySessionAndPseudo($session, trim((string) $data['pseudo']));
             if (!$participant) {
-                return new JsonResponse(['error' => 'session.remove.error.participant_not_found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.remove.errors.participant_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             if ('kick' === $reason) {
@@ -485,7 +485,7 @@ class SessionController extends AbstractController
                 $user = $this->providerManager->findByAccessToken($accessToken);
 
                 if ($session->getHost()->getId() !== $user->getId()) {
-                    return new JsonResponse(['error' => 'session.remove.error.only_host_can_kick'], Response::HTTP_FORBIDDEN);
+                    return new JsonResponse(['error' => 'session.remove.errors.only_host_can_kick'], Response::HTTP_FORBIDDEN);
                 }
             }
 
@@ -502,7 +502,7 @@ class SessionController extends AbstractController
                 'pseudo' => $data['pseudo'] ?? 'unknown',
             ]);
 
-            return new JsonResponse(['error' => 'session.remove.error.generic'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'session.remove.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
