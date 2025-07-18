@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Provider\ProviderManager;
-use App\Session\CreateSessionRequest;
-use App\Session\SessionManager;
-use App\Session\SessionMapper;
-use App\Session\SessionParticipantManager;
+use App\Session\Manager\SessionManager;
+use App\Session\Manager\SessionParticipantManager;
+use App\Session\Mapper\SessionMapper;
+use App\Session\Model\Request\CreateSessionRequest;
 use App\Voter\AuthenticationVoter;
 use Exception;
 use InvalidArgumentException;
@@ -49,7 +49,7 @@ class SessionController extends AbstractController
                 properties: [
                     new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                     new OA\Property(property: 'description', type: 'string', nullable: true, description: 'Session description', example: 'Une session pour créer une playlist ensemble'),
-                    new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50, minimum: 1, maximum: 100),
+                    new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10, minimum: 1, maximum: 10),
                 ]
             )
         ),
@@ -64,7 +64,7 @@ class SessionController extends AbstractController
                         new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                         new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                         new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
+                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10),
                         new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
                         new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
@@ -96,7 +96,7 @@ class SessionController extends AbstractController
             );
 
             $session = $this->sessionManager->createSession($user, $createSessionRequest);
-            $sessionModel = $this->sessionMapper->toModel($session);
+            $sessionModel = $this->sessionMapper->mapModel($session);
 
             return new JsonResponse($sessionModel->toArray(), Response::HTTP_CREATED);
         } catch (Exception $e) {
@@ -134,7 +134,7 @@ class SessionController extends AbstractController
                         new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                         new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                         new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
+                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10),
                         new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
                         new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
@@ -155,7 +155,7 @@ class SessionController extends AbstractController
             return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $sessionModel = $this->sessionMapper->toModel($session);
+        $sessionModel = $this->sessionMapper->mapModel($session);
 
         return new JsonResponse($sessionModel->toArray());
     }
@@ -179,7 +179,7 @@ class SessionController extends AbstractController
                             new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
                             new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
                             new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                            new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 50),
+                            new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10),
                             new OA\Property(property: 'host', type: 'object', description: 'Session host'),
                             new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
                             new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
@@ -201,7 +201,7 @@ class SessionController extends AbstractController
         $user = $this->providerManager->findByAccessToken($accessToken);
 
         $sessions = $this->sessionManager->getActiveSessionsByHost($user);
-        $sessionModels = $this->sessionMapper->toModels($sessions);
+        $sessionModels = $this->sessionMapper->mapModels($sessions);
 
         return new JsonResponse(array_map(fn ($model) => $model->toArray(), $sessionModels), Response::HTTP_OK);
     }

@@ -3,7 +3,7 @@
 namespace App\User;
 
 use App\Provider\ProviderModel;
-use App\Session\SessionModel;
+use App\Session\Model\SessionModel;
 use App\Subscription\SubscriptionModel;
 use OpenApi\Attributes as OA;
 

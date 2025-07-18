@@ -5,7 +5,7 @@ namespace App\User;
 use App\ApiResource\ApiReference;
 use App\Entity\User;
 use App\Provider\ProviderMapper;
-use App\Session\SessionModel;
+use App\Session\Mapper\SessionMapper;
 use App\Subscription\SubscriptionMapper;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
@@ -17,6 +17,7 @@ class UserMapper
     public function __construct(
         private ProviderMapper $providerMapper,
         private SubscriptionMapper $subscriptionMapper,
+        private SessionMapper $sessionMapper,
     ) {
     }
 
@@ -89,27 +90,7 @@ class UserMapper
         }
 
         $session = $user->getCurrentSession();
-        if ($session) {
-            $sessionModel = new SessionModel();
-            $sessionModel
-                ->setId($session->getId()?->toRfc4122() ?? '')
-                ->setName($session->getName())
-                ->setCode($session->getCode())
-                ->setMaxParticipants($session->getMaxParticipants())
-                ->setHost([
-                    'id' => (string) $user->getId(),
-                    'firstName' => $user->getFirstName(),
-                    'lastName' => $user->getLastName(),
-                    'email' => $user->getEmail(),
-                    'profilePicture' => $user->getProfilePicture(),
-                    'roles' => $user->getRoles(),
-                ])
-                ->setCreatedAt($session->getCreatedAt()?->format('c') ?? '')
-                ->setEndedAt($session->getEndedAt()?->format('c'));
-            $userModel->setCurrentSession($sessionModel);
-        } else {
-            $userModel->setCurrentSession(null);
-        }
+        $userModel->setCurrentSession(null !== $session ? $this->sessionMapper->mapModel($session) : null);
 
         return $userModel;
     }

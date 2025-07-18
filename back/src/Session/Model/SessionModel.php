@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Session;
+namespace App\Session\Model;
 
 use OpenApi\Attributes as OA;
 
@@ -22,9 +22,9 @@ use OpenApi\Attributes as OA;
 class SessionModel
 {
     private string $id = '';
-    private string $name = '';
-    private string $code = '';
-    private int $maxParticipants = 50;
+    private ?string $name = null;
+    private ?string $code = null;
+    private ?int $maxParticipants = null;
     /** @var array<string, mixed> */
     private array $host = [];
     private string $createdAt = '';
@@ -42,36 +42,36 @@ class SessionModel
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    public function getMaxParticipants(): int
+    public function getMaxParticipants(): ?int
     {
         return $this->maxParticipants;
     }
 
-    public function setMaxParticipants(int $maxParticipants): self
+    public function setMaxParticipants(?int $maxParticipants): self
     {
         $this->maxParticipants = $maxParticipants;
 

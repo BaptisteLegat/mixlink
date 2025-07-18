@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Session;
+namespace App\Session\Mapper;
 
 use App\Entity\Session;
 use App\Entity\User;
+use App\Session\Model\Request\CreateSessionRequest;
+use App\Session\Model\SessionModel;
 
 class SessionMapper
 {
-    public function mapFromRequest(CreateSessionRequest $request, User $host): Session
+    public function mapEntity(CreateSessionRequest $request, User $host): Session
     {
         $session = new Session()
             ->setName($request->name)
@@ -18,7 +20,7 @@ class SessionMapper
         return $session;
     }
 
-    public function toModel(Session $session): SessionModel
+    public function mapModel(Session $session): SessionModel
     {
         $model = new SessionModel()
             ->setId($session->getId()?->toRfc4122() ?? '')
@@ -36,6 +38,7 @@ class SessionMapper
             'profilePicture' => $host->getProfilePicture(),
             'roles' => $host->getRoles(),
         ];
+
         $model->setHost($hostArray);
 
         $model->setCreatedAt($session->getCreatedAt()?->format('c') ?? '');
@@ -49,8 +52,8 @@ class SessionMapper
      *
      * @return SessionModel[]
      */
-    public function toModels(array $sessions): array
+    public function mapModels(array $sessions): array
     {
-        return array_map([$this, 'toModel'], $sessions);
+        return array_map([$this, 'mapModel'], $sessions);
     }
 }

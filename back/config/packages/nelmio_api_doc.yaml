@@ -26,3 +26,4 @@ nelmio_api_doc:
             - { alias: SubscriptionModel, type: App\Subscription\SubscriptionModel }
             - { alias: PlanModel, type: App\Plan\PlanModel }
             - { alias: ProviderModel, type: App\Provider\ProviderModel }
+            - { alias: SessionModel, type: App\Session\Model\SessionModel }

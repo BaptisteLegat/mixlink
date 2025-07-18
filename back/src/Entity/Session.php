@@ -26,14 +26,14 @@ class Session implements BlameableInterface, TimestampableInterface
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $name;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 8, unique: true)]
-    private string $code;
+    #[ORM\Column(type: 'string', length: 8, unique: true, nullable: true)]
+    private ?string $code = null;
 
-    #[ORM\Column(type: 'integer')]
-    private int $maxParticipants = 50;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $maxParticipants = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -58,36 +58,36 @@ class Session implements BlameableInterface, TimestampableInterface
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    public function getMaxParticipants(): int
+    public function getMaxParticipants(): ?int
     {
         return $this->maxParticipants;
     }
 
-    public function setMaxParticipants(int $maxParticipants): self
+    public function setMaxParticipants(?int $maxParticipants): self
     {
         $this->maxParticipants = $maxParticipants;
 

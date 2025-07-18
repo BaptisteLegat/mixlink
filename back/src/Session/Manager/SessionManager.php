@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Session;
+namespace App\Session\Manager;
 
 use App\Entity\Session;
 use App\Entity\User;
 use App\Repository\SessionRepository;
+use App\Session\Mapper\SessionMapper;
+use App\Session\Model\Request\CreateSessionRequest;
+use App\Session\Publisher\SessionMercurePublisher;
 use App\Trait\TraceableTrait;
-use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 
 class SessionManager
 {
@@ -21,14 +20,14 @@ class SessionManager
         private SessionRepository $sessionRepository,
         private LoggerInterface $logger,
         private SessionMapper $sessionMapper,
-        private HubInterface $mercureHub,
+        private SessionMercurePublisher $mercurePublisher,
         private SessionParticipantManager $sessionParticipantManager,
     ) {
     }
 
     public function createSession(User $host, CreateSessionRequest $request): Session
     {
-        $session = $this->sessionMapper->mapFromRequest($request, $host);
+        $session = $this->sessionMapper->mapEntity($request, $host);
         $session->setCode($this->sessionRepository->generateUniqueCode());
 
         $this->setTimestampable($session, false);
@@ -56,7 +55,7 @@ class SessionManager
         $sessionId = $session->getId()?->toRfc4122();
         $sessionCode = $session->getCode();
 
-        $this->publishSessionUpdate($session, 'session_ended');
+        $this->mercurePublisher->publishSessionUpdate($session, 'session_ended');
 
         $this->sessionRepository->remove($session, true);
 
@@ -75,7 +74,7 @@ class SessionManager
 
         $sessionId = $session->getId()?->toRfc4122();
 
-        $this->publishSessionUpdate($session, 'session_deleted');
+        $this->mercurePublisher->publishSessionUpdate($session, 'session_deleted');
 
         $this->sessionRepository->remove($session, true);
 
@@ -83,38 +82,6 @@ class SessionManager
             'sessionId' => $sessionId,
             'hostId' => $user->getId()?->toRfc4122(),
         ]);
-    }
-
-    private function publishSessionUpdate(Session $session, string $event): void
-    {
-        try {
-            $data = [
-                'event' => $event,
-                'session' => [
-                    'id' => $session->getId()?->toRfc4122(),
-                    'code' => $session->getCode(),
-                    'name' => $session->getName(),
-                ],
-            ];
-
-            $jsonData = json_encode($data);
-            if (false === $jsonData) {
-                throw new RuntimeException('Failed to encode session data to JSON');
-            }
-
-            $update = new Update(
-                'session/'.$session->getCode(),
-                $jsonData
-            );
-
-            $this->mercureHub->publish($update);
-        } catch (Exception $e) {
-            $this->logger->error('Failed to publish session update to Mercure', [
-                'sessionCode' => $session->getCode(),
-                'event' => $event,
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
 
     public function findSessionByCode(string $code): ?Session

@@ -28,8 +28,8 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Session $session;
 
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $pseudo;
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $pseudo = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $leftAt = null;
@@ -51,12 +51,12 @@ class SessionParticipant implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function getPseudo(): string
+    public function getPseudo(): ?string
     {
         return $this->pseudo;
     }
 
-    public function setPseudo(string $pseudo): self
+    public function setPseudo(?string $pseudo): self
     {
         $this->pseudo = $pseudo;
 

@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Session;
+namespace App\Session\Manager;
 
 use App\Entity\Session;
 use App\Entity\SessionParticipant;
 use App\Repository\SessionParticipantRepository;
+use App\Session\Publisher\SessionMercurePublisher;
 use App\Trait\TraceableTrait;
-use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 
 class SessionParticipantManager
 {
@@ -20,7 +17,7 @@ class SessionParticipantManager
     public function __construct(
         private SessionParticipantRepository $participantRepository,
         private LoggerInterface $logger,
-        private HubInterface $mercureHub,
+        private SessionMercurePublisher $mercurePublisher,
     ) {
     }
 
@@ -51,7 +48,7 @@ class SessionParticipantManager
             'pseudo' => $pseudo,
         ]);
 
-        $this->publishParticipantUpdate($session, 'participant_joined', [
+        $this->mercurePublisher->publishParticipantUpdate($session, 'participant_joined', [
             'id' => $participant->getId()?->toRfc4122(),
             'pseudo' => $participant->getPseudo(),
         ]);
@@ -72,7 +69,7 @@ class SessionParticipantManager
             'reason' => $reason,
         ]);
 
-        $this->publishParticipantUpdate($session, 'participant_removed', [
+        $this->mercurePublisher->publishParticipantUpdate($session, 'participant_removed', [
             'id' => $participant->getId()?->toRfc4122(),
             'pseudo' => $participant->getPseudo(),
             'reason' => $reason,
@@ -92,40 +89,5 @@ class SessionParticipantManager
     public function getParticipantBySessionAndPseudo(Session $session, string $pseudo): ?SessionParticipant
     {
         return $this->participantRepository->findBySessionAndPseudo($session, $pseudo);
-    }
-
-    /**
-     * @param array<string, mixed> $participantData
-     */
-    private function publishParticipantUpdate(Session $session, string $event, array $participantData): void
-    {
-        try {
-            $data = [
-                'event' => $event,
-                'participant' => $participantData,
-                'session' => [
-                    'code' => $session->getCode(),
-                    'participants_count' => count($session->getParticipants()),
-                ],
-            ];
-
-            $jsonData = json_encode($data);
-            if (false === $jsonData) {
-                throw new RuntimeException('Failed to encode participant data to JSON');
-            }
-
-            $update = new Update(
-                'session/'.$session->getCode(),
-                $jsonData
-            );
-
-            $this->mercureHub->publish($update);
-        } catch (Exception $e) {
-            $this->logger->error('Failed to publish participant update to Mercure', [
-                'sessionCode' => $session->getCode(),
-                'event' => $event,
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
 }

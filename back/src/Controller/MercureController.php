@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Mercure\MercureManager;
 use App\Provider\ProviderManager;
-use App\Session\SessionManager;
+use App\Session\Manager\SessionManager;
 use App\Voter\AuthenticationVoter;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Signer\Key\InMemory;
 use OpenApi\Attributes as OA;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +21,7 @@ class MercureController extends AbstractController
     public function __construct(
         private SessionManager $sessionManager,
         private ProviderManager $providerManager,
+        private MercureManager $mercureManager,
     ) {
     }
 
@@ -72,25 +72,13 @@ class MercureController extends AbstractController
             return new JsonResponse(['error' => 'Session not found'], 404);
         }
 
-        $jwtKey = $_ENV['MERCURE_PUBLISHER_JWT_KEY'];
-        if (empty($jwtKey)) {
-            return new JsonResponse(['error' => 'MERCURE_PUBLISHER_JWT_KEY is not set'], 500);
+        try {
+            $result = $this->mercureManager->generateTokenForSession($sessionCode);
+
+            return new JsonResponse($result);
+        } catch (RuntimeException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
         }
-        $config = Configuration::forSymmetricSigner(
-            new Sha256(),
-            InMemory::plainText($jwtKey)
-        );
-
-        $token = $config->builder()
-            ->withClaim('mercure', [
-                'subscribe' => ["session/{$sessionCode}"],
-            ])
-            ->getToken($config->signer(), $config->signingKey());
-
-        return new JsonResponse([
-            'token' => $token->toString(),
-            'mercureUrl' => $_ENV['MERCURE_PUBLIC_URL']
-        ]);
     }
 
     #[Route('/auth/host/{sessionCode}', name: 'auth_host', methods: ['GET'])]
@@ -154,27 +142,12 @@ class MercureController extends AbstractController
             return new JsonResponse(['error' => 'Not the session host'], 403);
         }
 
-        $jwtKey = $_ENV['MERCURE_PUBLISHER_JWT_KEY'];
-        if (empty($jwtKey)) {
-            return new JsonResponse(['error' => 'MERCURE_PUBLISHER_JWT_KEY is not set'], 500);
+        try {
+            $result = $this->mercureManager->generateTokenForHost($sessionCode);
+
+            return new JsonResponse($result);
+        } catch (RuntimeException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
         }
-
-        $config = Configuration::forSymmetricSigner(
-            new Sha256(),
-            InMemory::plainText($jwtKey)
-        );
-
-        $token = $config->builder()
-            ->withClaim('mercure', [
-                'subscribe' => ["session/{$sessionCode}"],
-                'publish' => ["session/{$sessionCode}"],
-            ])
-            ->getToken($config->signer(), $config->signingKey())
-        ;
-
-        return new JsonResponse([
-            'token' => $token->toString(),
-            'mercureUrl' => $_ENV['MERCURE_PUBLIC_URL']
-        ]);
     }
 }

@@ -12,6 +12,8 @@ parameters:
     stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
     stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
     stripe.webhook_secret: '%env(STRIPE_WEBHOOK_SECRET)%'
+    mercurePublisherJwtKey: '%env(MERCURE_PUBLISHER_JWT_KEY)%'
+    mercurePublicUrl: '%env(MERCURE_PUBLIC_URL)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -43,6 +45,11 @@ services:
             $stripeSecretKey: '%stripeSecretKey%'
             $stripePrices: '%stripePrices%'
             $stripeWebhookSecret: '%stripe.webhook_secret%'
+
+    App\Mercure\MercureManager:
+        arguments:
+            $jwtKey: '%mercurePublisherJwtKey%'
+            $mercureUrl: '%mercurePublicUrl%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
