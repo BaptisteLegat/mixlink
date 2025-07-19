@@ -88,6 +88,20 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 
 ---
 
+### Stripe CLI pour le développement local
+
+Pour que le système de souscription Stripe fonctionne correctement en environnement de développement, il est nécessaire d’installer [Stripe CLI](https://stripe.com/docs/stripe-cli) sur votre machine.
+
+Ensuite, lancez la commande suivante dans un terminal pour rediriger les webhooks Stripe vers votre API locale :
+
+```sh
+stripe listen --forward-to localhost/api/webhook/stripe
+```
+
+Cela permet à Stripe d’envoyer les événements de paiement à votre backend local pour les tests et le développement.
+
+---
+
 ## Commandes utiles
 
 ### Frontend
@@ -137,6 +151,23 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
   ```sh
   ./scripts/resetDb.sh --env=test
   ```
+
+---
+
+### Couverture de tests (Coverage)
+
+Pour générer un rapport de couverture de code lors de l’exécution des tests, il faut utiliser Xdebug. Les rapports sont générés au format HTML et consultables dans un navigateur.
+
+- **Tests fonctionnels** :
+  ```sh
+  XDEBUG_MODE=coverage vendor/bin/phpunit tests/functional --coverage-html=./coverage/functional
+  ```
+- **Tests unitaires** :
+  ```sh
+  XDEBUG_MODE=coverage vendor/bin/phpunit tests/unit --coverage-html=./coverage/unit
+  ```
+
+Après l’exécution de ces commandes, ouvrez le fichier `index.html` généré à la racine du dossier `coverage/functional` ou `coverage/unit` dans votre navigateur pour visualiser le rapport de couverture.
 
 ---
 
