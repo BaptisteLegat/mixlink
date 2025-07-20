@@ -6,6 +6,7 @@ use App\Entity\Session;
 use App\Entity\User;
 use App\Session\Model\Request\CreateSessionRequest;
 use App\Session\Model\SessionModel;
+use RuntimeException;
 
 class SessionMapper
 {
@@ -30,6 +31,10 @@ class SessionMapper
         ;
 
         $host = $session->getHost();
+        if (null === $host) {
+            throw new RuntimeException('Host is null');
+        }
+
         $hostArray = [
             'id' => (string) $host->getId(),
             'firstName' => $host->getFirstName(),

@@ -1,0 +1,50 @@
+include:
+  - '../templates/provider.yaml'
+  - '../templates/session.yaml'
+  - '../templates/session_participant.yaml'
+  - '../templates/user.yaml'
+
+App\Entity\Provider:
+  session-host-provider (extends google):
+    user: '@session-host'
+    accessToken: 'session_host_token'
+  session-guest-provider (extends spotify):
+    user: '@session-guest'
+    accessToken: 'session_guest_token'
+  session-guest2-provider (extends deezer):
+    user: '@session-guest2'
+    accessToken: 'session_guest2_token'
+
+App\Entity\Session:
+  session-active (extends session):
+    host: '@session-host'
+    code: 'SESSION1'
+    name: 'Session Active'
+    maxParticipants: 3
+  session-ended (extends session):
+    host: '@session-host'
+    code: 'SESSION2'
+    name: 'Session ended'
+    maxParticipants: 3
+    endedAt: <(new DateTimeImmutable('-1 day'))>
+
+App\Entity\SessionParticipant:
+  participant-1 (extends session_participant):
+    session: '@session-active'
+    pseudo: 'Guest1'
+  participant-2 (extends session_participant):
+    session: '@session-active'
+    pseudo: 'Guest2'
+  participant-ended (extends session_participant):
+    session: '@session-ended'
+    pseudo: 'Guest3'
+    leftAt: <(new DateTimeImmutable('-1 hour'))>
+
+App\Entity\User:
+  session-host (extends john-doe):
+    email: 'session-host@test.fr'
+    sessions: ['@session-active', '@session-ended']
+  session-guest (extends jane-smith):
+    email: 'session-guest@test.fr'
+  session-guest2 (extends alice-johnson):
+    email: 'session-guest2@test.fr'

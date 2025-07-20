@@ -9,6 +9,7 @@ use App\Session\Model\Request\CreateSessionRequest;
 use App\Session\Model\SessionModel;
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class SessionMapperTest extends TestCase
 {
@@ -69,6 +70,13 @@ class SessionMapperTest extends TestCase
             'profilePicture' => 'pic.jpg',
             'roles' => ['ROLE_USER'],
         ], $model->getHost());
+    }
+
+    public function testMapModelWithNullHost(): void
+    {
+        $session = new Session();
+        $this->expectException(RuntimeException::class);
+        $this->sessionMapper->mapModel($session);
     }
 
     public function testMapModels(): void

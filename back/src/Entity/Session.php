@@ -36,8 +36,8 @@ class Session implements BlameableInterface, TimestampableInterface
     private ?int $maxParticipants = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $host;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $host = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $endedAt = null;
@@ -94,12 +94,12 @@ class Session implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function getHost(): User
+    public function getHost(): ?User
     {
         return $this->host;
     }
 
-    public function setHost(User $host): self
+    public function setHost(?User $host): self
     {
         $this->host = $host;
 

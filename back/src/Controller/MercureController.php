@@ -138,7 +138,7 @@ class MercureController extends AbstractController
             return new JsonResponse(['error' => 'Session not found'], 404);
         }
 
-        if ($session->getHost()->getId() !== $user->getId()) {
+        if ($session->getHost()?->getId() !== $user->getId()) {
             return new JsonResponse(['error' => 'Not the session host'], 403);
         }
 

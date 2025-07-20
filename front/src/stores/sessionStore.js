@@ -124,7 +124,7 @@ export const useSessionStore = defineStore('session', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'session.remove.error.generic');
+                throw new Error(result.error || 'session.remove.error');
             }
 
             return result;
@@ -148,7 +148,7 @@ export const useSessionStore = defineStore('session', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'session.join.error.generic');
+                throw new Error(result.error || 'session.join.error');
             }
 
             return result;

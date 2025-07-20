@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Session;
 use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Session\Manager\SessionManager;
@@ -109,57 +110,6 @@ class SessionController extends AbstractController
         }
     }
 
-    #[Route('/{code}', name: 'get_by_code', methods: ['GET'])]
-    #[OA\Get(
-        path: '/api/session/{code}',
-        summary: 'Get session by code',
-        description: 'Retrieve a session by its code',
-        tags: ['Session'],
-        parameters: [
-            new OA\Parameter(
-                name: 'code',
-                in: 'path',
-                required: true,
-                description: 'Session code',
-                schema: new OA\Schema(type: 'string', example: 'ABC12345')
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Session found',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
-                        new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
-                        new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
-                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10),
-                        new OA\Property(property: 'host', type: 'object', description: 'Session host'),
-                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
-                        new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Session not found'
-            ),
-        ]
-    )]
-    public function getSessionByCode(string $code): JsonResponse
-    {
-        $session = $this->sessionManager->findSessionByCode($code);
-
-        if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $sessionModel = $this->sessionMapper->mapModel($session);
-
-        return new JsonResponse($sessionModel->toArray());
-    }
-
     #[Route('/my-sessions', name: 'my_sessions', methods: ['GET'])]
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[OA\Get(
@@ -249,14 +199,14 @@ class SessionController extends AbstractController
             $session = $this->sessionManager->findSessionByCode($code);
 
             if (!$session) {
-                return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.end.error_session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             $this->sessionManager->endSession($session, $user);
 
-            return new JsonResponse(['message' => 'Session ended successfully']);
+            return new JsonResponse(['message' => 'session.end.success']);
         } catch (InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'session.end.error_forbidden'], Response::HTTP_FORBIDDEN);
         } catch (Exception $e) {
             $this->logger->error('Error ending session', [
                 'error' => $e->getMessage(),
@@ -264,7 +214,7 @@ class SessionController extends AbstractController
                 'userId' => $user?->getId()?->toRfc4122(),
             ]);
 
-            return new JsonResponse(['error' => 'Unable to end session'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'session.end.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -347,7 +297,7 @@ class SessionController extends AbstractController
                 'pseudo' => $data['pseudo'] ?? 'unknown',
             ]);
 
-            return new JsonResponse(['error' => 'session.join.error.generic'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'session.join.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -381,7 +331,7 @@ class SessionController extends AbstractController
     {
         $session = $this->sessionManager->findSessionByCode($code);
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => 'session.participants.error_session_not_found'], Response::HTTP_NOT_FOUND);
         }
 
         $participants = $this->participantManager->getActiveParticipants($session);
@@ -407,6 +357,7 @@ class SessionController extends AbstractController
     }
 
     #[Route('/{code}/remove', name: 'remove', methods: ['POST'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[OA\Post(
         path: '/api/session/{code}/remove',
         summary: 'Remove a participant from a session',
@@ -463,11 +414,8 @@ class SessionController extends AbstractController
             if (!isset($data['pseudo']) || !is_string($data['pseudo']) || empty(trim((string) $data['pseudo']))) {
                 return new JsonResponse(['error' => 'session.remove.errors.pseudo_required'], Response::HTTP_BAD_REQUEST);
             }
-            $reason = isset($data['reason']) && is_string($data['reason']) ? $data['reason'] : 'leave';
-            if (!in_array($reason, ['leave', 'kick'], true)) {
-                $reason = 'leave';
-            }
 
+            $reason = isset($data['reason']) && is_string($data['reason']) ? $data['reason'] : 'leave';
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
                 return new JsonResponse(['error' => 'session.remove.errors.session_not_found'], Response::HTTP_NOT_FOUND);
@@ -484,7 +432,7 @@ class SessionController extends AbstractController
                 /** @var User $user */
                 $user = $this->providerManager->findByAccessToken($accessToken);
 
-                if ($session->getHost()->getId() !== $user->getId()) {
+                if ($session->getHost()?->getId() !== $user->getId()) {
                     return new JsonResponse(['error' => 'session.remove.errors.only_host_can_kick'], Response::HTTP_FORBIDDEN);
                 }
             }
@@ -504,5 +452,55 @@ class SessionController extends AbstractController
 
             return new JsonResponse(['error' => 'session.remove.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    #[Route('/{code}', name: 'get_by_code', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/session/{code}',
+        summary: 'Get session by code',
+        description: 'Retrieve a session by its code',
+        tags: ['Session'],
+        parameters: [
+            new OA\Parameter(
+                name: 'code',
+                in: 'path',
+                required: true,
+                description: 'Session code',
+                schema: new OA\Schema(type: 'string', example: 'ABC12345')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Session found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'id', type: 'string', description: 'Session ID', example: '01234567-89ab-cdef-0123-456789abcdef'),
+                        new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
+                        new OA\Property(property: 'code', type: 'string', description: 'Session code', example: 'ABC12345'),
+                        new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10),
+                        new OA\Property(property: 'host', type: 'object', description: 'Session host'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
+                        new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Session not found'
+            ),
+        ]
+    )]
+    public function getSessionByCode(string $code): JsonResponse
+    {
+        $session = $this->sessionManager->findSessionByCode($code);
+        if (!$session instanceof Session) {
+            return new JsonResponse(['error' => 'session.get_by_code.error_session_not_found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $sessionModel = $this->sessionMapper->mapModel($session);
+
+        return new JsonResponse($sessionModel->toArray());
     }
 }

@@ -203,11 +203,27 @@ class User implements BlameableInterface, TimestampableInterface
         return null;
     }
 
+    public function getSessions(): Collection
+    {
+        return $this->sessions;
+    }
+
     public function addSession(Session $session): self
     {
         if (!$this->sessions->contains($session)) {
             $this->sessions[] = $session;
             $session->setHost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSession(Session $session): self
+    {
+        if ($this->sessions->removeElement($session)) {
+            if ($session->getHost() === $this) {
+                $session->setHost(null);
+            }
         }
 
         return $this;

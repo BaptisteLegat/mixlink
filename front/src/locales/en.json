@@ -390,7 +390,8 @@
             "title": "Participants",
             "host": "Host",
             "guest": "Guest",
-            "waiting": "Waiting for participants..."
+            "waiting": "Waiting for participants...",
+            "error_session_not_found": "Session not found"
         },
         "playlist": {
             "title": "Collaborative Playlist",
@@ -441,7 +442,9 @@
             "confirm": "End",
             "button": "End session",
             "success": "Session ended successfully",
-            "error": "Error ending session"
+            "error": "Error ending session",
+            "error_forbidden": "You are not authorized to end this session",
+            "error_session_not_found": "Session not found"
         },
         "error": {
             "not_found_description": "This session does not exist or has been ended",
@@ -469,6 +472,9 @@
                 "participant_not_found": "Participant not found",
                 "only_host_can_kick": "Only the host can remove participants"
             }
+        },
+        "get_by_code": {
+            "error_session_not_found": "Session not found"
         }
     }
 }

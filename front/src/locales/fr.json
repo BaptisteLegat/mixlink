@@ -393,7 +393,8 @@
             "title": "Participants",
             "host": "Hôte",
             "guest": "Invité",
-            "waiting": "En attente de participants..."
+            "waiting": "En attente de participants...",
+            "error_session_not_found": "Session introuvable"
         },
         "playlist": {
             "title": "Playlist collaborative",
@@ -455,7 +456,9 @@
             "confirm": "Terminer",
             "button": "Terminer la session",
             "success": "Session terminée avec succès",
-            "error": "Erreur lors de la terminaison de la session"
+            "error": "Erreur lors de la terminaison de la session",
+            "error_forbidden": "Vous n'êtes pas autorisé à terminer cette session",
+            "error_session_not_found": "Session introuvable"
         },
         "error": {
             "not_found_description": "Cette session n'existe pas ou a été terminée",
@@ -472,6 +475,9 @@
             "success": "\"{pseudo}\" a été exclu de la session",
             "error": "Erreur lors de l'exclusion du participant",
             "kicked_notification": "Vous avez été exclu de la session par l'hôte."
+        },
+        "get_by_code": {
+            "error_session_not_found": "Session introuvable"
         }
     }
 }
