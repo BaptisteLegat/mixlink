@@ -184,8 +184,14 @@
         "terms_link": "Terms of service"
     },
     "common": {
-        "cancel": "Annuler",
-        "loading": "Chargement..."
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "close": "Close",
+        "unauthorized": "You are not authorized",
+        "error_fetch_profile": "Error fetching profile.",
+        "error_logout": "Error during logout.",
+        "error_delete_account": "Error deleting account.",
+        "error_request_failed": "Request failed. Please try again later."
     },
     "routes": {
         "terms": "Terms of service",
@@ -356,7 +362,9 @@
             "title": "Create session",
             "button": "Create session",
             "success": "Session created successfully!",
-            "error": "Error creating session"
+            "error": "Error creating session",
+            "error_session_not_found": "Session not found",
+            "error_not_host": "You are not the host of this session"
         },
         "form": {
             "name": "Name",
@@ -475,6 +483,31 @@
         },
         "get_by_code": {
             "error_session_not_found": "Session not found"
+        }
+    },
+    "provider": {
+        "disconnect": {
+            "success": "Provider disconnected successfully",
+            "error": "Error disconnecting provider",
+            "error_provider_not_found": "Provider not found"
+        }
+    },
+    "subscription": {
+        "start": {
+            "error_plan_not_found": "Requested plan not found.",
+            "error_stripe_price_id_not_configured": "The plan is not properly configured for Stripe.",
+            "error_unable_to_create_checkout_session": "Unable to create Stripe checkout session."
+        },
+        "cancel": {
+            "error_no_active_subscription": "No active subscription found.",
+            "error_failed_to_cancel_subscription": "Failed to cancel subscription.",
+            "success": "Subscription cancelled successfully."
+        },
+        "change": {
+            "error_no_active_subscription": "No active subscription found.",
+            "error_plan_not_found": "Requested plan not found.",
+            "error_already_subscribed_to_this_plan": "You are already subscribed to this plan.",
+            "error_failed_to_change_subscription": "Failed to change subscription."
         }
     }
 }

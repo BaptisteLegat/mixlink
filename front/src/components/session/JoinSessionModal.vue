@@ -47,22 +47,6 @@
             await formRef.value.validate();
             loading.value = true;
 
-            const sessionResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${form.code}`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!sessionResponse.ok) {
-                if (sessionResponse.status === 404) {
-                    ElMessage.error(t('session.join.session_not_found'));
-                } else {
-                    ElMessage.error(t('session.join.error'));
-                }
-                return;
-            }
-
             try {
                 await sessionStore.joinSession(form.code, form.pseudo);
 

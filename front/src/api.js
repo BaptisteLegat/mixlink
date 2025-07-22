@@ -8,7 +8,7 @@ export async function fetchUserProfile() {
     });
 
     if (!response.ok) {
-        throw new Error('Erreur lors de la récupération du profil');
+        throw new Error('common.error_fetch_profile');
     }
 
     const data = await response.json();
@@ -23,7 +23,7 @@ export async function apiLogout() {
     });
 
     if (!response.ok) {
-        throw new Error('Erreur lors de la déconnexion');
+        throw new Error('common.error_logout');
     }
 
     return response.json();
@@ -36,7 +36,7 @@ export async function apiDeleteAccount() {
     });
 
     if (!response.ok) {
-        throw new Error('Erreur lors de la suppression du compte');
+        throw new Error('common.error_delete_account');
     }
 
     return response.json();
@@ -51,7 +51,7 @@ export async function apiDisconnectProvider(providerId) {
     if (!response.ok) {
         const errorData = await response.json();
 
-        throw new Error(errorData.error || 'Erreur lors de la déconnexion du service');
+        throw new Error(errorData.error || 'provider.disconnect.error');
     }
 
     return response.json();
@@ -69,8 +69,12 @@ export async function fetchWithAuth(path, options = {}) {
 
     if (!response.ok && !response.redirected) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Request failed');
+        throw new Error(errorData.error || 'common.error_request_failed');
     }
 
     return response;
+}
+
+export function getOAuthUrl(provider) {
+    return `${import.meta.env.VITE_API_BASE_URL}/api/auth/${provider}`;
 }

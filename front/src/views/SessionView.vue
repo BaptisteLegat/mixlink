@@ -4,18 +4,19 @@
     import { useI18n } from 'vue-i18n';
     import { useSessionStore } from '@/stores/sessionStore';
     import { useAuthStore } from '@/stores/authStore';
+    import { useMercureStore } from '@/stores/mercureStore';
     import { ElMessage, ElMessageBox } from 'element-plus';
-    import ExitIcon from 'vue-material-design-icons/ExitToApp.vue';
-    import StopIcon from 'vue-material-design-icons/Stop.vue';
-    import GroupIcon from 'vue-material-design-icons/AccountGroup.vue';
-    import MusicIcon from 'vue-material-design-icons/Music.vue';
-    import DeleteIcon from 'vue-material-design-icons/Delete.vue';
+    import SessionHeader from '@/components/session/SessionHeader.vue';
+    import GuestJoinCard from '@/components/session/GuestJoinCard.vue';
+    import ParticipantsCard from '@/components/session/ParticipantsCard.vue';
+    import PlaylistCard from '@/components/session/PlaylistCard.vue';
 
     const { t } = useI18n();
     const route = useRoute();
     const router = useRouter();
     const sessionStore = useSessionStore();
     const authStore = useAuthStore();
+    const mercureStore = useMercureStore();
 
     const sessionCode = ref(route.params.code);
     const session = ref(null);
@@ -26,16 +27,12 @@
     const isHost = ref(false);
     const hasJoined = ref(false);
 
-    const mercureConnection = ref(null);
-
     const participantCount = computed(() => participants.value.length);
 
     const filteredParticipants = computed(() => {
         if (!session.value) return participants.value;
 
-        return participants.value.filter(
-            p => p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email
-        );
+        return participants.value.filter((p) => p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email);
     });
 
     function checkGuestJoined() {
@@ -51,20 +48,6 @@
         }
     }
 
-    onMounted(async () => {
-        checkGuestJoined();
-        await loadSession();
-        if (session.value) {
-            setupMercureConnection();
-        }
-    });
-
-    onUnmounted(() => {
-        if (mercureConnection.value) {
-            mercureConnection.value.close();
-        }
-    });
-
     async function loadSession() {
         try {
             isLoading.value = true;
@@ -74,7 +57,7 @@
             if (authStore.isAuthenticated && authStore.user) {
                 isHost.value = session.value.host.id === authStore.user.id;
                 if (isHost.value) {
-                    currentUserPseudo.value = session.value.host.firstName || 'Hôte';
+                    currentUserPseudo.value = session.value.host.firstName || t('session.participants.host');
                     hasJoined.value = true;
                 }
             }
@@ -84,7 +67,7 @@
             error.value = null;
         } catch (err) {
             console.error('Error loading session:', err);
-            error.value = 'Session non trouvée';
+            error.value = t('session.error.not_found');
         } finally {
             isLoading.value = false;
         }
@@ -99,11 +82,11 @@
                 const guestSessionCode = localStorage.getItem('guestSessionCode');
                 const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
 
-                hasJoined.value = !!guestPseudo && participants.value.some(
-                    p => p.pseudo === guestPseudo &&
-                        p.pseudo !== session.value.host.firstName &&
-                        p.pseudo !== session.value.host.email
-                );
+                hasJoined.value =
+                    !!guestPseudo &&
+                    participants.value.some(
+                        (p) => p.pseudo === guestPseudo && p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email
+                    );
                 if (hasJoined.value && guestPseudo) {
                     currentUserPseudo.value = guestPseudo;
                 }
@@ -113,57 +96,24 @@
         }
     }
 
-    async function setupMercureConnection() {
-        if (!session.value) return;
-
-        try {
-            const tokenEndpoint = isHost.value ? `/api/mercure/auth/host/${session.value.code}` : `/api/mercure/auth/${session.value.code}`;
-
-            const tokenResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}${tokenEndpoint}`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!tokenResponse.ok) {
-                console.error('Failed to get Mercure token:', await tokenResponse.text());
-                return;
-            }
-
-            const tokenData = await tokenResponse.json();
-            const url = new URL(tokenData.mercureUrl);
-            url.searchParams.append('topic', `session/${session.value.code}`);
-            url.searchParams.append('authorization', tokenData.token);
-
-            mercureConnection.value = new EventSource(url.toString());
-
-            mercureConnection.value.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                handleMercureMessage(data);
-            };
-
-            mercureConnection.value.onerror = (error) => {
-                console.error('Mercure connection error:', error);
-            };
-
-            console.log('Mercure connection established for session:', session.value.code);
-        } catch (error) {
-            console.error('Error setting up Mercure connection:', error);
-        }
+    function connectMercure() {
+        mercureStore.connect({
+            sessionCode: session.value.code,
+            isHost: isHost.value,
+            onMessage: handleMercureMessage,
+            onError: (e) => {
+                console.error('Mercure connection error:', e);
+            },
+        });
     }
 
     async function kickParticipant(pseudo) {
         try {
-            await ElMessageBox.confirm(
-                t('session.kick.confirmation', { pseudo }),
-                t('session.kick.title'),
-                {
-                    confirmButtonText: t('session.kick.confirm'),
-                    cancelButtonText: t('common.cancel'),
-                    type: 'warning',
-                }
-            );
+            await ElMessageBox.confirm(t('session.kick.confirmation', { pseudo }), t('session.kick.title'), {
+                confirmButtonText: t('session.kick.confirm'),
+                cancelButtonText: t('common.cancel'),
+                type: 'warning',
+            });
             const result = await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             ElMessage.success(t(result.message, { pseudo }));
             await loadParticipants();
@@ -186,7 +136,7 @@
                 ElMessage.success(t(result.message));
             }
 
-            mercureConnection.value?.close();
+            mercureStore.disconnect();
             sessionStore.leaveCurrentSession();
             router.push('/');
         } catch (error) {
@@ -202,7 +152,7 @@
                 type: 'warning',
             });
 
-            mercureConnection.value?.close();
+            mercureStore.disconnect();
             await sessionStore.endSession(sessionCode.value);
             ElMessage.success(t('session.end.success'));
             router.push('/');
@@ -245,18 +195,18 @@
     }
 
     function handleMercureMessage(data) {
-        console.log('Received Mercure message:', data);
-
         switch (data.event) {
             case 'participant_joined':
             case 'participant_removed':
                 reloadParticipantsWithNotification(data);
+
                 break;
             case 'session_ended':
                 ElMessage.success(t('session.end.success'));
-                mercureConnection.value?.close();
+                mercureStore.disconnect();
                 sessionStore.leaveCurrentSession();
                 router.push('/');
+
                 break;
             default:
                 console.log('Unknown Mercure event:', data.event);
@@ -298,14 +248,24 @@
             loadParticipants();
         }
     }
-</script>
 
+    onMounted(async () => {
+        checkGuestJoined();
+        await loadSession();
+        if (session.value) {
+            connectMercure();
+        }
+    });
+
+    onUnmounted(() => {
+        mercureStore.disconnect();
+    });
+</script>
 <template>
     <div class="session-page">
         <div v-if="isLoading" class="loading-container">
             <el-skeleton :rows="5" animated />
         </div>
-
         <div v-else-if="error" class="error-container">
             <el-result icon="error" :title="error" :sub-title="t('session.error.not_found_description')">
                 <template #extra>
@@ -315,109 +275,24 @@
                 </template>
             </el-result>
         </div>
-
         <div v-else class="session-container">
-            <el-card class="session-header">
-                <div class="session-info">
-                    <div class="session-main-info">
-                        <h1 class="session-title">{{ session.name }}</h1>
-                        <el-tag type="primary" size="large">{{ session.code }}</el-tag>
-                    </div>
-                    <div class="session-description" v-if="session.description">
-                        <p>{{ session.description }}</p>
-                    </div>
-                </div>
-
-                <div class="session-actions">
-                    <el-button v-if="isHost" type="danger" @click="endSession" :icon="StopIcon">
-                        {{ t('session.end.button') }}
-                    </el-button>
-                    <el-button v-else type="warning" @click="leaveSession" :icon="ExitIcon">
-                        {{ t('session.leave.button') }}
-                    </el-button>
-                </div>
-            </el-card>
-
-            <el-card v-if="!hasJoined" class="guest-join-card">
-                <div class="guest-join-content">
-                    <h3>{{ t('session.join.title') }}</h3>
-                    <p>{{ t('session.join.description') }}</p>
-                    <div class="pseudo-input-group">
-                        <el-input
-                            v-model="currentUserPseudo"
-                            :placeholder="t('session.join.pseudo_placeholder')"
-                            size="large"
-                            maxlength="20"
-                            show-word-limit
-                            @keyup.enter="joinAsGuest"
-                        />
-                        <el-button type="primary" size="large" @click="joinAsGuest" :disabled="!currentUserPseudo.trim()">
-                            {{ t('session.join.button') }}
-                        </el-button>
-                    </div>
-                </div>
-            </el-card>
-
-            <el-card class="participants-card">
-                <template #header>
-                    <div class="participants-header">
-                        <GroupIcon style="margin-right: 8px" />
-                        {{ t('session.participants.title') }}
-                        <el-badge :value="participantCount" class="participants-count" />
-                    </div>
-                </template>
-
-                <div class="participants-list">
-                    <div class="participant-item">
-                        <el-avatar :src="session.host.profilePicture" size="small">
-                            {{ session.host.firstName?.charAt(0) || 'H' }}
-                        </el-avatar>
-                        <span class="participant-name">{{ session.host.firstName || 'Hôte' }}</span>
-                        <el-tag type="success" size="small">{{ t('session.participants.host') }}</el-tag>
-                    </div>
-
-                    <div v-for="participant in filteredParticipants" :key="participant.id" class="participant-item">
-                        <el-avatar size="small">
-                            {{ participant.pseudo?.charAt(0) || 'G' }}
-                        </el-avatar>
-                        <span class="participant-name">{{ participant.pseudo }}</span>
-                        <el-tag type="info" size="small">{{ t('session.participants.guest') }}</el-tag>
-                        <el-button
-                            v-if="isHost"
-                            type="danger"
-                            size="small"
-                            :icon="DeleteIcon"
-                            @click="kickParticipant(participant.pseudo)"
-                        >
-                            {{ t('session.kick.button') }}
-                        </el-button>
-                    </div>
-                </div>
-
-                <div v-if="participants.length === 0" class="no-participants">
-                    <p>{{ t('session.participants.waiting') }}</p>
-                </div>
-            </el-card>
-
-            <el-card class="playlist-card">
-                <template #header>
-                    <div class="playlist-header">
-                        <MusicIcon style="margin-right: 8px" />
-                        {{ t('session.playlist.title') }}
-                    </div>
-                </template>
-
-                <div class="playlist-content">
-                    <el-empty :description="t('session.playlist.empty')">
-                        <template #image>
-                            <MusicIcon style="width: 60px; height: 60px; color: #909399" />
-                        </template>
-                        <template #description>
-                            <p>{{ t('session.playlist.empty_description') }}</p>
-                        </template>
-                    </el-empty>
-                </div>
-            </el-card>
+            <SessionHeader :session="session" :isHost="isHost" @end-session="endSession" @leave-session="leaveSession" />
+            <GuestJoinCard
+                v-if="!hasJoined"
+                :currentUserPseudo="currentUserPseudo"
+                :hasJoined="hasJoined"
+                @update:pseudo="(val) => (currentUserPseudo = val)"
+                @join-as-guest="joinAsGuest"
+            />
+            <ParticipantsCard
+                :session="session"
+                :participants="participants"
+                :filteredParticipants="filteredParticipants"
+                :participantCount="participantCount"
+                :isHost="isHost"
+                @kick-participant="kickParticipant"
+            />
+            <PlaylistCard />
         </div>
     </div>
 </template>
@@ -562,7 +437,7 @@
         .session-container {
             .session-header {
                 .session-info {
-                                     .session-main-info {
+                    .session-main-info {
                         flex-direction: column;
                         align-items: flex-start;
                         gap: 10px;

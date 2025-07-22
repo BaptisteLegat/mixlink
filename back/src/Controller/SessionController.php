@@ -36,7 +36,7 @@ class SessionController extends AbstractController
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/session',
         summary: 'Create a new session',
@@ -111,7 +111,7 @@ class SessionController extends AbstractController
     }
 
     #[Route('/my-sessions', name: 'my_sessions', methods: ['GET'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Get(
         path: '/api/session/my-sessions',
         summary: 'Get my sessions',
@@ -157,7 +157,7 @@ class SessionController extends AbstractController
     }
 
     #[Route('/{code}/end', name: 'end', methods: ['POST'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/session/{code}/end',
         summary: 'End a session',
@@ -357,7 +357,6 @@ class SessionController extends AbstractController
     }
 
     #[Route('/{code}/remove', name: 'remove', methods: ['POST'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[OA\Post(
         path: '/api/session/{code}/remove',
         summary: 'Remove a participant from a session',

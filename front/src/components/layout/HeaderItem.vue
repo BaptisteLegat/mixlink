@@ -50,7 +50,7 @@
     }
 
     const guestSessionCode = computed(() => localStorage.getItem('guestSessionCode'));
-    const guestPseudo = computed(() => guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null);
+    const guestPseudo = computed(() => (guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null));
 
     function isGuestOnCurrentSession() {
         return route.name === 'session' && route.params.code === guestSessionCode.value;
@@ -64,19 +64,10 @@
         const guestSessionCode = localStorage.getItem('guestSessionCode');
         const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
 
-        hasGuestJoined.value =
-            !!guestSessionCode &&
-            !!guestPseudo &&
-            route.name === 'session' &&
-            route.params.code === guestSessionCode
-        ;
+        hasGuestJoined.value = !!guestSessionCode && !!guestPseudo && route.name === 'session' && route.params.code === guestSessionCode;
     }
 
-    watch(
-        () => [route.name, route.params.code],
-        updateHasGuestJoined,
-        { immediate: true }
-    );
+    watch(() => [route.name, route.params.code], updateHasGuestJoined, { immediate: true });
 
     window.addEventListener('guest-joined', updateHasGuestJoined);
 </script>

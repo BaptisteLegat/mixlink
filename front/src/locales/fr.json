@@ -184,7 +184,16 @@
     "common": {
         "cancel": "Annuler",
         "loading": "Chargement...",
-        "close": "Fermer"
+        "close": "Fermer",
+        "unauthorized": "Vous n'êtes pas autorisé",
+        "error": "Une erreur est survenue, veuillez réessayer ultérieurement",
+        "form": {
+            "error": "Une erreur est survenue, veuillez vérifier les champs et réessayer"
+        },
+        "error_fetch_profile": "Erreur lors de la récupération du profil.",
+        "error_logout": "Erreur lors de la déconnexion.",
+        "error_delete_account": "Erreur lors de la suppression du compte.",
+        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement."
     },
     "routes": {
         "terms": "Conditions d'utilisation",
@@ -272,7 +281,6 @@
             "success_message": "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.",
             "error_message": "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer.",
             "error_rate_limit": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
-            "error_server": "Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.",
             "validation": {
                 "name_required": "Veuillez entrer votre nom",
                 "email_required": "Veuillez entrer votre email",
@@ -357,7 +365,9 @@
             "title": "Créer une session",
             "button": "Créer la session",
             "success": "Session créée avec succès !",
-            "error": "Erreur lors de la création de la session"
+            "error": "Erreur lors de la création de la session",
+            "error_session_not_found": "Session introuvable",
+            "error_not_host": "Vous n'êtes pas l'hôte de cette session"
         },
         "form": {
             "name": "Nom",
@@ -478,6 +488,31 @@
         },
         "get_by_code": {
             "error_session_not_found": "Session introuvable"
+        }
+    },
+    "provider": {
+        "disconnect": {
+            "success": "Service déconnecté avec succès",
+            "error": "Erreur lors de la déconnexion du service",
+            "error_provider_not_found": "Service introuvable"
+        }
+    },
+    "subscription": {
+        "start": {
+            "error_plan_not_found": "Le plan demandé est introuvable.",
+            "error_stripe_price_id_not_configured": "Le plan n'est pas configuré correctement pour Stripe.",
+            "error_unable_to_create_checkout_session": "Impossible de créer la session de paiement Stripe."
+        },
+        "cancel": {
+            "error_no_active_subscription": "Aucun abonnement actif trouvé.",
+            "error_failed_to_cancel_subscription": "Échec de l'annulation de l'abonnement.",
+            "success": "Abonnement annulé avec succès."
+        },
+        "change": {
+            "error_no_active_subscription": "Aucun abonnement actif trouvé.",
+            "error_plan_not_found": "Le plan demandé est introuvable.",
+            "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
+            "error_failed_to_change_subscription": "Échec du changement d'abonnement."
         }
     }
 }

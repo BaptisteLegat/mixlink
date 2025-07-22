@@ -64,7 +64,7 @@ class MercureControllerTest extends WebTestCase
         $this->client->request('GET', '/api/mercure/auth/UNKNOWN');
         $this->assertResponseStatusCodeSame(404);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Session not found', $data['error']);
+        $this->assertEquals('session.create.error_session_not_found', $data['error']);
     }
 
     public function testGenerateTokenInternalError(): void
@@ -77,7 +77,7 @@ class MercureControllerTest extends WebTestCase
         $this->client->request('GET', '/api/mercure/auth/MERCURE1');
         $this->assertResponseStatusCodeSame(500);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Erreur Mercure', $data['error']);
+        $this->assertEquals('common.error', $data['error']);
     }
 
     public function testGenerateHostTokenSuccess(): void
@@ -121,7 +121,7 @@ class MercureControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Not the session host', $data['error']);
+        $this->assertEquals('session.create.error_not_host', $data['error']);
     }
 
     public function testGenerateHostTokenSessionNotFound(): void
@@ -137,7 +137,7 @@ class MercureControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Session not found', $data['error']);
+        $this->assertEquals('session.create.error_session_not_found', $data['error']);
     }
 
     public function testGenerateHostTokenInternalError(): void
@@ -159,7 +159,7 @@ class MercureControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Erreur Mercure Host', $data['error']);
+        $this->assertEquals('common.error', $data['error']);
     }
 
     public function testGenerateHostTokenUnauthenticated(): void

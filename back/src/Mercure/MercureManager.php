@@ -6,11 +6,14 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MercureManager
 {
     public function __construct(
+        #[Autowire('%mercure_publisher_jwt_key%')]
         private string $jwtKey,
+        #[Autowire('%mercure_public_url%')]
         private string $mercureUrl,
     ) {
     }

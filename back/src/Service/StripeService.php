@@ -8,6 +8,7 @@ use Stripe\Exception\SignatureVerificationException;
 use Stripe\StripeClient;
 use Stripe\StripeObject;
 use Stripe\Webhook;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class StripeService
 {
@@ -20,8 +21,11 @@ class StripeService
      * @param array<string, string> $stripePrices
      */
     public function __construct(
+        #[Autowire('%stripe_secret_key%')]
         private string $stripeSecretKey,
+        #[Autowire('%stripe_prices%')]
         array $stripePrices,
+        #[Autowire('%stripe_webhook_secret%')]
         private string $stripeWebhookSecret,
     ) {
         $this->stripeClient = new StripeClient($this->stripeSecretKey);

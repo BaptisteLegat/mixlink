@@ -36,8 +36,15 @@
     }
 
     watch(
-        () => [route.name, route.params.code, localStorage.getItem('guestSessionCode'), localStorage.getItem(`guestSession_${localStorage.getItem('guestSessionCode')}`)],
-        () => { checkGuestSession(); },
+        () => [
+            route.name,
+            route.params.code,
+            localStorage.getItem('guestSessionCode'),
+            localStorage.getItem(`guestSession_${localStorage.getItem('guestSessionCode')}`),
+        ],
+        () => {
+            checkGuestSession();
+        },
         { immediate: true }
     );
 
@@ -116,22 +123,6 @@
         }
     }
 
-    onMounted(async () => {
-        if (authStore.isAuthenticated) {
-            await refreshCurrentSession();
-        }
-    });
-
-    watch(
-        () => route.name,
-        async (newName) => {
-            if (authStore.isAuthenticated && shouldRefreshSession(newName)) {
-                await refreshCurrentSession();
-            }
-        },
-        { immediate: true }
-    );
-
     function shouldRefreshSession(routeName) {
         return routeName === 'home' || routeName === undefined;
     }
@@ -147,8 +138,23 @@
             sessionStore.leaveCurrentSession();
         }
     }
-</script>
 
+    onMounted(async () => {
+        if (authStore.isAuthenticated) {
+            await refreshCurrentSession();
+        }
+    });
+
+    watch(
+        () => route.name,
+        async (newName) => {
+            if (authStore.isAuthenticated && shouldRefreshSession(newName)) {
+                await refreshCurrentSession();
+            }
+        },
+        { immediate: true }
+    );
+</script>
 <template>
     <div class="session-action" v-if="showButton">
         <el-button type="primary" size="large" :icon="buttonIcon" :loading="isLoading" @click="handleButtonClick" class="session-action-button">
@@ -158,7 +164,6 @@
         <JoinSessionModal ref="joinSessionModalRef" />
     </div>
 </template>
-
 <style lang="scss" scoped>
     .session-action {
         display: flex;

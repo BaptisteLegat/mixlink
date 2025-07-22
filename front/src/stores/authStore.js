@@ -75,8 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
     async function logout() {
         try {
             await apiLogout();
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion :', error);
         } finally {
             document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             resetUserState();
@@ -85,30 +83,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function deleteAccount() {
-        try {
-            await apiDeleteAccount();
-            document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            resetUserState();
-            return true;
-        } catch (error) {
-            console.error('Erreur lors de la suppression du compte :', error);
-            throw error;
-        }
+        await apiDeleteAccount();
+        document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        resetUserState();
+
+        return true;
     }
 
     async function disconnectProvider(providerId) {
-        try {
-            const response = await apiDisconnectProvider(providerId);
-
-            if (!response.mainProvider) {
-                providers.value = providers.value.filter((provider) => provider.id !== providerId);
-            }
-
-            return response;
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion du provider :', error);
-            throw error;
+        const response = await apiDisconnectProvider(providerId);
+        if (!response.mainProvider) {
+            providers.value = providers.value.filter((provider) => provider.id !== providerId);
         }
+
+        return response;
     }
 
     return {

@@ -75,7 +75,7 @@
     }
 
     const guestSessionCode = computed(() => localStorage.getItem('guestSessionCode'));
-    const guestPseudo = computed(() => guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null);
+    const guestPseudo = computed(() => (guestSessionCode.value ? localStorage.getItem(`guestSession_${guestSessionCode.value}`) : null));
 
     function isGuestOnCurrentSession() {
         return route.name === 'session' && route.params.code === guestSessionCode.value;
@@ -88,18 +88,10 @@
         }
         const guestSessionCode = localStorage.getItem('guestSessionCode');
         const guestPseudo = guestSessionCode ? localStorage.getItem(`guestSession_${guestSessionCode}`) : null;
-        hasGuestJoined.value =
-            !!guestSessionCode &&
-            !!guestPseudo &&
-            route.name === 'session' &&
-            route.params.code === guestSessionCode;
+        hasGuestJoined.value = !!guestSessionCode && !!guestPseudo && route.name === 'session' && route.params.code === guestSessionCode;
     }
 
-    watch(
-        () => [route.name, route.params.code],
-        updateHasGuestJoined,
-        { immediate: true }
-    );
+    watch(() => [route.name, route.params.code], updateHasGuestJoined, { immediate: true });
 
     watchEffect(() => {
         updateHasGuestJoined();
@@ -153,14 +145,16 @@
                 <template v-else>
                     <el-menu-item
                         v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
-                        @click="() => { router.push(`/session/${guestSessionCode}`); drawerVisible = false; }"
+                        @click="
+                            () => {
+                                router.push(`/session/${guestSessionCode}`);
+                                drawerVisible = false;
+                            }
+                        "
                     >
                         {{ t('header.join_current_session') }}
                     </el-menu-item>
-                    <el-menu-item
-                        v-else-if="!guestSessionCode || !guestPseudo"
-                        @click="openJoinSessionModal"
-                    >
+                    <el-menu-item v-else-if="!guestSessionCode || !guestPseudo" @click="openJoinSessionModal">
                         {{ t('header.join_session') }}
                     </el-menu-item>
                     <el-menu-item @click="handleLogin">

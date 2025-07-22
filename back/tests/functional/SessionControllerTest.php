@@ -245,26 +245,13 @@ class SessionControllerTest extends WebTestCase
         $this->assertEquals('session.join.success', $data['message']);
     }
 
-    public function testRemoveParticipantUnauthorized(): void
-    {
-        $payload = ['pseudo' => 'Guest1', 'reason' => 'kick'];
-        $this->client->request(
-            'POST',
-            '/api/session/SESSION1/remove',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
-        );
-        $this->assertResponseStatusCodeSame(401);
-    }
-
     public function testRemoveParticipantNotHostKick(): void
     {
         $user = $this->userRepository->findOneBy(['email' => 'session-guest@test.fr']);
         $provider = $user->getProviders()->first();
         $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
+
         $payload = ['pseudo' => 'Guest1', 'reason' => 'kick'];
         $this->client->request(
             'POST',
@@ -281,10 +268,6 @@ class SessionControllerTest extends WebTestCase
 
     public function testRemoveParticipantSessionNotFound(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'session-host@test.fr']);
-        $provider = $user->getProviders()->first();
-        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
-        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
         $payload = ['pseudo' => 'Guest1', 'reason' => 'kick'];
         $this->client->request(
             'POST',
@@ -301,10 +284,6 @@ class SessionControllerTest extends WebTestCase
 
     public function testRemoveParticipantNotFound(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'session-host@test.fr']);
-        $provider = $user->getProviders()->first();
-        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
-        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
         $payload = ['pseudo' => 'Inexistant', 'reason' => 'kick'];
         $this->client->request(
             'POST',
@@ -321,10 +300,6 @@ class SessionControllerTest extends WebTestCase
 
     public function testRemoveParticipantPseudoRequired(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'session-host@test.fr']);
-        $provider = $user->getProviders()->first();
-        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
-        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
         $payload = ['reason' => 'kick'];
         $this->client->request(
             'POST',
@@ -341,10 +316,6 @@ class SessionControllerTest extends WebTestCase
 
     public function testRemoveParticipantThrowException(): void
     {
-        $user = $this->userRepository->findOneBy(['email' => 'session-host@test.fr']);
-        $provider = $user->getProviders()->first();
-        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
-        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
 
         $mock = $this->createMock(SessionManager::class);
         $mock->method('findSessionByCode')->willThrowException(new Exception('Erreur interne'));

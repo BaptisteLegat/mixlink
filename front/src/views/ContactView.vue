@@ -52,7 +52,7 @@
                 } catch (error) {
                     console.error('Error submitting form:', error);
                     ElMessage({
-                        message: t('contact.form.error_message'),
+                        message: t(error.message),
                         type: 'error',
                     });
                 } finally {

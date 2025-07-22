@@ -7,7 +7,8 @@ export async function sendContactEmail(formData) {
     });
 
     if (!response.ok) {
-        throw new Error('Email sending failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'contact.form.error_message');
     }
 
     return await response.json();

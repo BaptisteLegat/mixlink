@@ -136,12 +136,8 @@ export const useSessionStore = defineStore('session', () => {
     async function joinSession(code, pseudo) {
         isLoading.value = true;
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/session/${code}/join`, {
+            const response = await fetchWithAuth(`/api/session/${code}/join`, {
                 method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ pseudo }),
             });
 
@@ -176,7 +172,7 @@ export const useSessionStore = defineStore('session', () => {
     async function checkGuestSession(code, pseudo) {
         try {
             const participants = await getParticipants(code);
-            return participants.some(p => p.pseudo === pseudo);
+            return participants.some((p) => p.pseudo === pseudo);
         } catch {
             return false;
         }

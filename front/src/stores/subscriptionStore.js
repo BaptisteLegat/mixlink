@@ -63,20 +63,25 @@ export const useSubscriptionStore = defineStore('subscription', () => {
             const authStore = useAuthStore();
 
             if (authStore.subscription?.stripeSubscriptionId && authStore.subscription.isActive && !authStore.subscription.isCanceled) {
-                await changeSubscription(planName);
-                await authStore.fetchUser();
-
-                return { success: true };
-            } else {
-                const result = await subscribeToPlan(planName);
-
-                if (result.url) {
-                    window.location.href = result.url;
-                } else {
+                try {
+                    await changeSubscription(planName);
                     await authStore.fetchUser();
+                    return { success: true, message: 'subscription.change.success' };
+                } catch (error) {
+                    return { success: false, error: error.message };
                 }
-
-                return result;
+            } else {
+                try {
+                    const result = await subscribeToPlan(planName);
+                    if (result.url) {
+                        window.location.href = result.url;
+                    } else {
+                        await authStore.fetchUser();
+                    }
+                    return { success: true, message: 'subscription.start.success' };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
             }
         } finally {
             isLoading.value = false;
@@ -88,13 +93,15 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         try {
             const authStore = useAuthStore();
             if (!authStore.subscription || !authStore.subscription.isActive) {
-                return { success: false, error: 'No active subscription to cancel' };
+                return { success: false, error: 'subscription.cancel.error_no_active_subscription' };
             }
-
-            await cancelSubscription();
-            await authStore.fetchUser();
-
-            return { success: true };
+            try {
+                await cancelSubscription();
+                await authStore.fetchUser();
+                return { success: true, message: 'subscription.cancel.success' };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
         } finally {
             isLoading.value = false;
         }

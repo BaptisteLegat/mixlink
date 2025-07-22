@@ -7,6 +7,7 @@
     import { useSubscriptionStore } from '@/stores/subscriptionStore';
     import router from '@/router';
     import { ref, computed } from 'vue';
+    import { ElMessage } from 'element-plus';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
@@ -51,9 +52,17 @@
         }
         try {
             loading.value = plan.name;
-            await subscriptionStore.subscribe(plan.name);
+            const result = await subscriptionStore.subscribe(plan.name);
+            if (result.success) {
+                if (result.message && result.message !== 'subscription.start.success') {
+                    ElMessage.success(t(result.message));
+                }
+            } else {
+                ElMessage.error(t(result.error));
+            }
         } catch (error) {
             console.error('Subscription error:', error);
+            ElMessage.error(t('common.error'));
         } finally {
             loading.value = false;
         }

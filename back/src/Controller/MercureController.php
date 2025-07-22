@@ -12,6 +12,7 @@ use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -69,7 +70,7 @@ class MercureController extends AbstractController
     {
         $session = $this->sessionManager->findSessionByCode($sessionCode);
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['error' => 'session.create.error_session_not_found'], Response::HTTP_NOT_FOUND);
         }
 
         try {
@@ -77,12 +78,12 @@ class MercureController extends AbstractController
 
             return new JsonResponse($result);
         } catch (RuntimeException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'common.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     #[Route('/auth/host/{sessionCode}', name: 'auth_host', methods: ['GET'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Get(
         path: '/api/mercure/auth/host/{sessionCode}',
         summary: 'Get Mercure JWT token for session host',
@@ -135,11 +136,11 @@ class MercureController extends AbstractController
 
         $session = $this->sessionManager->findSessionByCode($sessionCode);
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['error' => 'session.create.error_session_not_found'], Response::HTTP_NOT_FOUND);
         }
 
         if ($session->getHost()?->getId() !== $user->getId()) {
-            return new JsonResponse(['error' => 'Not the session host'], 403);
+            return new JsonResponse(['error' => 'session.create.error_not_host'], Response::HTTP_FORBIDDEN);
         }
 
         try {
@@ -147,7 +148,7 @@ class MercureController extends AbstractController
 
             return new JsonResponse($result);
         } catch (RuntimeException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'common.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
