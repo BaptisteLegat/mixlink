@@ -75,6 +75,14 @@ export async function fetchWithAuth(path, options = {}) {
     return response;
 }
 
+export async function updateSoundCloudEmail(email) {
+    const response = await fetchWithAuth('/api/me/email', {
+        method: 'PATCH',
+        body: JSON.stringify({ email }),
+    });
+    return response.json();
+}
+
 export function getOAuthUrl(provider) {
     return `${import.meta.env.VITE_API_BASE_URL}/api/auth/${provider}`;
 }

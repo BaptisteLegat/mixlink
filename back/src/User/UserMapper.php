@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 
 class UserMapper
 {
@@ -24,6 +25,7 @@ class UserMapper
     private const array PROVIDER_MAPPERS = [
         ApiReference::GOOGLE,
         ApiReference::SPOTIFY,
+        ApiReference::SOUNDCLOUD,
     ];
 
     public function mapEntity(ResourceOwnerInterface $resourceOwner, string $providerName, ?User $user): User
@@ -38,6 +40,8 @@ class UserMapper
             $this->mapGoogleUser($resourceOwner, $user);
         } elseif ($resourceOwner instanceof SpotifyResourceOwner) {
             $this->mapSpotifyUser($resourceOwner, $user);
+        } elseif ($resourceOwner instanceof SoundCloudResourceOwner) {
+            $this->mapSoundcloudUser($resourceOwner, $user);
         }
 
         $user->setRoles(['ROLE_USER']);
@@ -66,12 +70,21 @@ class UserMapper
         }
     }
 
+    private function mapSoundcloudUser(SoundCloudResourceOwner $resourceOwner, User $user): void
+    {
+        $user->setFirstName((string) $resourceOwner->getFirstName());
+        $user->setLastName((string) $resourceOwner->getLastName());
+        $user->setProfilePicture($resourceOwner->getAvatarUrl());
+    }
+
     public function mapModel(UserModel $userModel, User $user, ?string $currentAccessToken = null): UserModel
     {
+        $email = $user->getEmail() ?? '';
+
         $userModel = $userModel->setId((string) $user->getId())
             ->setFirstName($user->getFirstName())
             ->setLastName($user->getLastName())
-            ->setEmail($user->getEmail())
+            ->setEmail($email)
             ->setProfilePicture($user->getProfilePicture())
             ->setRoles($user->getRoles())
         ;

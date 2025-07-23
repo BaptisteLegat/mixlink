@@ -6,6 +6,7 @@
     import { useAuthStore } from '@/stores/authStore';
     import GoogleIcon from 'vue-material-design-icons/Google.vue';
     import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
+    import SoundcloudIcon from 'vue-material-design-icons/Soundcloud.vue';
     import { useMotion } from '@vueuse/motion';
     import GradientBackground from '@/components/ui/GradientBackground.vue';
     import { getOAuthUrl } from '@/api.js';
@@ -17,6 +18,7 @@
     const cardRef = ref(null);
     const googleButtonRef = ref(null);
     const spotifyButtonRef = ref(null);
+    const soundcloudButtonRef = ref(null);
 
     const redirectTo = (provider) => {
         window.location.href = getOAuthUrl(provider);
@@ -53,6 +55,15 @@
                 transition: { delay: 500, duration: 500 },
             },
         });
+
+        useMotion(soundcloudButtonRef, {
+            initial: { opacity: 0, y: 20 },
+            enter: {
+                opacity: 1,
+                y: 0,
+                transition: { delay: 700, duration: 500 },
+            },
+        });
     });
 </script>
 <template>
@@ -81,6 +92,11 @@
                                 <el-button ref="spotifyButtonRef" size="large" type="success" @click="redirectTo('spotify')" class="oauth-button">
                                     <SpotifyIcon :size="24" style="min-width: 24px; margin-right: 10px" />
                                     <span>{{ t('login.connect_with_spotify') }}</span>
+                                </el-button>
+
+                                <el-button ref="soundcloudButtonRef" size="large" type="success" @click="redirectTo('soundcloud')" class="oauth-button soundcloud-button">
+                                    <SoundcloudIcon :size="24" style="min-width: 24px; margin-right: 10px; color: #fff" />
+                                    <span>{{ t('login.connect_with_soundcloud') }}</span>
                                 </el-button>
                             </div>
                             <div style="text-align: center; margin-top: 24px">
@@ -215,6 +231,19 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+    }
+
+    .soundcloud-button {
+      background: #FF6600 !important;
+      border-color: #FF6600 !important;
+      color: #fff !important;
+
+      &:hover,
+      &:focus {
+        background: #e65c00 !important;
+        border-color: #e65c00 !important;
+        color: #fff !important;
+      }
     }
 
     .dark {

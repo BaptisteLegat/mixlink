@@ -14,3 +14,11 @@ knpu_oauth2_client:
             redirect_route: app_auth_callback
             redirect_params:
                 provider: spotify
+        soundcloud:
+            type: generic
+            provider_class: Martin1982\OAuth2\Client\Provider\SoundCloud
+            client_id: '%env(SOUNDCLOUD_CLIENT_ID)%'
+            client_secret: '%env(SOUNDCLOUD_CLIENT_SECRET)%'
+            redirect_route: app_auth_callback
+            redirect_params:
+                provider: soundcloud

@@ -12,6 +12,7 @@
     const { t } = useI18n();
     const authStore = useAuthStore();
     const subscriptionStore = useSubscriptionStore();
+    const { setSoundCloudEmail } = useAuthStore();
 
     const props = defineProps({
         compact: {
@@ -39,6 +40,37 @@
         }
         return true;
     };
+
+    const isSoundCloudOnly = computed(() =>
+        authStore.providers.length === 1 && authStore.providers[0].name === 'soundcloud'
+    );
+
+    const soundcloudEmail = ref(authStore.user?.email || '');
+    const emailLoading = ref(false);
+
+    const shouldShowSoundCloudEmail = computed(() =>
+        isSoundCloudOnly.value && (!authStore.user?.email || '' === authStore.user.email)
+    );
+
+    async function submitSoundCloudEmail() {
+        if (!soundcloudEmail.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(soundcloudEmail.value)) {
+            ElMessage.error(t('soundcloud.email_error'));
+            return;
+        }
+        emailLoading.value = true;
+        try {
+            const result = await setSoundCloudEmail(soundcloudEmail.value);
+            if (result.success) {
+                ElMessage.success(t('soundcloud.email_success'));
+            } else {
+                ElMessage.error(t(result.error || 'soundcloud.email_error'));
+            }
+        } catch {
+            ElMessage.error(t('soundcloud.email_error'));
+        } finally {
+            emailLoading.value = false;
+        }
+    }
 
     async function handlePlanClick(plan) {
         if (plan.name === 'enterprise') {
@@ -69,73 +101,107 @@
     }
 </script>
 <template>
-    <el-row :gutter="props.compact ? 16 : 32" justify="center" class="pricing-row">
-        <el-col
-            v-for="(plan, index) in plans"
-            :key="index"
-            :xs="24"
-            :sm="24"
-            :md="props.compact ? 24 : 8"
-            :lg="props.compact ? 8 : 8"
-            :xl="props.compact ? 8 : 8"
-            class="pricing-col"
-            :class="{ 'pricing-col-compact': props.compact }"
-        >
-            <el-card
-                class="pricing-card"
-                :class="{
-                    'pricing-card-highlighted': plan.highlighted,
-                    'pricing-card-dark': isDark && !plan.highlighted,
-                    'pricing-card-highlighted-dark': isDark && plan.highlighted,
-                    'pricing-card-compact': props.compact,
-                    'pricing-card-current': isCurrentPlan(plan.name),
-                }"
-                shadow="hover"
-                :body-style="{ padding: props.compact ? '20px 16px' : '32px 24px', height: '100%', display: 'flex', flexDirection: 'column' }"
-            >
-                <div v-if="plan.badge" class="plan-badge">
-                    <StarIcon :size="16" />
-                    <span>{{ t(plan.badge) }}</span>
-                </div>
-                <div v-if="isCurrentPlan(plan.name)" class="current-plan-badge">
-                    {{ t('profile.current_plan') }}
-                </div>
-                <el-text tag="h3" class="plan-name">{{ t(plan.displayName) }}</el-text>
-                <div class="plan-price">
-                    <el-text tag="span" class="currency" v-if="plan.price !== 'home.plans.enterprise.price'">€</el-text>
-                    <el-text tag="span" class="amount">{{ plan.price === 'home.plans.enterprise.price' ? t(plan.price) : plan.price }}</el-text>
-                    <el-text v-if="plan.price !== 'home.plans.enterprise.price'" tag="span" class="period">
-                        {{ t('home.plans.per_month') }}
-                    </el-text>
-                </div>
-                <div class="divider"></div>
-                <el-space direction="vertical" class="plan-features" :fill="true" :size="props.compact ? 8 : 16" v-if="!props.compact">
-                    <div v-for="(feature, featureIndex) in plan.features" :key="featureIndex" class="feature-item">
-                        <CheckCircleIcon :size="18" :fill="plan.highlighted ? '#fff' : isDark ? '#6023c080' : '#6023c0'" />
-                        <el-text class="feature-text">{{ t(feature) }}</el-text>
-                    </div>
-                </el-space>
-                <div class="cta-wrapper">
+    <div>
+        <div v-if="shouldShowSoundCloudEmail" class="soundcloud-email-block">
+            <el-alert
+                type="info"
+                :title="t('soundcloud.email_info')"
+                show-icon
+                :closable="false"
+                class="mb-3"
+            />
+            <el-form @submit.prevent="submitSoundCloudEmail" :inline="true" class="soundcloud-email-form">
+                <el-form-item>
+                    <el-input
+                        v-model="soundcloudEmail"
+                        :placeholder="t('soundcloud.email_placeholder')"
+                        type="email"
+                        autocomplete="email"
+                        :disabled="emailLoading"
+                    />
+                </el-form-item>
+                <el-form-item>
                     <el-button
-                        :type="plan.highlighted ? 'primary' : 'default'"
-                        class="plan-cta"
-                        :class="{
-                            'plan-cta-highlighted': plan.highlighted,
-                            'plan-cta-secondary': !plan.highlighted,
-                        }"
-                        @click="handlePlanClick(plan)"
-                        :disabled="!canSubscribe(plan.name)"
-                        :loading="loading === plan.name"
-                        size="large"
-                        :style="props.compact ? 'width: 100%' : ''"
+                        type="primary"
+                        :loading="emailLoading"
+                        @click="submitSoundCloudEmail"
                     >
-                        <span v-if="isCurrentPlan(plan.name)">{{ t('profile.current_plan') }}</span>
-                        <span v-else>{{ t(plan.cta) }}</span>
+                        {{ t('soundcloud.email_submit') }}
                     </el-button>
-                </div>
-            </el-card>
-        </el-col>
-    </el-row>
+                </el-form-item>
+            </el-form>
+        </div>
+        <el-row v-if="!shouldShowSoundCloudEmail" :gutter="props.compact ? 16 : 32" justify="center" class="pricing-row">
+            <el-col
+                v-for="(plan, index) in plans"
+                :key="index"
+                :xs="24"
+                :sm="24"
+                :md="props.compact ? 24 : 8"
+                :lg="props.compact ? 8 : 8"
+                :xl="props.compact ? 8 : 8"
+                class="pricing-col"
+                :class="{ 'pricing-col-compact': props.compact }"
+            >
+                <el-card
+                    class="pricing-card"
+                    :class="{
+                        'pricing-card-highlighted': plan.highlighted,
+                        'pricing-card-dark': isDark && !plan.highlighted,
+                        'pricing-card-highlighted-dark': isDark && plan.highlighted,
+                        'pricing-card-compact': props.compact,
+                        'pricing-card-current': isCurrentPlan(plan.name),
+                    }"
+                    shadow="hover"
+                    :body-style="{ padding: props.compact ? '20px 16px' : '32px 24px', height: '100%', display: 'flex', flexDirection: 'column' }"
+                >
+                    <div v-if="plan.badge" class="plan-badge">
+                        <StarIcon :size="16" />
+                        <span>{{ t(plan.badge) }}</span>
+                    </div>
+                    <div v-if="isCurrentPlan(plan.name)" class="current-plan-badge">
+                        {{ t('profile.current_plan') }}
+                    </div>
+                    <el-text tag="h3" class="plan-name">{{ t(plan.displayName) }}</el-text>
+                    <div class="plan-price">
+                        <el-text tag="span" class="currency" v-if="plan.price !== 'home.plans.enterprise.price'">€</el-text>
+                        <el-text tag="span" class="amount">{{ plan.price === 'home.plans.enterprise.price' ? t(plan.price) : plan.price }}</el-text>
+                        <el-text v-if="plan.price !== 'home.plans.enterprise.price'" tag="span" class="period">
+                            {{ t('home.plans.per_month') }}
+                        </el-text>
+                    </div>
+                    <div class="divider"></div>
+                    <el-space direction="vertical" class="plan-features" :fill="true" :size="props.compact ? 8 : 16" v-if="!props.compact">
+                        <div v-for="(feature, featureIndex) in plan.features" :key="featureIndex" class="feature-item">
+                            <CheckCircleIcon :size="18" :fill="plan.highlighted ? '#fff' : isDark ? '#6023c080' : '#6023c0'" />
+                            <el-text class="feature-text">{{ t(feature) }}</el-text>
+                        </div>
+                    </el-space>
+                    <div class="cta-wrapper">
+                        <el-button
+                            :type="plan.highlighted ? 'primary' : 'default'"
+                            class="plan-cta"
+                            :class="{
+                                'plan-cta-highlighted': plan.highlighted,
+                                'plan-cta-secondary': !plan.highlighted,
+                            }"
+                            @click="handlePlanClick(plan)"
+                            :disabled="!canSubscribe(plan.name)"
+                            :loading="loading === plan.name"
+                            size="large"
+                            :style="props.compact ? 'width: 100%' : ''"
+                        >
+                            <span v-if="isCurrentPlan(plan.name)">{{ t('profile.current_plan') }}</span>
+                            <span v-else>{{ t(plan.cta) }}</span>
+                        </el-button>
+                    </div>
+                </el-card>
+            </el-col>
+        </el-row>
+        <el-row v-else :gutter="props.compact ? 16 : 32" justify="center" class="pricing-row">
+            <el-col :span="24"></el-col>
+        </el-row>
+    </div>
 </template>
 
 <style lang="scss" scoped>
@@ -432,4 +498,15 @@
             }
         }
     }
+
+.soundcloud-email-block {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
+.soundcloud-email-form {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
 </style>

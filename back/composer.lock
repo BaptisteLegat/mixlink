@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "376fb2383921998a7984b560a0a9d1ec",
+    "content-hash": "14f1cf895c8506904a9acbcf6c828c8c",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2103,6 +2103,69 @@
                 "source": "https://github.com/thephpleague/oauth2-google/tree/4.0.1"
             },
             "time": "2023-03-17T15:20:52+00:00"
+        },
+        {
+            "name": "martin1982/oauth2-soundcloud",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Martin1982/oauth2-soundcloud.git",
+                "reference": "24ac2edc9151bde477bc8841e49a6421d2a449ff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Martin1982/oauth2-soundcloud/zipball/24ac2edc9151bde477bc8841e49a6421d2a449ff",
+                "reference": "24ac2edc9151bde477bc8841e49a6421d2a449ff",
+                "shasum": ""
+            },
+            "require": {
+                "league/oauth2-client": "^2.3",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "php-parallel-lint/php-console-highlighter": "^1.0",
+                "php-parallel-lint/php-parallel-lint": "^1.0",
+                "phpmd/phpmd": "^2.10",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/var-dumper": "^4.4|^5.4|^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Martin1982\\OAuth2\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin de Keijzer",
+                    "email": "martin.dekeijzer@gmail.com",
+                    "homepage": "https://martindekeijzer.nl",
+                    "role": "Author"
+                }
+            ],
+            "description": "SoundCloud Oauth 2.0 Client Provider for The PHP League OAuth2-Client",
+            "homepage": "https://github.com/Martin1982/oauth2-soundcloud",
+            "keywords": [
+                "Authentication",
+                "authorization",
+                "client",
+                "oauth",
+                "oauth2",
+                "soundcloud"
+            ],
+            "support": {
+                "issues": "https://github.com/Martin1982/oauth2-soundcloud/issues",
+                "source": "https://github.com/Martin1982/oauth2-soundcloud/tree/2.0.0"
+            },
+            "time": "2022-12-09T08:56:27+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -14747,7 +14810,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -14755,6 +14818,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

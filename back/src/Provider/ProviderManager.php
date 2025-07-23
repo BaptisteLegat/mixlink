@@ -45,8 +45,10 @@ class ProviderManager
 
         $isUpdate = $existingProvider instanceof Provider;
 
+        $email = $user->getEmail() ?? '';
+
         $this->setTimestampable($provider, $isUpdate);
-        $this->setBlameable($provider, $user->getEmail(), $isUpdate);
+        $this->setBlameable($provider, $email, $isUpdate);
 
         $this->providerRepository->save($provider, true);
     }

@@ -2,8 +2,10 @@
 
 namespace App\Security;
 
+use App\ApiResource\ApiReference;
 use InvalidArgumentException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class OAuthService
@@ -19,6 +21,11 @@ class OAuthService
         'user-read-private',
     ];
 
+    public const array SOUNDCLOUD_SCOPES = [
+        'user-read-email',
+        'user-read-private',
+    ];
+
     public function __construct(private ClientRegistry $clientRegistry)
     {
     }
@@ -28,8 +35,9 @@ class OAuthService
         $client = $this->clientRegistry->getClient($provider);
 
         $scopes = match ($provider) {
-            'google' => self::GOOGLE_SCOPES,
-            'spotify' => self::SPOTIFY_SCOPES,
+            ApiReference::GOOGLE => self::GOOGLE_SCOPES,
+            ApiReference::SPOTIFY => self::SPOTIFY_SCOPES,
+            ApiReference::SOUNDCLOUD => self::SOUNDCLOUD_SCOPES,
             default => throw new InvalidArgumentException("Provider $provider not supported"),
         };
 
@@ -43,6 +51,10 @@ class OAuthService
         $accessToken = $client->getAccessToken();
 
         $user = $client->fetchUserFromToken($accessToken);
+
+        if (ApiReference::SOUNDCLOUD === $provider) {
+            $user = new SoundCloudResourceOwner($user->toArray());
+        }
 
         return new OAuthUserData(
             $user,

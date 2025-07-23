@@ -41,7 +41,8 @@ class SubscriptionManager
         $isUpdate = $existingSubscription instanceof Subscription;
 
         $this->setTimestampable($subscription, $isUpdate);
-        $this->setBlameable($subscription, $user->getEmail(), $isUpdate);
+        $email = $user->getEmail() ?? '';
+        $this->setBlameable($subscription, $email, $isUpdate);
 
         $this->subscriptionRepository->save($subscription, true);
 

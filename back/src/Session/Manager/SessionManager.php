@@ -31,11 +31,11 @@ class SessionManager
         $session->setCode($this->sessionRepository->generateUniqueCode());
 
         $this->setTimestampable($session, false);
-        $this->setBlameable($session, $host->getEmail(), false);
+        $this->setBlameable($session, $host->getEmail() ?? '', false);
 
         $this->sessionRepository->save($session, true);
 
-        $this->sessionParticipantManager->joinSession($session, $host->getFirstName() ?: $host->getEmail());
+        $this->sessionParticipantManager->joinSession($session, (string) $host->getFirstName());
 
         $this->logger->info('Session created', [
             'sessionId' => $session->getId()?->toRfc4122(),
