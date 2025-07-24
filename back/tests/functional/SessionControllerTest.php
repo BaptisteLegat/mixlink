@@ -316,7 +316,6 @@ class SessionControllerTest extends WebTestCase
 
     public function testRemoveParticipantThrowException(): void
     {
-
         $mock = $this->createMock(SessionManager::class);
         $mock->method('findSessionByCode')->willThrowException(new Exception('Erreur interne'));
         static::getContainer()->set(SessionManager::class, $mock);

@@ -31,7 +31,7 @@
         <circle cx="170" cy="150" r="25" :fill="props.color">
             <animate attributeName="r" values="25;28;25" dur="2s" repeatCount="indefinite" />
         </circle>
-        <path d="M160 140V160M150 150H170" stroke="white" stroke-width="2" stroke-linecap="round" />
+        <path d="M170 140V160M160 150H180" stroke="white" stroke-width="2" stroke-linecap="round" />
 
         <path d="M190 150L230 150" stroke="url(#connectionGradient)" stroke-width="4" stroke-dasharray="12 6">
             <animate attributeName="stroke-dashoffset" values="18;0;18" dur="1.5s" repeatCount="indefinite" />
@@ -46,7 +46,7 @@
             <animate attributeName="r" values="15;20;15" dur="2s" repeatCount="indefinite" begin="0.5s" />
         </circle>
 
-        <path d="M270 160L280 170L290 150" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0">
+        <path d="M274 150L279 155L286 144" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0">
             <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2s" fill="freeze" />
         </path>
     </svg>

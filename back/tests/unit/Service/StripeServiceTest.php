@@ -158,4 +158,106 @@ class StripeServiceTest extends TestCase
         $result = $this->stripeService->getSessionLineItems($sessionId);
         $this->assertSame($lineItemsMock, $result);
     }
+
+    public function testCancelSubscription(): void
+    {
+        $subscriptionId = 'sub_test_123';
+        $expectedResult = $this->createMock(StripeObject::class);
+
+        $subscriptionsMock = new class($expectedResult) {
+            private $returnValue;
+            public $called = false;
+            public $args;
+
+            public function __construct($returnValue)
+            {
+                $this->returnValue = $returnValue;
+            }
+
+            public function cancel($subscriptionId, $options)
+            {
+                $this->called = true;
+                $this->args = [$subscriptionId, $options];
+
+                return $this->returnValue;
+            }
+        };
+
+        $stripeClientStub = new class($subscriptionsMock) extends StripeClient {
+            public object $subscriptions;
+
+            public function __construct($subscriptions)
+            {
+                parent::__construct('sk_test_dummy');
+                $this->subscriptions = $subscriptions;
+            }
+        };
+
+        $this->stripeClientProperty->setValue($this->stripeService, $stripeClientStub);
+
+        $result = $this->stripeService->cancelSubscription($subscriptionId);
+        $this->assertSame($expectedResult, $result);
+    }
+
+    public function testChangeSubscriptionPlan(): void
+    {
+        $subscriptionId = 'sub_test_456';
+        $newPriceId = 'price_new_789';
+        $expectedResult = $this->createMock(StripeObject::class);
+
+        $subscriptionItemId = 'si_123abc';
+        $subscriptionRetrieveMock = (object) [
+            'items' => (object) [
+                'data' => [
+                    (object) ['id' => $subscriptionItemId],
+                ],
+            ],
+        ];
+
+        $subscriptionsMock = new class($subscriptionRetrieveMock, $expectedResult) {
+            private $retrieveReturn;
+            private $updateReturn;
+            public $retrieveCalled = false;
+            public $updateCalled = false;
+            public $retrieveArgs;
+            public $updateArgs;
+
+            public function __construct($retrieveReturn, $updateReturn)
+            {
+                $this->retrieveReturn = $retrieveReturn;
+                $this->updateReturn = $updateReturn;
+            }
+
+            public function retrieve($subscriptionId, $options)
+            {
+                $this->retrieveCalled = true;
+                $this->retrieveArgs = [$subscriptionId, $options];
+
+                return $this->retrieveReturn;
+            }
+
+            public function update($subscriptionId, $params)
+            {
+                $this->updateCalled = true;
+                $this->updateArgs = [$subscriptionId, $params];
+
+                return $this->updateReturn;
+            }
+        };
+
+        $stripeClientStub = new class($subscriptionsMock) extends StripeClient {
+            public object $subscriptions;
+
+            public function __construct($subscriptions)
+            {
+                parent::__construct('sk_test_dummy');
+                $this->subscriptions = $subscriptions;
+            }
+        };
+
+        $this->stripeClientProperty->setValue($this->stripeService, $stripeClientStub);
+
+        $result = $this->stripeService->changeSubscriptionPlan($subscriptionId, $newPriceId);
+        $this->assertSame($expectedResult, $result);
+    }
 }

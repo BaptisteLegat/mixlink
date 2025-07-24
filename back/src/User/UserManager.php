@@ -122,11 +122,6 @@ class UserManager
         }
     }
 
-    public function saveUser(User $user): void
-    {
-        $this->userRepository->save($user, true);
-    }
-
     public function updateEmailForSoundCloudUser(User $user, string $email): void
     {
         $activeProviders = array_filter($user->getProviders()->toArray(), function ($provider) {
@@ -143,6 +138,7 @@ class UserManager
         ;
         $this->setTimestampable($user, true);
         $this->setBlameable($user, $email, true);
+
         $provider = $activeProviders[0];
         $provider
             ->setCreatedBy($email)

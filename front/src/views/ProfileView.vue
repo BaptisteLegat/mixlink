@@ -77,13 +77,13 @@
                                             <b>{{ t('profile.id') }}:</b> {{ authStore.user?.id }}
                                         </el-text>
                                         <el-text tag="p">
-                                            <b>{{ t('profile.email') }}:</b> {{ authStore.user?.email }}
+                                            <b>{{ t('profile.email') }}:</b> {{ authStore.user?.email || t('profile.unknown') }}
                                         </el-text>
                                         <el-text tag="p">
-                                            <b>{{ t('profile.first_name') }}:</b> {{ authStore.user?.firstName ?? t('profile.unknown') }}
+                                            <b>{{ t('profile.first_name') }}:</b> {{ authStore.user?.firstName || t('profile.unknown') }}
                                         </el-text>
                                         <el-text tag="p">
-                                            <b>{{ t('profile.last_name') }}:</b> {{ authStore.user?.lastName ?? t('profile.unknown') }}
+                                            <b>{{ t('profile.last_name') }}:</b> {{ authStore.user?.lastName || t('profile.unknown') }}
                                         </el-text>
                                     </el-col>
                                     <el-col :span="24" :md="12">

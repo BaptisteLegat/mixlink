@@ -127,6 +127,46 @@ class UserMapperTest extends TestCase
         $this->userMapper->mapEntity($googleUser, 'unknown', null);
     }
 
+    public function testMapEntitySoundCloudUser(): void
+    {
+        $soundcloudData = [
+            'id' => 'sc_123',
+            'first_name' => 'SCFirst',
+            'last_name' => 'SCLast',
+            'avatar_url' => 'http://soundcloud.com/avatar.jpg',
+        ];
+        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+
+        $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, null);
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertEquals('SCFirst', $user->getFirstName());
+        $this->assertEquals('SCLast', $user->getLastName());
+        $this->assertEquals('http://soundcloud.com/avatar.jpg', $user->getProfilePicture());
+        $this->assertEquals(['ROLE_USER'], $user->getRoles());
+    }
+
+    public function testMapEntitySoundCloudUserWithExistingUser(): void
+    {
+        $existingUser = new User();
+        $existingUser->setFirstName('OldFirst')->setLastName('OldLast')->setProfilePicture('oldpic');
+        $soundcloudData = [
+            'id' => 'sc_456',
+            'first_name' => 'NewFirst',
+            'last_name' => 'NewLast',
+            'avatar_url' => 'http://soundcloud.com/newavatar.jpg',
+        ];
+        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+
+        $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, $existingUser);
+
+        $this->assertSame($existingUser, $user);
+        $this->assertEquals('NewFirst', $user->getFirstName());
+        $this->assertEquals('NewLast', $user->getLastName());
+        $this->assertEquals('http://soundcloud.com/newavatar.jpg', $user->getProfilePicture());
+        $this->assertEquals(['ROLE_USER'], $user->getRoles());
+    }
+
     public function testMapModelWithEmptyUser(): void
     {
         $user = new User()

@@ -20,6 +20,7 @@ class AuthenticationControllerTest extends WebTestCase
 
     private const GOOGLE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     private const SPOTIFY_URL = 'https://accounts.spotify.com/authorize';
+    private const SOUNDCLOUD_URL = 'https://api.soundcloud.com/connect';
 
     public static function setUpBeforeClass(): void
     {
@@ -53,6 +54,14 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $location = $this->client->getResponse()->headers->get('Location');
         $this->assertStringContainsString(self::SPOTIFY_URL, $location);
+    }
+
+    public function testConnectSoundCloud(): void
+    {
+        $this->client->request('GET', '/api/auth/soundcloud');
+        $this->assertResponseStatusCodeSame(302);
+        $location = $this->client->getResponse()->headers->get('Location');
+        $this->assertStringContainsString(self::SOUNDCLOUD_URL, $location);
     }
 
     // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
@@ -90,6 +99,15 @@ class AuthenticationControllerTest extends WebTestCase
     }
 
     // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckSoundCloud(): void
+    {
+        $this->client->request('GET', '/api/auth/soundcloud/callback');
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
     public function testConnectCheckGoogleWithExistingUser(): void
     {
         $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
@@ -121,6 +139,25 @@ class AuthenticationControllerTest extends WebTestCase
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_access_token_123'));
 
         $this->client->request('GET', '/api/auth/spotify/callback');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects();
+        $this->assertResponseHeaderSame('Location', $_ENV['FRONTEND_URL']);
+    }
+
+    // CAN'T TEST CORRECTLY THE CALLBACK ROUTE BECAUSE CANT SIMULATE THE STATE PARAMETER
+    public function testConnectCheckSoundCloudWithExistingUser(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_access_token_123'));
+
+        $this->client->request('GET', '/api/auth/soundcloud/callback');
 
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
@@ -214,6 +251,97 @@ class AuthenticationControllerTest extends WebTestCase
             '[]',
             $this->client->getResponse()->getContent()
         );
+    }
+
+    public function testSetEmailForSoundCloudInvalidEmail(): void
+    {
+        $user = $this->userRepository->findOneBy(['firstName' => 'Bob']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $user->getProviders()->first()->getAccessToken()));
+        $payload = json_encode(['email' => 'not-an-email']);
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
+        $this->assertResponseStatusCodeSame(400);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('profile.email.invalid', $responseData['error']);
+    }
+
+    public function testSetEmailForSoundCloudMalformedRequest(): void
+    {
+        $user = $this->userRepository->findOneBy(['firstName' => 'Bob']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_access_token_910'));
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], 'not a json');
+        $this->assertResponseStatusCodeSame(400);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('profile.email.invalid', $responseData['error']);
+    }
+
+    public function testSetEmailForSoundCloudForbiddenIfNotSoundCloudOnly(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_access_token_910'));
+        $payload = json_encode(['email' => 'nouvel.email@test.fr']);
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
+        $this->assertResponseStatusCodeSame(403);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('profile.email.not_soundcloud_only', $responseData['error']);
+    }
+
+    public function testSetEmailForSoundCloudThrowException(): void
+    {
+        $user = $this->userRepository->findOneBy(['firstName' => 'Bob']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $userManagerMock = $this->createMock(UserManager::class);
+        $userManagerMock->method('updateEmailForSoundCloudUser')
+            ->willThrowException(new Exception('Error updating email'))
+        ;
+
+        static::getContainer()->set(UserManager::class, $userManagerMock);
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_access_token_910'));
+        $payload = json_encode(['email' => 'nouvel.email@test.fr']);
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
+        $this->assertResponseStatusCodeSame(500);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('profile.email.update_error', $responseData['error']);
+    }
+
+    public function testSetEmailForSoundCloudSuccess(): void
+    {
+        $user = $this->userRepository->findOneBy(['firstName' => 'Bob']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_access_token_910'));
+        $payload = json_encode(['email' => 'nouvel.email@test.fr']);
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
+        $this->assertResponseStatusCodeSame(200);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($responseData['success']);
+
+        $user = $this->userRepository->findOneBy(['email' => 'nouvel.email@test.fr']);
+
+        $this->assertNotNull($user);
+        $this->assertEquals('nouvel.email@test.fr', $user->getEmail());
     }
 
     public function testLogout(): void

@@ -10,6 +10,7 @@ use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2Client;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -78,6 +79,31 @@ class OAuthServiceTest extends TestCase
         $this->assertSame($redirectResponse, $response);
     }
 
+    public function testGetRedirectResponseSoundCloud(): void
+    {
+        $provider = ApiReference::SOUNDCLOUD;
+        $expectedScopes = OAuthService::SOUNDCLOUD_SCOPES;
+        $redirectResponse = new RedirectResponse('https://example.com/oauth_redirect');
+
+        $this->clientRegistryMocked
+            ->expects($this->once())
+            ->method('getClient')
+            ->with($provider)
+            ->willReturn($this->oauthClientMocked)
+        ;
+
+        $this->oauthClientMocked
+            ->expects($this->once())
+            ->method('redirect')
+            ->with($expectedScopes, [])
+            ->willReturn($redirectResponse)
+        ;
+
+        $response = $this->oAuthService->getRedirectResponse($provider);
+
+        $this->assertSame($redirectResponse, $response);
+    }
+
     public function testGetRedirectResponseWithUnknownProvider(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -124,6 +150,43 @@ class OAuthServiceTest extends TestCase
         $accessToken = new AccessToken(['access_token' => 'xxx', 'refresh_token' => 'yyy']);
         $user = $this->createMock(ResourceOwnerInterface::class);
         $oauthUserData = new OAuthUserData($user, 'xxx', 'yyy');
+
+        $this->clientRegistryMocked
+            ->expects($this->once())
+            ->method('getClient')
+            ->with($providerName)
+            ->willReturn($this->oauthClientMocked)
+        ;
+
+        $this->oauthClientMocked
+            ->expects($this->once())
+            ->method('getAccessToken')
+            ->willReturn($accessToken)
+        ;
+
+        $this->oauthClientMocked
+            ->expects($this->once())
+            ->method('fetchUserFromToken')
+            ->with($accessToken)
+            ->willReturn($user)
+        ;
+
+        $result = $this->oAuthService->fetchUser($providerName);
+
+        $this->assertEquals($oauthUserData, $result);
+    }
+
+    public function testFetchUserSoundCloud(): void
+    {
+        $providerName = ApiReference::SOUNDCLOUD;
+        $accessToken = new AccessToken(['access_token' => 'xxx', 'refresh_token' => 'yyy']);
+        $user = $this->createMock(ResourceOwnerInterface::class);
+        $user->method('toArray')->willReturn(['id' => 123, 'full_name' => 'Test User']);
+        $oauthUserData = new OAuthUserData(
+            new SoundCloudResourceOwner(['id' => 123, 'full_name' => 'Test User']),
+            'xxx',
+            'yyy'
+        );
 
         $this->clientRegistryMocked
             ->expects($this->once())

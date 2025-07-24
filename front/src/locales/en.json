@@ -192,7 +192,8 @@
         "error_fetch_profile": "Error fetching profile.",
         "error_logout": "Error during logout.",
         "error_delete_account": "Error deleting account.",
-        "error_request_failed": "Request failed. Please try again later."
+        "error_request_failed": "Request failed. Please try again later.",
+        "error_update_email": "Error updating email."
     },
     "routes": {
         "terms": "Terms of service",
@@ -516,6 +517,6 @@
         "email_submit": "Validate email",
         "email_success": "Your email has been successfully registered!",
         "email_error": "Please enter a valid email.",
-        "email_info": "For the proper functioning of the application with SoundCloud, you must define an email address. If you connect other providers, use the same email address."
+        "email_info": "For the proper functioning of the application with SoundCloud, you must define an email address. If you connect other authentication methods, use the same email address."
     }
 }

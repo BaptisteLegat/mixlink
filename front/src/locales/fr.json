@@ -194,7 +194,8 @@
         "error_fetch_profile": "Erreur lors de la récupération du profil.",
         "error_logout": "Erreur lors de la déconnexion.",
         "error_delete_account": "Erreur lors de la suppression du compte.",
-        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement."
+        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement.",
+        "error_update_email": "Erreur lors de la mise à jour de l'email."
     },
     "routes": {
         "terms": "Conditions d'utilisation",
@@ -521,6 +522,6 @@
         "email_submit": "Valider l'email",
         "email_success": "Votre email a bien été enregistré !",
         "email_error": "Veuillez saisir une adresse email valide.",
-        "email_info": "Pour le bon fonctionnement de l'application avec SoundCloud, vous devez définir une adresse email. Si vous connectez d'autres providers, utilisez la même adresse email."
+        "email_info": "Pour le bon fonctionnement de l'application avec SoundCloud, vous devez définir une adresse email. Si vous connectez d'autres méthodes d'authentification, utilisez la même adresse email."
     }
 }

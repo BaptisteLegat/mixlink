@@ -12,6 +12,13 @@
     const ctaRef = ref(null);
     const imageRef = ref(null);
 
+    const scrollToFeatures = () => {
+        const el = document.getElementById('features');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     useMotion(titleRef, {
         initial: { opacity: 0, x: -30 },
         enter: {
@@ -93,6 +100,7 @@
                         <el-button
                             size="large"
                             bg
+                            @click="scrollToFeatures"
                             v-motion="{
                                 hover: {
                                     scale: 1.05,

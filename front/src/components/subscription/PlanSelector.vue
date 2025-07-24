@@ -41,16 +41,12 @@
         return true;
     };
 
-    const isSoundCloudOnly = computed(() =>
-        authStore.providers.length === 1 && authStore.providers[0].name === 'soundcloud'
-    );
+    const isSoundCloudOnly = computed(() => authStore.providers.length === 1 && authStore.providers[0].name === 'soundcloud');
 
     const soundcloudEmail = ref(authStore.user?.email || '');
     const emailLoading = ref(false);
 
-    const shouldShowSoundCloudEmail = computed(() =>
-        isSoundCloudOnly.value && (!authStore.user?.email || '' === authStore.user.email)
-    );
+    const shouldShowSoundCloudEmail = computed(() => isSoundCloudOnly.value && (!authStore.user?.email || '' === authStore.user.email));
 
     async function submitSoundCloudEmail() {
         if (!soundcloudEmail.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(soundcloudEmail.value)) {
@@ -103,13 +99,7 @@
 <template>
     <div>
         <div v-if="shouldShowSoundCloudEmail" class="soundcloud-email-block">
-            <el-alert
-                type="info"
-                :title="t('soundcloud.email_info')"
-                show-icon
-                :closable="false"
-                class="mb-3"
-            />
+            <el-alert type="info" :title="t('soundcloud.email_info')" show-icon :closable="false" class="alert-info" />
             <el-form @submit.prevent="submitSoundCloudEmail" :inline="true" class="soundcloud-email-form">
                 <el-form-item>
                     <el-input
@@ -121,11 +111,7 @@
                     />
                 </el-form-item>
                 <el-form-item>
-                    <el-button
-                        type="primary"
-                        :loading="emailLoading"
-                        @click="submitSoundCloudEmail"
-                    >
+                    <el-button type="primary" :loading="emailLoading" @click="submitSoundCloudEmail">
                         {{ t('soundcloud.email_submit') }}
                     </el-button>
                 </el-form-item>
@@ -499,14 +485,17 @@
         }
     }
 
-.soundcloud-email-block {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 24px 0;
-}
-.soundcloud-email-form {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
+    .alert-info {
+        margin-bottom: 16px;
+    }
+
+    .soundcloud-email-block {
+        margin: 0 auto;
+        padding: 24px 0;
+    }
+    .soundcloud-email-form {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
 </style>

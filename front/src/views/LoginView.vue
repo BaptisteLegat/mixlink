@@ -94,7 +94,13 @@
                                     <span>{{ t('login.connect_with_spotify') }}</span>
                                 </el-button>
 
-                                <el-button ref="soundcloudButtonRef" size="large" type="success" @click="redirectTo('soundcloud')" class="oauth-button soundcloud-button">
+                                <el-button
+                                    ref="soundcloudButtonRef"
+                                    size="large"
+                                    type="success"
+                                    @click="redirectTo('soundcloud')"
+                                    class="oauth-button soundcloud-button"
+                                >
                                     <SoundcloudIcon :size="24" style="min-width: 24px; margin-right: 10px; color: #fff" />
                                     <span>{{ t('login.connect_with_soundcloud') }}</span>
                                 </el-button>
@@ -234,16 +240,16 @@
     }
 
     .soundcloud-button {
-      background: #FF6600 !important;
-      border-color: #FF6600 !important;
-      color: #fff !important;
-
-      &:hover,
-      &:focus {
-        background: #e65c00 !important;
-        border-color: #e65c00 !important;
+        background: #ff6600 !important;
+        border-color: #ff6600 !important;
         color: #fff !important;
-      }
+
+        &:hover,
+        &:focus {
+            background: #e65c00 !important;
+            border-color: #e65c00 !important;
+            color: #fff !important;
+        }
     }
 
     .dark {

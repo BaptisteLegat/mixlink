@@ -59,7 +59,7 @@
         <div ref="heroRef">
             <HeroSection />
         </div>
-        <div ref="featuresRef">
+        <div ref="featuresRef" id="features">
             <HowItWorks />
             <FeaturesSection />
         </div>

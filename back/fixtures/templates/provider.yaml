@@ -35,3 +35,11 @@ App\Entity\Provider:
     updatedBy: "anon."
     updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
 
+  soundcloud (template):
+    name: 'soundcloud'
+    accessToken: 'soundcloud_access_token_910'
+    refreshToken: 'soundcloud_refresh_token_131'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
