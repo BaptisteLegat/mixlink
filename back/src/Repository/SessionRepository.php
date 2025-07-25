@@ -19,6 +19,9 @@ class SessionRepository extends ServiceEntityRepository
         parent::__construct($registry, Session::class);
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function save(Session $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -28,6 +31,9 @@ class SessionRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function remove(Session $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

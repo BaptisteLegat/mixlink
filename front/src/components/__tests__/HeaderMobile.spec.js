@@ -20,17 +20,28 @@ vi.mock('@/composables/dark', () => ({
     isDark: isDarkMock,
 }));
 
-vi.mock('@vueuse/core', () => ({
+vi.mock('vue-router', () => ({
+    useRouter: () => mockRouter,
+    useRoute: () => ({
+        path: '/',
+        name: 'home',
+        params: {},
+        query: {},
+        fullPath: '/',
+        matched: [],
+        hash: '',
+        redirectedFrom: undefined,
+        meta: {},
+    }),
+}));
+
+vi.mock('vueuse/core', () => ({
     useMediaQuery: vi.fn(() => false),
 }));
 
 const mockRouter = {
     push: vi.fn(),
 };
-
-vi.mock('vue-router', () => ({
-    useRouter: () => mockRouter,
-}));
 
 afterEach(() => {
     vi.clearAllMocks();
@@ -93,12 +104,12 @@ describe('HeaderMobile Component', () => {
         expect(wrapper.findComponent(ElDrawer).exists()).toBe(true);
     });
 
-    it('should have a menu with 3 items', async () => {
+    it('should have a menu with 4 items', async () => {
         const menuIcon = wrapper.findComponent(MenuIcon);
         await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
-        expect(menu.findAllComponents(ElMenuItem).length).toBe(3);
+        expect(menu.findAllComponents(ElMenuItem).length).toBe(4);
     });
 
     it('should toggle language when clicking on the language item', async () => {
@@ -128,7 +139,7 @@ describe('HeaderMobile Component', () => {
         await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
-        const loginItem = menu.findAllComponents(ElMenuItem)[2];
+        const loginItem = menu.findAllComponents(ElMenuItem).find(item => item.text() === i18n.global.t('header.login'));
         await loginItem.trigger('click', {});
 
         expect(mockRouter.push).toHaveBeenCalledWith('/login');

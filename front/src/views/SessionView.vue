@@ -114,8 +114,7 @@
                 cancelButtonText: t('common.cancel'),
                 type: 'warning',
             });
-            const result = await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
-            ElMessage.success(t(result.message, { pseudo }));
+            await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             await loadParticipants();
         } catch (error) {
             ElMessage.error(t(error.message));

@@ -19,6 +19,8 @@ class MercureManager
     }
 
     /**
+     * @SuppressWarnings("PHPMD.StaticAccess")
+     *
      * @return array{token: string, mercureUrl: string}
      */
     public function generateTokenForSession(string $sessionCode): array
@@ -46,6 +48,8 @@ class MercureManager
     }
 
     /**
+     * @SuppressWarnings("PHPMD.StaticAccess")
+     *
      * @return array{token: string, mercureUrl: string}
      */
     public function generateTokenForHost(string $sessionCode): array

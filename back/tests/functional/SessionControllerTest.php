@@ -188,7 +188,7 @@ class SessionControllerTest extends WebTestCase
         );
         $this->assertResponseStatusCodeSame(404);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('session.join.error.session_not_found', $data['error']);
+        $this->assertEquals('session.join.errors.session_not_found', $data['error']);
     }
 
     public function testJoinSessionPseudoAlreadyTaken(): void

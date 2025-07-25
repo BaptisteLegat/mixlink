@@ -272,7 +272,7 @@ class SessionController extends AbstractController
 
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
-                return new JsonResponse(['error' => 'session.join.error.session_not_found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'session.join.errors.session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             try {
@@ -408,23 +408,27 @@ class SessionController extends AbstractController
     public function removeParticipant(string $code, Request $request): JsonResponse
     {
         try {
+            /** @var array<string, string> $data */
             $data = json_decode($request->getContent(), true);
 
-            if (!isset($data['pseudo']) || !is_string($data['pseudo']) || empty(trim((string) $data['pseudo']))) {
+            /** @var ?string $pseudo */
+            $pseudo = $data['pseudo'] ?? null;
+            if (!is_string($pseudo) || empty($pseudo)) {
                 return new JsonResponse(['error' => 'session.remove.errors.pseudo_required'], Response::HTTP_BAD_REQUEST);
             }
 
-            $reason = isset($data['reason']) && is_string($data['reason']) ? $data['reason'] : 'leave';
             $session = $this->sessionManager->findSessionByCode($code);
             if (!$session) {
                 return new JsonResponse(['error' => 'session.remove.errors.session_not_found'], Response::HTTP_NOT_FOUND);
             }
 
-            $participant = $this->participantManager->getParticipantBySessionAndPseudo($session, trim((string) $data['pseudo']));
+            $participant = $this->participantManager->getParticipantBySessionAndPseudo($session, $pseudo);
             if (!$participant) {
                 return new JsonResponse(['error' => 'session.remove.errors.participant_not_found'], Response::HTTP_NOT_FOUND);
             }
 
+            /** @var string $reason */
+            $reason = $data['reason'] ?? 'leave';
             if ('kick' === $reason) {
                 /** @var string $accessToken */
                 $accessToken = $request->cookies->get('AUTH_TOKEN');
@@ -443,7 +447,7 @@ class SessionController extends AbstractController
             $this->logger->error('Error removing participant', [
                 'error' => $e->getMessage(),
                 'sessionCode' => $code,
-                'pseudo' => $data['pseudo'] ?? 'unknown',
+                'pseudo' => $pseudo ?? 'unknown',
             ]);
 
             return new JsonResponse(['error' => 'session.remove.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
