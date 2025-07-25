@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { fetchUserProfile, apiLogout, apiDeleteAccount, apiDisconnectProvider } from '@/api';
 import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
+import { useSessionStore } from '@/stores/sessionStore';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null);
@@ -28,6 +29,13 @@ export const useAuthStore = defineStore('auth', () => {
                 isAuthenticated.value = true;
                 subscription.value = response.subscription || null;
                 providers.value = response.providers || [];
+
+                const sessionStore = useSessionStore();
+                if (response.currentSession) {
+                    sessionStore.setCurrentSession(response.currentSession);
+                } else {
+                    sessionStore.leaveCurrentSession();
+                }
 
                 return true;
             } else {
@@ -67,8 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
     async function logout() {
         try {
             await apiLogout();
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion :', error);
         } finally {
             document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             resetUserState();
@@ -77,30 +83,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function deleteAccount() {
-        try {
-            await apiDeleteAccount();
-            document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            resetUserState();
-            return true;
-        } catch (error) {
-            console.error('Erreur lors de la suppression du compte :', error);
-            throw error;
-        }
+        await apiDeleteAccount();
+        document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        resetUserState();
+
+        return true;
     }
 
     async function disconnectProvider(providerId) {
-        try {
-            const response = await apiDisconnectProvider(providerId);
-
-            if (!response.mainProvider) {
-                providers.value = providers.value.filter((provider) => provider.id !== providerId);
-            }
-
-            return response;
-        } catch (error) {
-            console.error('Erreur lors de la déconnexion du provider :', error);
-            throw error;
+        const response = await apiDisconnectProvider(providerId);
+        if (!response.mainProvider) {
+            providers.value = providers.value.filter((provider) => provider.id !== providerId);
         }
+
+        return response;
     }
 
     return {

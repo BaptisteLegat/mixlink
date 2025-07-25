@@ -150,16 +150,16 @@ class Subscription implements BlameableInterface, TimestampableInterface
     {
         $now = new DateTimeImmutable();
 
-        // Si la date de fin est dépassée, l'abonnement n'est pas actif
+        // If the subscription is not started yet, it's not active
         if ($this->getEndDate() <= $now) {
             return false;
         }
 
-        // Si l'abonnement est annulé mais la période courante n'est pas terminée,
-        // on considère toujours l'abonnement comme actif jusqu'à sa date de fin
+        // If the subscription is canceled but the current period is not over,
+        // we still consider the subscription as active until its end date
         if ($this->isCanceled()) {
-            // Si le statut est explicitement marqué comme 'canceled' ou similaire
-            // on peut décider de retourner false ici si nécessaire
+            // If the status is explicitly marked as 'canceled' or similar
+            // we can decide to return false here if necessary
             if ('canceled' === $this->getStatus()) {
                 return false;
             }

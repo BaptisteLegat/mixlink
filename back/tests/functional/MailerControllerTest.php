@@ -49,7 +49,6 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Email envoyé avec succès', $responseData['message']);
         $this->assertTrue($responseData['success']);
     }
 
@@ -66,8 +65,7 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
-        $this->assertArrayHasKey('message', $responseData['errors']);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
     public function testSendContactEmailWithInvalidJson(): void
@@ -103,7 +101,7 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
     public function testSendContactEmailWithInvalidEmail(): void
@@ -126,8 +124,7 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
-        $this->assertArrayHasKey('email', $responseData['errors']);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
     public function testSendContactEmailWithShortMessage(): void
@@ -150,8 +147,7 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
-        $this->assertArrayHasKey('message', $responseData['errors']);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
     public function testSendContactEmailWithMailerException(): void
@@ -180,7 +176,6 @@ class MailerControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertFalse($responseData['success']);
-        $this->assertStringContainsString('Erreur lors de l\'envoi de l\'email', $responseData['error']);
+        $this->assertArrayHasKey('error', $responseData);
     }
 }

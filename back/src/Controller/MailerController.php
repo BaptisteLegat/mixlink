@@ -9,6 +9,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
@@ -66,7 +67,6 @@ class MailerController extends AbstractController
                 description: 'Server error when sending the email',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: 'Error sending email: ...'),
                     ]
                 )
@@ -81,13 +81,13 @@ class MailerController extends AbstractController
     ): JsonResponse {
         $content = $request->getContent();
         if (empty($content)) {
-            return $this->json(['errors' => ['message' => 'Empty request body']], 400);
+            return new JsonResponse(['error' => 'common.error'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
             json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            return $this->json(['errors' => ['message' => 'Invalid JSON']], 400);
+            return new JsonResponse(['error' => 'common.error'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -97,7 +97,7 @@ class MailerController extends AbstractController
                 'json'
             );
         } catch (Throwable $e) {
-            return $this->json(['errors' => ['message' => 'Invalid data format']], 400);
+            return new JsonResponse(['error' => 'common.form.error'], Response::HTTP_BAD_REQUEST);
         }
 
         $constraints = new Assert\Collection([
@@ -113,13 +113,7 @@ class MailerController extends AbstractController
         );
 
         if (count($violations) > 0) {
-            $errors = [];
-            foreach ($violations as $violation) {
-                $propertyPath = trim($violation->getPropertyPath(), '[\]');
-                $errors[$propertyPath] = $violation->getMessage();
-            }
-
-            return $this->json(['errors' => $errors], 400);
+            return new JsonResponse(['error' => 'common.form.error'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -137,9 +131,9 @@ class MailerController extends AbstractController
 
             $mailer->send($email);
 
-            return $this->json(['success' => true, 'message' => 'Email envoyé avec succès']);
+            return new JsonResponse(['success' => true]);
         } catch (Exception $e) {
-            return $this->json(['success' => false, 'error' => 'Erreur lors de l\'envoi de l\'email: '.$e->getMessage()], 500);
+            return new JsonResponse(['error' => 'contact.form.error_message'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

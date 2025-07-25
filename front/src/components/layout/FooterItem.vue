@@ -34,7 +34,7 @@
             <el-col :span="24" class="text-center">
                 <el-link :underline="false" @click="navigateTo('/')">
                     <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
-                    <el-image :src="isDark ? 'logo-dark.svg' : 'logo.svg'" alt="mixlink" class="logo" />
+                    <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" class="logo" fit="contain" />
                     <h1 :class="isDark ? 'primary-dark' : 'primary'" class="logo-text">link</h1>
                 </el-link>
             </el-col>

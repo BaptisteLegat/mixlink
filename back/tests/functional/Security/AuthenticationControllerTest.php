@@ -241,11 +241,6 @@ class AuthenticationControllerTest extends WebTestCase
         $this->client->request('DELETE', '/api/me/delete');
 
         $this->assertResponseStatusCodeSame(401);
-
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseData = json_decode($responseContent, true);
-
-        $this->assertEquals('Unauthorized', $responseData['error']);
     }
 
     public function testDeleteAccountWithInvalidToken(): void
@@ -259,12 +254,7 @@ class AuthenticationControllerTest extends WebTestCase
 
         $this->client->request('DELETE', '/api/me/delete');
 
-        $this->assertResponseStatusCodeSame(404);
-
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseData = json_decode($responseContent, true);
-
-        $this->assertEquals('User not found', $responseData['error']);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testDeleteAccountWithException(): void
@@ -278,7 +268,8 @@ class AuthenticationControllerTest extends WebTestCase
 
         $userManagerMock = $this->createMock(UserManager::class);
         $userManagerMock->method('deleteUser')
-            ->willThrowException(new Exception('Error deleting user'));
+            ->willThrowException(new Exception('Error deleting user'))
+        ;
 
         static::getContainer()->set(UserManager::class, $userManagerMock);
 
@@ -291,7 +282,7 @@ class AuthenticationControllerTest extends WebTestCase
         $responseContent = $this->client->getResponse()->getContent();
         $responseData = json_decode($responseContent, true);
 
-        $this->assertEquals('Failed to delete account', $responseData['error']);
+        $this->assertEquals('profile.delete_account.error', $responseData['error']);
     }
 
     public function testDeleteAccountWithValidToken(): void

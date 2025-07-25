@@ -12,6 +12,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -26,8 +27,8 @@ class SubscriptionController extends AbstractController
     ) {
     }
 
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscribe/{planName}', name: 'api_subscription_start', methods: ['GET'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Get(
         path: '/api/subscribe/{planName}',
         summary: 'Start a new subscription',
@@ -84,13 +85,13 @@ class SubscriptionController extends AbstractController
 
         $plan = $planRepository->findOneBy(['name' => $planName]);
         if (null === $plan) {
-            return new JsonResponse(['error' => 'Plan not found.'], 404);
+            return new JsonResponse(['error' => 'subscription.start.error_plan_not_found'], Response::HTTP_NOT_FOUND);
         }
 
         $priceId = $this->stripeService->getPriceIdForPlan($plan->getName());
 
         if (null === $priceId) {
-            return new JsonResponse(['error' => 'Stripe price ID not configured for this plan.'], 400);
+            return new JsonResponse(['error' => 'subscription.start.error_stripe_price_id_not_configured'], Response::HTTP_BAD_REQUEST);
         }
 
         /** @var string $frontendUrl */
@@ -106,7 +107,7 @@ class SubscriptionController extends AbstractController
 
         $checkoutUrl = $checkoutSession->url;
         if (null === $checkoutUrl) {
-            return new JsonResponse(['error' => 'Unable to create checkout session.'], 500);
+            return new JsonResponse(['error' => 'subscription.start.error_unable_to_create_checkout_session'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return new JsonResponse([
@@ -114,8 +115,8 @@ class SubscriptionController extends AbstractController
         ]);
     }
 
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscription/cancel', name: 'api_subscription_cancel', methods: ['POST'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/subscription/cancel',
         summary: 'Cancel current subscription',
@@ -128,7 +129,6 @@ class SubscriptionController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Subscription successfully cancelled'),
                     ]
                 )
             ),
@@ -161,23 +161,20 @@ class SubscriptionController extends AbstractController
 
         $subscription = $user->getSubscription();
         if (null === $subscription || null === $subscription->getStripeSubscriptionId()) {
-            return new JsonResponse(['error' => 'No active subscription found'], 404);
+            return new JsonResponse(['error' => 'subscription.cancel.error_no_active_subscription'], Response::HTTP_NOT_FOUND);
         }
 
         $result = $this->subscriptionManager->cancelSubscription($user);
 
         if (!$result) {
-            return new JsonResponse(['error' => 'Failed to cancel subscription'], 500);
+            return new JsonResponse(['error' => 'subscription.cancel.error_failed_to_cancel_subscription'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Subscription successfully cancelled',
-        ]);
+        return new JsonResponse(['success' => true]);
     }
 
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/subscription/change/{planName}', name: 'api_subscription_change', methods: ['POST'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/subscription/change/{planName}',
         summary: 'Change subscription plan',
@@ -199,7 +196,6 @@ class SubscriptionController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Subscription successfully changed'),
                     ]
                 )
             ),
@@ -235,28 +231,25 @@ class SubscriptionController extends AbstractController
 
         $subscription = $user->getSubscription();
         if (null === $subscription || null === $subscription->getStripeSubscriptionId()) {
-            return new JsonResponse(['error' => 'No active subscription found'], 404);
+            return new JsonResponse(['error' => 'subscription.change.error_no_active_subscription'], Response::HTTP_NOT_FOUND);
         }
 
         $newPlan = $planRepository->findOneBy(['name' => $planName]);
         if (null === $newPlan) {
-            return new JsonResponse(['error' => 'Plan not found'], 404);
+            return new JsonResponse(['error' => 'subscription.change.error_plan_not_found'], Response::HTTP_NOT_FOUND);
         }
 
         $currentPlan = $subscription->getPlan();
         if (null !== $currentPlan && $currentPlan->getId() === $newPlan->getId()) {
-            return new JsonResponse(['error' => 'Already subscribed to this plan'], 400);
+            return new JsonResponse(['error' => 'subscription.change.error_already_subscribed_to_this_plan'], Response::HTTP_BAD_REQUEST);
         }
 
         $result = $this->subscriptionManager->changeSubscriptionPlan($user, $newPlan);
 
         if (!$result) {
-            return new JsonResponse(['error' => 'Failed to change subscription'], 500);
+            return new JsonResponse(['error' => 'subscription.change.error_failed_to_change_subscription'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Subscription successfully changed',
-        ]);
+        return new JsonResponse(['success' => true]);
     }
 }

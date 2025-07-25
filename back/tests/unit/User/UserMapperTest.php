@@ -4,10 +4,13 @@ namespace App\Tests\Unit\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\Provider;
+use App\Entity\Session;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
+use App\Session\Mapper\SessionMapper;
+use App\Session\Model\SessionModel;
 use App\Subscription\SubscriptionMapper;
 use App\Subscription\SubscriptionModel;
 use App\User\UserMapper;
@@ -22,15 +25,18 @@ class UserMapperTest extends TestCase
 {
     private ProviderMapper|MockObject $providerMapper;
     private SubscriptionMapper|MockObject $subscriptionMapper;
+    private SessionMapper|MockObject $sessionMapper;
     private UserMapper $userMapper;
 
     protected function setUp(): void
     {
         $this->providerMapper = $this->createMock(ProviderMapper::class);
         $this->subscriptionMapper = $this->createMock(SubscriptionMapper::class);
+        $this->sessionMapper = $this->createMock(SessionMapper::class);
         $this->userMapper = new UserMapper(
             $this->providerMapper,
-            $this->subscriptionMapper
+            $this->subscriptionMapper,
+            $this->sessionMapper
         );
     }
 
@@ -132,6 +138,10 @@ class UserMapperTest extends TestCase
 
         $userModel = new UserModel();
 
+        $this->sessionMapper->expects($this->never())
+            ->method('mapModel')
+        ;
+
         $result = $this->userMapper->mapModel($userModel, $user, null);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('', $result->getFirstName());
@@ -139,6 +149,7 @@ class UserMapperTest extends TestCase
         $this->assertEquals('', $result->getEmail());
         $this->assertEquals('', $result->getProfilePicture());
         $this->assertEquals(['ROLE_USER'], $result->getRoles());
+        $this->assertNull($result->getCurrentSession());
     }
 
     public function testMapModelWithUserAndProviders(): void
@@ -167,6 +178,10 @@ class UserMapperTest extends TestCase
             ->method('mapModel')
         ;
 
+        $this->sessionMapper->expects($this->never())
+            ->method('mapModel')
+        ;
+
         $result = $this->userMapper->mapModel($userModel, $user, $currentAccessToken);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('John', $result->getFirstName());
@@ -176,6 +191,7 @@ class UserMapperTest extends TestCase
         $this->assertEquals(['ROLE_USER'], $result->getRoles());
         $this->assertCount(2, $result->getProviders());
         $this->assertNull($result->getSubscription());
+        $this->assertNull($result->getCurrentSession());
     }
 
     public function testMapModelWithUserAndSubscription(): void
@@ -201,6 +217,10 @@ class UserMapperTest extends TestCase
             ->willReturn(new SubscriptionModel())
         ;
 
+        $this->sessionMapper->expects($this->never())
+            ->method('mapModel')
+        ;
+
         $result = $this->userMapper->mapModel($userModel, $user, null);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertEquals('John', $result->getFirstName());
@@ -211,6 +231,7 @@ class UserMapperTest extends TestCase
         $this->assertCount(0, $result->getProviders());
         $this->assertInstanceOf(SubscriptionModel::class, $result->getSubscription());
         $this->assertEquals($user->getSubscription()->getId(), $result->getSubscription()->getId());
+        $this->assertNull($result->getCurrentSession());
     }
 
     public function testMapModelWithCurrentAccessToken(): void
@@ -234,8 +255,45 @@ class UserMapperTest extends TestCase
             ->willReturn(new ProviderModel())
         ;
 
+        $this->sessionMapper->expects($this->never())
+            ->method('mapModel')
+        ;
+
         $result = $this->userMapper->mapModel($userModel, $user, $currentAccessToken);
         $this->assertInstanceOf(UserModel::class, $result);
         $this->assertCount(1, $result->getProviders());
+        $this->assertNull($result->getCurrentSession());
+    }
+
+    public function testMapModelWithCurrentSession(): void
+    {
+        $user = new User();
+        $user->setFirstName('John')
+            ->setLastName('Doe')
+            ->setEmail('test@test.fr')
+            ->setProfilePicture('test')
+            ->setRoles(['ROLE_USER'])
+        ;
+
+        $session = new Session()
+            ->setEndedAt(null)
+            ->setHost($user)
+        ;
+
+        $user->addSession($session);
+
+        $this->sessionMapper
+            ->expects($this->once())
+            ->method('mapModel')
+            ->with($session)
+            ->willReturn(new SessionModel())
+        ;
+
+        $userModel = new UserModel();
+
+        $result = $this->userMapper->mapModel($userModel, $user, null);
+        $this->assertInstanceOf(UserModel::class, $result);
+        $this->assertNotNull($result->getCurrentSession());
+        $this->assertInstanceOf(SessionModel::class, $result->getCurrentSession());
     }
 }

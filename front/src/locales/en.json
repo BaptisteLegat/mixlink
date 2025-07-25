@@ -4,22 +4,25 @@
         "login": "Login",
         "logout": "Logout",
         "dark_mode": "Dark mode",
-        "light_mode": "Light mode"
+        "light_mode": "Light mode",
+        "create_session": "Create session",
+        "join_session": "Join session",
+        "join_current_session": "Join current session"
     },
     "profile": {
-        "title": "My Profile",
-        "unknown_user": "Unknown User",
-        "account_info": "Account Information",
+        "title": "My profile",
+        "unknown_user": "Unknown user",
+        "account_info": "Account information",
         "id": "ID",
         "email": "Email",
-        "first_name": "First Name",
-        "last_name": "Last Name",
+        "first_name": "First name",
+        "last_name": "Last name",
         "unknown": "Not specified",
         "role": "Role",
         "subscription": "Subscription",
         "plan": "Plan",
-        "start_date": "Start Date",
-        "end_date": "End Date",
+        "start_date": "Start date",
+        "end_date": "End date",
         "status": "Status",
         "active": "Active",
         "inactive": "Inactive",
@@ -28,12 +31,12 @@
         "no_subscription": "No active subscription",
         "back_to_home": "Back to Home",
         "not_authenticated": "Please login to view your profile",
-        "connected_services": "Connected Services",
+        "connected_services": "Connected services",
         "connected": "Connected",
         "connected_with": "Connected with",
-        "change_subscription": "Change Subscription",
-        "choose_subscription": "Choose a Subscription",
-        "current_plan": "Current Plan",
+        "change_subscription": "Change subscription",
+        "choose_subscription": "Choose a subscription",
+        "current_plan": "Current plan",
         "danger_zone": {
             "title": "Danger Zone",
             "unsubscribe_title": "Unsubscribe",
@@ -74,8 +77,8 @@
     "footer": {
         "about": "About",
         "contact": "Contact",
-        "privacy": "Privacy Policy",
-        "terms": "Terms of Service",
+        "privacy": "Privacy policy",
+        "terms": "Terms of service",
         "faq": "FAQ"
     },
     "home": {
@@ -83,42 +86,43 @@
         "title_2": "Music",
         "title_3": "Playlists",
         "subtitle": "Create collaborative playlists between different streaming platforms in a few clicks. No need for app switching or sign-ups.",
-        "start_free": "Start Free",
-        "view_demo": "View Demo",
-        "how_it_works": "How It Works",
+        "start_free": "Start free",
+        "view_demo": "View demo",
+        "how_it_works": "How it works",
         "features": {
             "title": "Features",
             "subtitle": "Discover what makes mixlink unique",
             "feature1": {
-                "title": "Cross-Platform Creation",
+                "title": "Cross-Platform creation",
                 "description": "Create playlists that integrate songs from different streaming platforms in one place."
             },
             "feature2": {
-                "title": "Easy Sharing",
+                "title": "Easy sharing",
                 "description": "Share a simple link with your friends so they can contribute to your playlist."
             },
             "feature3": {
-                "title": "URL Addition",
+                "title": "URL addition",
                 "description": "Add songs by simply pasting the URL or searching by name and artist."
             },
             "feature4": {
-                "title": "Complete History",
+                "title": "Complete history",
                 "description": "View the complete history of all playlists created."
             }
         },
         "plans": {
-            "title": "Subscription Plans",
+            "title": "Subscription plans",
             "subtitle": "Choose the plan that best suits your needs",
             "per_month": "/month",
             "popular": "Popular",
             "current_plan": "You are currently on the plan",
             "since": "since",
             "change_plan": "Want to change your plan? Click the button below.",
-            "change_plan_cta": "Change Plan",
+            "change_plan_cta": "Change plan",
             "free": {
                 "title": "Free",
                 "feature1": "Create up to 5 playlists",
                 "feature2": "Add up to 50 songs per playlist",
+                "feature3": "Maximum of 3 participants per session",
                 "cta": "Get Started, Free"
             },
             "premium": {
@@ -126,6 +130,7 @@
                 "feature1": "Unlimited playlists",
                 "feature2": "Unlimited number of songs",
                 "feature3": "Complete history",
+                "feature4": "Maximum of 10 participants per session",
                 "cta": "Get Premium"
             },
             "enterprise": {
@@ -166,7 +171,9 @@
     },
     "button": {
         "submit": "Submit",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "close": "Close"
     },
     "login": {
         "title": "Login",
@@ -174,40 +181,46 @@
         "connect_with_google": "Sign in with Google",
         "connect_with_spotify": "Sign in with Spotify",
         "terms_notice": "By logging in, you agree to our",
-        "terms_link": "Terms of Service"
+        "terms_link": "Terms of service"
     },
     "common": {
-        "cancel": "Annuler",
-        "loading": "Chargement..."
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "close": "Close",
+        "unauthorized": "You are not authorized",
+        "error_fetch_profile": "Error fetching profile.",
+        "error_logout": "Error during logout.",
+        "error_delete_account": "Error deleting account.",
+        "error_request_failed": "Request failed. Please try again later."
     },
     "routes": {
-        "terms": "Terms of Service",
-        "privacy": "Privacy Policy",
+        "terms": "Terms of service",
+        "privacy": "Privacy policy",
         "contact": "Contact",
         "faq": "FAQ"
     },
     "terms": {
-        "title": "Terms of Service",
+        "title": "Terms of service",
         "last_updated": "Last updated: {date}",
         "section1": {
-            "title": "Acceptance of Terms",
+            "title": "Acceptance of terms",
             "content": "By using the mixlink service, you agree to comply with these terms of service. If you do not accept these terms, please do not use our service. We reserve the right to modify these terms at any time, and it is your responsibility to review them regularly to stay informed of updates."
         },
         "section2": {
-            "title": "Service Description",
+            "title": "Service description",
             "content": "mixlink is a platform that allows users to create collaborative playlists across different music streaming platforms. Our service enables you to share and contribute to playlists without needing to switch applications or create new accounts on other platforms."
         },
         "section3": {
-            "title": "Authentication and User Accounts",
+            "title": "Authentication and user accounts",
             "content": "When registering, you must provide accurate information and keep it up to date. You are responsible for maintaining the confidentiality of your credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account or any other security breach.",
             "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Apple Music, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
         },
         "section4": {
-            "title": "Copyright and Intellectual Property",
+            "title": "Copyright and intellectual property",
             "content": "mixlink respects copyright and expects its users to do the same. Our service only allows referencing content hosted on legal streaming platforms, and we do not directly host copyright-protected audio files. If you believe that your work has been used in a way that constitutes copyright infringement, please contact us."
         },
         "section5": {
-            "title": "Limitations of Liability",
+            "title": "Limitations of liability",
             "content": "mixlink provides its service 'as is' and disclaims all responsibility for its accuracy, availability, or reliability. We are not responsible for service interruptions due to technical issues, maintenance operations, or factors beyond our reasonable control."
         },
         "section6": {
@@ -216,19 +229,19 @@
         }
     },
     "privacy": {
-        "title": "Privacy Policy",
+        "title": "Privacy policy",
         "last_updated": "Last updated: {date}",
         "section1": {
-            "title": "Information Collection",
+            "title": "Information collection",
             "content": "We collect information when you register on our site, log in to your account, create playlists, or share content. The information collected includes your name, email address, and potentially your music preferences and application usage history.",
             "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Apple Music, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
         },
         "section2": {
-            "title": "Use of Information",
+            "title": "Use of information",
             "content": "The information we collect is used to personalize your experience, improve our website, improve customer service, and process transactions. We may also use this information to send periodic emails regarding updates to our service or other products and services."
         },
         "section3": {
-            "title": "Information Protection",
+            "title": "Information protection",
             "content": "We implement various security measures to protect the security of your personal information. We use advanced encryption to protect sensitive information transmitted online, and we also protect your information offline."
         },
         "section4": {
@@ -236,24 +249,24 @@
             "content": "Our website uses cookies to enhance the user experience. A cookie is a small file placed on your computer's hard drive. You can refuse the use of cookies by changing your browser settings, but this may affect certain features of our service."
         },
         "section5": {
-            "title": "Information Sharing",
+            "title": "Information sharing",
             "content": "We do not sell, trade, or transfer your personally identifiable information to third parties, except when necessary to provide a service you have requested or when we have your permission. This does not include trusted third parties who assist us in operating our website or conducting our business, as long as those parties agree to keep this information confidential."
         },
         "section6": {
-            "title": "Your Rights",
+            "title": "Your rights",
             "content": "You have the right to access, update, or delete the information we have about you. You can exercise these rights by contacting us via our contact page. We will respond to your request within a reasonable timeframe.",
             "content_oauth": "You have the right to access, update, or delete the information we have about you. You can disconnect from one or more streaming services connected to your mixlink account at any time by accessing your profile. You can also completely delete your mixlink account, which will remove all your data from our servers. If you wish to exercise other rights regarding your data, you can contact us via our contact page. We will respond to your request within a reasonable timeframe."
         }
     },
     "contact": {
-        "title": "Contact Us",
+        "title": "Contact us",
         "description": "Have questions or suggestions? Feel free to contact us and we will get back to you as soon as possible.",
-        "info_title": "Our Contact Information",
+        "info_title": "Our contact information",
         "email_title": "Email",
         "phone_title": "Phone",
         "address_title": "Address",
         "form": {
-            "title": "Send Us a Message",
+            "title": "Send us a message",
             "name": "Name",
             "name_placeholder": "Enter your name",
             "email": "Email",
@@ -262,7 +275,7 @@
             "subject_placeholder": "Enter the subject of your message",
             "message": "Message",
             "message_placeholder": "Write your message here...",
-            "submit": "Send Message",
+            "submit": "Send message",
             "success_message": "Your message has been sent successfully. We will get back to you shortly.",
             "error_message": "An error occurred while sending the message. Please try again.",
             "validation": {
@@ -276,16 +289,16 @@
         }
     },
     "faq": {
-        "title": "Frequently Asked Questions",
+        "title": "Frequently asked questions",
         "description": "Find answers to the most commonly asked questions about mixlink and its features.",
         "didnt_find": "Didn't find the answer to your question?",
         "contact_us": "Contact us directly and we'll be happy to help.",
-        "contact_button": "Contact Us",
+        "contact_button": "Contact us",
         "categories": {
-            "general": "General Questions",
-            "account": "User Account",
-            "subscription": "Subscriptions and Pricing",
-            "technical": "Technical Support"
+            "general": "General questions",
+            "account": "User account",
+            "subscription": "Subscriptions and pricing",
+            "technical": "Technical support"
         },
         "general": {
             "what_is": {
@@ -342,6 +355,159 @@
                 "question": "Do you offer an API for developers?",
                 "answer": "Yes, we offer an API for developers as part of our Enterprise offering. If you are interested, please contact us to discuss your specific needs and integration options."
             }
+        }
+    },
+    "session": {
+        "create": {
+            "title": "Create session",
+            "button": "Create session",
+            "success": "Session created successfully!",
+            "error": "Error creating session",
+            "error_session_not_found": "Session not found",
+            "error_not_host": "You are not the host of this session"
+        },
+        "form": {
+            "name": "Name",
+            "name_placeholder": "Session name",
+            "participants_limit": "With your {plan} plan, you can invite up to {limit} participants",
+            "validation": {
+                "name_required": "Name is required",
+                "name_min": "Name must be at least 3 characters",
+                "name_max": "Name cannot exceed 50 characters"
+            }
+        },
+        "share": {
+            "title": "Share session",
+            "success_title": "Session created!",
+            "success_description": "Your session has been created successfully. Share the link or code with your friends.",
+            "share_with_friends": "Share with friends",
+            "share_link": "Share link",
+            "session_code": "Session code",
+            "copy": "Copy",
+            "copied": "Link copied!",
+            "copied_short": "Copied",
+            "copy_error": "Error copying",
+            "join_session": "Join session"
+        },
+        "info": {
+            "name": "Name",
+            "code": "Code",
+            "description": "Description"
+        },
+        "participants": {
+            "title": "Participants",
+            "host": "Host",
+            "guest": "Guest",
+            "waiting": "Waiting for participants...",
+            "error_session_not_found": "Session not found"
+        },
+        "playlist": {
+            "title": "Collaborative Playlist",
+            "empty": "No music added",
+            "empty_description": "Start adding tracks to the collaborative playlist!"
+        },
+        "join": {
+            "title": "Join session",
+            "description": "Enter your nickname to join the session",
+            "code": "Session code",
+            "code_placeholder": "Enter the session code",
+            "pseudo": "Nickname",
+            "pseudo_placeholder": "Your nickname",
+            "button": "Join",
+            "join_button": "Join",
+            "success": "You have joined the session successfully!",
+            "error": "Error joining the session",
+            "already_joined": "You have already joined this session",
+            "validation": {
+                "code_required": "Session code is required",
+                "code_length": "The code must be exactly 8 characters",
+                "pseudo_required": "Nickname is required",
+                "pseudo_length": "Nickname must be between 2 and 20 characters"
+            },
+            "errors": {
+                "pseudo_taken": "This nickname is already taken",
+                "session_full": "The session is full",
+                "session_not_found": "Session not found"
+            }
+        },
+        "rejoin": {
+            "title": "Rejoin existing session",
+            "button": "Rejoin session",
+            "success": "You have joined the session successfully!",
+            "error": "Error rejoining the session",
+            "alert_title": "Active session detected",
+            "alert_description": "You already have an active session: {name}. Do you want to join it?"
+        },
+        "leave": {
+            "title": "Leave session",
+            "confirmation": "Are you sure you want to leave this session?",
+            "confirm": "Leave",
+            "button": "Leave"
+        },
+        "end": {
+            "title": "End session",
+            "confirmation": "Are you sure you want to end this session? This action is irreversible.",
+            "confirm": "End",
+            "button": "End session",
+            "success": "Session ended successfully",
+            "error": "Error ending session",
+            "error_forbidden": "You are not authorized to end this session",
+            "error_session_not_found": "Session not found"
+        },
+        "error": {
+            "not_found_description": "This session does not exist or has been ended",
+            "back_home": "Back to Home",
+            "not_found": "Session not found"
+        },
+        "counter": {
+            "participants": "{current}/{max} participants"
+        },
+        "kick": {
+            "title": "Remove participant",
+            "button": "Remove",
+            "confirmation": "Are you sure you want to remove \"{pseudo}\" from the session?",
+            "confirm": "Remove",
+            "success": "\"{pseudo}\" has been removed from the session",
+            "error": "Error removing participant",
+            "kicked_notification": "You have been removed from the session by the host."
+        },
+        "remove": {
+            "error": "Error removing participant",
+            "errors": {
+                "pseudo_required": "Pseudo is required",
+                "pseudo_length": "Pseudo must be between 2 and 20 characters",
+                "session_not_found": "Session not found",
+                "participant_not_found": "Participant not found",
+                "only_host_can_kick": "Only the host can remove participants"
+            }
+        },
+        "get_by_code": {
+            "error_session_not_found": "Session not found"
+        }
+    },
+    "provider": {
+        "disconnect": {
+            "success": "Provider disconnected successfully",
+            "error": "Error disconnecting provider",
+            "error_provider_not_found": "Provider not found"
+        }
+    },
+    "subscription": {
+        "start": {
+            "error_plan_not_found": "Requested plan not found.",
+            "error_stripe_price_id_not_configured": "The plan is not properly configured for Stripe.",
+            "error_unable_to_create_checkout_session": "Unable to create Stripe checkout session."
+        },
+        "cancel": {
+            "error_no_active_subscription": "No active subscription found.",
+            "error_failed_to_cancel_subscription": "Failed to cancel subscription.",
+            "success": "Subscription cancelled successfully."
+        },
+        "change": {
+            "error_no_active_subscription": "No active subscription found.",
+            "error_plan_not_found": "Requested plan not found.",
+            "error_already_subscribed_to_this_plan": "You are already subscribed to this plan.",
+            "error_failed_to_change_subscription": "Failed to change subscription."
         }
     }
 }

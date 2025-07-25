@@ -4,7 +4,10 @@
         "login": "Connexion",
         "logout": "Déconnexion",
         "dark_mode": "Mode sombre",
-        "light_mode": "Mode clair"
+        "light_mode": "Mode clair",
+        "create_session": "Créer une session",
+        "join_session": "Rejoindre la session",
+        "join_current_session": "Rejoindre la session en cours"
     },
     "profile": {
         "title": "Mon Profil",
@@ -119,6 +122,7 @@
                 "title": "Gratuit",
                 "feature1": "Créez jusqu'à 5 playlists",
                 "feature2": "Ajout jusqu'à 50 morceaux par playlist",
+                "feature3": "Maximum 3 participants par session",
                 "cta": "Commencer, gratuitement"
             },
             "premium": {
@@ -126,6 +130,7 @@
                 "feature1": "Playlists illimitées",
                 "feature2": "Nombre illimité de morceaux",
                 "feature3": "Historique complet",
+                "feature4": "Maximum 10 participants par session",
                 "cta": "Obtenir premium"
             },
             "enterprise": {
@@ -178,7 +183,17 @@
     },
     "common": {
         "cancel": "Annuler",
-        "loading": "Chargement..."
+        "loading": "Chargement...",
+        "close": "Fermer",
+        "unauthorized": "Vous n'êtes pas autorisé",
+        "error": "Une erreur est survenue, veuillez réessayer ultérieurement",
+        "form": {
+            "error": "Une erreur est survenue, veuillez vérifier les champs et réessayer"
+        },
+        "error_fetch_profile": "Erreur lors de la récupération du profil.",
+        "error_logout": "Erreur lors de la déconnexion.",
+        "error_delete_account": "Erreur lors de la suppression du compte.",
+        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement."
     },
     "routes": {
         "terms": "Conditions d'utilisation",
@@ -266,7 +281,6 @@
             "success_message": "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.",
             "error_message": "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer.",
             "error_rate_limit": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
-            "error_server": "Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.",
             "validation": {
                 "name_required": "Veuillez entrer votre nom",
                 "email_required": "Veuillez entrer votre email",
@@ -278,7 +292,7 @@
         }
     },
     "faq": {
-        "title": "Foire Aux Questions",
+        "title": "Foire aux questions",
         "description": "Trouvez des réponses aux questions les plus fréquemment posées sur mixlink et ses fonctionnalités.",
         "didnt_find": "Vous n'avez pas trouvé la réponse à votre question ?",
         "contact_us": "Contactez-nous directement et nous serons ravis de vous aider.",
@@ -344,6 +358,161 @@
                 "question": "Proposez-vous une API pour les développeurs ?",
                 "answer": "Oui, nous proposons une API pour les développeurs dans le cadre de notre offre Entreprise. Si vous êtes intéressé, veuillez nous contacter pour discuter de vos besoins spécifiques et des options d'intégration."
             }
+        }
+    },
+    "session": {
+        "create": {
+            "title": "Créer une session",
+            "button": "Créer la session",
+            "success": "Session créée avec succès !",
+            "error": "Erreur lors de la création de la session",
+            "error_session_not_found": "Session introuvable",
+            "error_not_host": "Vous n'êtes pas l'hôte de cette session"
+        },
+        "form": {
+            "name": "Nom",
+            "name_placeholder": "Nom de la session",
+            "participants_limit": "Avec votre plan {plan}, vous pouvez inviter jusqu'à {limit} participants",
+            "validation": {
+                "name_required": "Le nom est requis",
+                "name_min": "Le nom doit contenir au moins 3 caractères",
+                "name_max": "Le nom ne peut pas dépasser 50 caractères"
+            }
+        },
+        "share": {
+            "title": "Partager la session",
+            "success_title": "Session créée !",
+            "success_description": "Votre session a été créée avec succès. Partagez le lien ou le code avec vos amis.",
+            "share_with_friends": "Partager avec des amis",
+            "share_link": "Lien de partage",
+            "session_code": "Code de session",
+            "copy": "Copier",
+            "copied": "Lien copié !",
+            "copied_short": "Copié",
+            "copy_error": "Erreur lors de la copie",
+            "join_session": "Rejoindre la session"
+        },
+        "info": {
+            "name": "Nom",
+            "code": "Code",
+            "description": "Description",
+            "max_participants": "Participants max",
+            "participants": "participants"
+        },
+        "participants": {
+            "title": "Participants",
+            "host": "Hôte",
+            "guest": "Invité",
+            "waiting": "En attente de participants...",
+            "error_session_not_found": "Session introuvable"
+        },
+        "playlist": {
+            "title": "Playlist collaborative",
+            "empty": "Aucune musique ajoutée",
+            "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !"
+        },
+        "join": {
+            "title": "Rejoindre la session",
+            "description": "Entrez votre pseudo pour rejoindre la session",
+            "code": "Code de session",
+            "code_placeholder": "Entrez le code de session",
+            "pseudo": "Pseudo",
+            "pseudo_placeholder": "Votre pseudo",
+            "button": "Rejoindre",
+            "join_button": "Rejoindre",
+            "success": "Vous avez rejoint la session avec succès !",
+            "error": "Erreur lors de la connexion à la session",
+            "already_joined": "Vous avez déjà rejoint cette session",
+            "validation": {
+                "code_required": "Le code de session est requis",
+                "code_length": "Le code doit contenir exactement 8 caractères",
+                "pseudo_required": "Le pseudo est requis",
+                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
+            },
+            "errors": {
+                "session_not_found": "Session introuvable",
+                "pseudo_taken": "Ce pseudo est déjà pris",
+                "session_full": "La session est pleine"
+            }
+        },
+        "rejoin": {
+            "title": "Rejoindre la session existante",
+            "button": "Rejoindre la session",
+            "success": "Vous avez rejoint la session avec succès !",
+            "error": "Erreur lors de la reconnexion à la session",
+            "alert_title": "Session active détectée",
+            "alert_description": "Vous avez déjà une session active : {name}. Voulez-vous la rejoindre ?"
+        },
+        "leave": {
+            "title": "Quitter la session",
+            "confirmation": "Êtes-vous sûr de vouloir quitter cette session ?",
+            "confirm": "Quitter",
+            "button": "Quitter"
+        },
+        "remove": {
+            "error": "Erreur lors de la suppression du participant",
+            "errors": {
+                "pseudo_required": "Le pseudo est requis",
+                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères",
+                "session_not_found": "Session introuvable",
+                "participant_not_found": "Participant introuvable",
+                "only_host_can_kick": "Seul l'hôte peut exclure des participants"
+            }
+        },
+        "end": {
+            "title": "Terminer la session",
+            "confirmation": "Êtes-vous sûr de vouloir terminer cette session ? Cette action est irréversible.",
+            "confirm": "Terminer",
+            "button": "Terminer la session",
+            "success": "Session terminée avec succès",
+            "error": "Erreur lors de la terminaison de la session",
+            "error_forbidden": "Vous n'êtes pas autorisé à terminer cette session",
+            "error_session_not_found": "Session introuvable"
+        },
+        "error": {
+            "not_found_description": "Cette session n'existe pas ou a été terminée",
+            "back_home": "Retour à l'accueil",
+            "not_found": "Session introuvable"
+        },
+        "counter": {
+            "participants": "{current}/{max} participants"
+        },
+        "kick": {
+            "title": "Exclure un participant",
+            "button": "Supprimer",
+            "confirmation": "Êtes-vous sûr de vouloir exclure \"{pseudo}\" de la session ?",
+            "confirm": "Exclure",
+            "success": "\"{pseudo}\" a été exclu de la session",
+            "error": "Erreur lors de l'exclusion du participant",
+            "kicked_notification": "Vous avez été exclu de la session par l'hôte."
+        },
+        "get_by_code": {
+            "error_session_not_found": "Session introuvable"
+        }
+    },
+    "provider": {
+        "disconnect": {
+            "success": "Service déconnecté avec succès",
+            "error": "Erreur lors de la déconnexion du service",
+            "error_provider_not_found": "Service introuvable"
+        }
+    },
+    "subscription": {
+        "start": {
+            "error_plan_not_found": "Le plan demandé est introuvable.",
+            "error_stripe_price_id_not_configured": "Le plan n'est pas configuré correctement pour Stripe.",
+            "error_unable_to_create_checkout_session": "Impossible de créer la session de paiement Stripe."
+        },
+        "cancel": {
+            "error_no_active_subscription": "Aucun abonnement actif trouvé.",
+            "error_failed_to_cancel_subscription": "Échec de l'annulation de l'abonnement.",
+            "success": "Abonnement annulé avec succès."
+        },
+        "change": {
+            "error_no_active_subscription": "Aucun abonnement actif trouvé.",
+            "error_plan_not_found": "Le plan demandé est introuvable.",
+            "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
+            "error_failed_to_change_subscription": "Échec du changement d'abonnement."
         }
     }
 }

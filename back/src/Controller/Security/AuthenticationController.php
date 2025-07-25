@@ -2,9 +2,11 @@
 
 namespace App\Controller\Security;
 
+use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Security\OAuthService;
 use App\User\UserManager;
+use App\Voter\AuthenticationVoter;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -13,7 +15,9 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
 #[OA\Tag(name: 'Authentication', description: 'OAuth authentication endpoints')]
@@ -181,6 +185,7 @@ class AuthenticationController extends AbstractController
     }
 
     #[Route('/me/delete', name: 'api_me_delete', methods: ['DELETE'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Delete(
         path: '/api/me/delete',
         summary: 'Delete user account',
@@ -218,15 +223,10 @@ class AuthenticationController extends AbstractController
     )]
     public function deleteAccount(Request $request): JsonResponse
     {
+        /** @var string $accessToken */
         $accessToken = $request->cookies->get('AUTH_TOKEN');
-        if (null === $accessToken) {
-            return new JsonResponse(['error' => 'Unauthorized'], 401);
-        }
-
+        /** @var User $user */
         $user = $this->providerManager->findByAccessToken($accessToken);
-        if (null === $user) {
-            return new JsonResponse(['error' => 'User not found'], 404);
-        }
 
         try {
             $this->userManager->deleteUser($user);
@@ -237,7 +237,7 @@ class AuthenticationController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return new JsonResponse(['error' => 'Failed to delete account'], 500);
+            return new JsonResponse(['error' => 'profile.delete_account.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $response = new JsonResponse(['success' => true]);

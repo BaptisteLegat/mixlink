@@ -8,18 +8,18 @@
     import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
     import { useMotion } from '@vueuse/motion';
     import GradientBackground from '@/components/ui/GradientBackground.vue';
+    import { getOAuthUrl } from '@/api.js';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
     const router = useRouter();
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const cardRef = ref(null);
     const googleButtonRef = ref(null);
     const spotifyButtonRef = ref(null);
 
     const redirectTo = (provider) => {
-        window.location.href = `${API_BASE_URL}/api/auth/${provider}`;
+        window.location.href = getOAuthUrl(provider);
     };
 
     onMounted(() => {

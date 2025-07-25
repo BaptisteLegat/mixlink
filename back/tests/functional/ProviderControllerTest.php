@@ -15,7 +15,6 @@ class ProviderControllerTest extends WebTestCase
     private KernelBrowser $client;
     private static $loader;
     private UserRepository $userRepository;
-    private ProviderRepository $providerRepository;
 
     public static function setUpBeforeClass(): void
     {
@@ -31,7 +30,6 @@ class ProviderControllerTest extends WebTestCase
         self::ensureKernelShutdown();
         $this->client = static::createClient();
         $this->userRepository = static::getContainer()->get(UserRepository::class);
-        $this->providerRepository = static::getContainer()->get(ProviderRepository::class);
     }
 
     public function testDisconnectProviderSuccess(): void
@@ -96,7 +94,7 @@ class ProviderControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(404);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $response);
-        $this->assertEquals('Provider not found', $response['error']);
+        $this->assertEquals('provider.disconnect.error_provider_not_found', $response['error']);
     }
 
     public function testDisconnectProviderUnauthenticated(): void
@@ -141,6 +139,6 @@ class ProviderControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(500);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $response);
-        $this->assertEquals('Failed to disconnect provider', $response['error']);
+        $this->assertEquals('common.error', $response['error']);
     }
 }

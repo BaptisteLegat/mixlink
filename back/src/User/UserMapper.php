@@ -5,6 +5,7 @@ namespace App\User;
 use App\ApiResource\ApiReference;
 use App\Entity\User;
 use App\Provider\ProviderMapper;
+use App\Session\Mapper\SessionMapper;
 use App\Subscription\SubscriptionMapper;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
@@ -16,6 +17,7 @@ class UserMapper
     public function __construct(
         private ProviderMapper $providerMapper,
         private SubscriptionMapper $subscriptionMapper,
+        private SessionMapper $sessionMapper,
     ) {
     }
 
@@ -86,6 +88,9 @@ class UserMapper
             $subscriptionModel = $this->subscriptionMapper->mapModel($subscription);
             $userModel->setSubscription($subscriptionModel);
         }
+
+        $session = $user->getCurrentSession();
+        $userModel->setCurrentSession(null !== $session ? $this->sessionMapper->mapModel($session) : null);
 
         return $userModel;
     }

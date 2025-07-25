@@ -10,18 +10,20 @@ export const useSubscriptionStore = defineStore('subscription', () => {
             name: 'free',
             displayName: 'home.plans.free.title',
             price: '0',
-            features: ['home.plans.free.feature1', 'home.plans.free.feature2'],
+            features: ['home.plans.free.feature1', 'home.plans.free.feature2', 'home.plans.free.feature3'],
             cta: 'home.plans.free.cta',
             highlighted: false,
+            maxParticipants: 3,
         },
         {
             name: 'premium',
             displayName: 'home.plans.premium.title',
             price: '3,99',
-            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3'],
+            features: ['home.plans.premium.feature1', 'home.plans.premium.feature2', 'home.plans.premium.feature3', 'home.plans.premium.feature4'],
             cta: 'home.plans.premium.cta',
             highlighted: true,
             badge: 'home.plans.popular',
+            maxParticipants: 10,
         },
         {
             name: 'enterprise',
@@ -46,26 +48,40 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         return authStore.subscription.plan?.name || 'free';
     });
 
+    const currentPlanMaxParticipants = computed(() => {
+        const currentPlan = plans.value.find((plan) => plan.name === currentPlanName.value);
+        return currentPlan?.maxParticipants || 3;
+    });
+
+    const currentPlan = computed(() => {
+        return plans.value.find((plan) => plan.name === currentPlanName.value) || plans.value[0];
+    });
+
     async function subscribe(planName) {
         isLoading.value = true;
         try {
             const authStore = useAuthStore();
 
             if (authStore.subscription?.stripeSubscriptionId && authStore.subscription.isActive && !authStore.subscription.isCanceled) {
-                await changeSubscription(planName);
-                await authStore.fetchUser();
-
-                return { success: true };
-            } else {
-                const result = await subscribeToPlan(planName);
-
-                if (result.url) {
-                    window.location.href = result.url;
-                } else {
+                try {
+                    await changeSubscription(planName);
                     await authStore.fetchUser();
+                    return { success: true, message: 'subscription.change.success' };
+                } catch (error) {
+                    return { success: false, error: error.message };
                 }
-
-                return result;
+            } else {
+                try {
+                    const result = await subscribeToPlan(planName);
+                    if (result.url) {
+                        window.location.href = result.url;
+                    } else {
+                        await authStore.fetchUser();
+                    }
+                    return { success: true, message: 'subscription.start.success' };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
             }
         } finally {
             isLoading.value = false;
@@ -77,13 +93,15 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         try {
             const authStore = useAuthStore();
             if (!authStore.subscription || !authStore.subscription.isActive) {
-                return { success: false, error: 'No active subscription to cancel' };
+                return { success: false, error: 'subscription.cancel.error_no_active_subscription' };
             }
-
-            await cancelSubscription();
-            await authStore.fetchUser();
-
-            return { success: true };
+            try {
+                await cancelSubscription();
+                await authStore.fetchUser();
+                return { success: true, message: 'subscription.cancel.success' };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
         } finally {
             isLoading.value = false;
         }
@@ -96,5 +114,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
         unsubscribe,
         hasActiveSubscription,
         currentPlanName,
+        currentPlanMaxParticipants,
+        currentPlan,
     };
 });

@@ -1,0 +1,20 @@
+include:
+  - '../templates/session.yaml'
+  - '../templates/session_participant.yaml'
+  - '../templates/user.yaml'
+
+App\Entity\Session:
+  mercure-session (extends session):
+    host: '@mercure-host'
+    code: 'MERCURE1'
+
+App\Entity\SessionParticipant:
+  mercure-participant-1 (extends session_participant):
+    session: '@mercure-session'
+    pseudo: 'Guest1'
+
+App\Entity\User:
+  mercure-host (extends john-doe):
+    email: 'mercure-host@test.fr'
+  mercure-guest (extends jane-smith):
+    email: 'mercure-guest@test.fr'

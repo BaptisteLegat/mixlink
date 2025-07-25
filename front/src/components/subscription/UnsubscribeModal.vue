@@ -28,11 +28,14 @@
 
         loading.value = true;
         try {
-            await subscriptionStore.unsubscribe();
-
-            dialogVisible.value = false;
-            confirmText.value = '';
-            ElMessage.success(t('profile.unsubscribe.success'));
+            const result = await subscriptionStore.unsubscribe();
+            if (result.success) {
+                dialogVisible.value = false;
+                confirmText.value = '';
+                ElMessage.success(t(result.message));
+            } else {
+                ElMessage.error(t(result.error));
+            }
         } catch (error) {
             console.error('Unsubscribe error:', error);
             ElMessage.error(t('profile.unsubscribe.error'));

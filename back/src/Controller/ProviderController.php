@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -23,8 +24,8 @@ class ProviderController extends AbstractController
     ) {
     }
 
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED)]
     #[Route('/api/provider/{id}/disconnect', name: 'api_provider_disconnect', methods: ['POST'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/provider/{id}/disconnect',
         summary: 'Disconnect OAuth provider',
@@ -90,7 +91,7 @@ class ProviderController extends AbstractController
             }
 
             if (null === $provider) {
-                return new JsonResponse(['error' => 'Provider not found'], 404);
+                return new JsonResponse(['error' => 'provider.disconnect.error_provider_not_found'], Response::HTTP_NOT_FOUND);
             }
 
             $isMainProvider = $provider->getAccessToken() === $accessToken;
@@ -101,7 +102,7 @@ class ProviderController extends AbstractController
                 $response = new JsonResponse([
                     'success' => true,
                     'mainProvider' => true,
-                    'message' => 'Provider disconnected. You will be logged out.',
+                    'message' => 'provider.disconnect.success',
                 ]);
                 $response->headers->clearCookie('AUTH_TOKEN');
 
@@ -111,7 +112,7 @@ class ProviderController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'mainProvider' => false,
-                'message' => 'Provider successfully disconnected',
+                'message' => 'provider.disconnect.success',
             ]);
         } catch (Exception $e) {
             $this->logger->error('Failed to disconnect provider', [
@@ -121,7 +122,7 @@ class ProviderController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return new JsonResponse(['error' => 'Failed to disconnect provider'], 500);
+            return new JsonResponse(['error' => 'common.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

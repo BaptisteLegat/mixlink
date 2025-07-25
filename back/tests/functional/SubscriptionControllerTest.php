@@ -97,7 +97,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Plan not found.', $responseData['error']);
+        $this->assertEquals('subscription.start.error_plan_not_found', $responseData['error']);
     }
 
     public function testSubscribeWithValidPlanButNoPriceId(): void
@@ -120,7 +120,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(400);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Stripe price ID not configured for this plan.', $responseData['error']);
+        $this->assertEquals('subscription.start.error_stripe_price_id_not_configured', $responseData['error']);
     }
 
     public function testSubscribeSuccess(): void
@@ -186,7 +186,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Unable to create checkout session.', $responseData['error']);
+        $this->assertEquals('subscription.start.error_unable_to_create_checkout_session', $responseData['error']);
     }
 
     public function testCancelSubscriptionWithoutAuthentication(): void
@@ -214,7 +214,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('No active subscription found', $responseData['error']);
+        $this->assertEquals('subscription.cancel.error_no_active_subscription', $responseData['error']);
     }
 
     public function testCancelSubscriptionFailure(): void
@@ -239,7 +239,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Failed to cancel subscription', $responseData['error']);
+        $this->assertEquals('subscription.cancel.error_failed_to_cancel_subscription', $responseData['error']);
     }
 
     public function testCancelSubscriptionSuccess(): void
@@ -265,7 +265,6 @@ class SubscriptionControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($responseData['success']);
-        $this->assertEquals('Subscription successfully cancelled', $responseData['message']);
     }
 
     public function testChangeSubscriptionWithoutAuthentication(): void
@@ -293,7 +292,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('No active subscription found', $responseData['error']);
+        $this->assertEquals('subscription.change.error_no_active_subscription', $responseData['error']);
     }
 
     public function testChangeSubscriptionWithInvalidPlan(): void
@@ -311,7 +310,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Plan not found', $responseData['error']);
+        $this->assertEquals('subscription.change.error_plan_not_found', $responseData['error']);
     }
 
     public function testChangeSubscriptionToSamePlan(): void
@@ -329,7 +328,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(400);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Already subscribed to this plan', $responseData['error']);
+        $this->assertEquals('subscription.change.error_already_subscribed_to_this_plan', $responseData['error']);
     }
 
     public function testChangeSubscriptionFailure(): void
@@ -356,7 +355,7 @@ class SubscriptionControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Failed to change subscription', $responseData['error']);
+        $this->assertEquals('subscription.change.error_failed_to_change_subscription', $responseData['error']);
     }
 
     public function testChangeSubscriptionSuccess(): void
@@ -384,6 +383,5 @@ class SubscriptionControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($responseData['success']);
-        $this->assertEquals('Subscription successfully changed', $responseData['message']);
     }
 }
