@@ -41,7 +41,6 @@ const mockRouter = {
     push: vi.fn(),
 };
 
-
 describe('Header Component', () => {
     let wrapper;
     let i18n;
@@ -122,13 +121,13 @@ describe('Header Component', () => {
     });
 
     it('displays login button when not authenticated', () => {
-        const loginButton = wrapper.findAll('.el-button').find(btn => btn.text() === i18n.global.t('header.login'));
+        const loginButton = wrapper.findAll('.el-button').find((btn) => btn.text() === i18n.global.t('header.login'));
         expect(loginButton).toBeTruthy();
         expect(loginButton.text()).toBe(i18n.global.t('header.login'));
     });
 
     it('navigates to login page when login button is clicked', async () => {
-        const loginButton = wrapper.findAll('.el-button').find(btn => btn.text() === i18n.global.t('header.login'));
+        const loginButton = wrapper.findAll('.el-button').find((btn) => btn.text() === i18n.global.t('header.login'));
         await loginButton.trigger('click');
         expect(mockRouter.push).toHaveBeenCalledWith('/login');
     });
@@ -156,8 +155,28 @@ describe('Header Component - Mobile View', () => {
             legacy: false,
             locale: 'en',
             messages: {
-                en: { header: { login: 'Login', logout: 'Logout', join_session: 'Join session', join_current_session: 'Join current session', create_session: 'Create session', profile: 'Profile' }, session: { rejoin: { button: 'Rejoin session' } } },
-                fr: { header: { login: 'Connexion', logout: 'Déconnexion', join_session: 'Rejoindre la session', join_current_session: 'Rejoindre la session en cours', create_session: 'Créer une session', profile: 'Profil' }, session: { rejoin: { button: 'Rejoindre la session' } } },
+                en: {
+                    header: {
+                        login: 'Login',
+                        logout: 'Logout',
+                        join_session: 'Join session',
+                        join_current_session: 'Join current session',
+                        create_session: 'Create session',
+                        profile: 'Profile',
+                    },
+                    session: { rejoin: { button: 'Rejoin session' } },
+                },
+                fr: {
+                    header: {
+                        login: 'Connexion',
+                        logout: 'Déconnexion',
+                        join_session: 'Rejoindre la session',
+                        join_current_session: 'Rejoindre la session en cours',
+                        create_session: 'Créer une session',
+                        profile: 'Profil',
+                    },
+                    session: { rejoin: { button: 'Rejoindre la session' } },
+                },
             },
         });
 

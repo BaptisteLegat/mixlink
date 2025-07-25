@@ -139,7 +139,7 @@ describe('HeaderMobile Component', () => {
         await menuIcon.trigger('click', {});
 
         const menu = wrapper.findComponent(ElMenu);
-        const loginItem = menu.findAllComponents(ElMenuItem).find(item => item.text() === i18n.global.t('header.login'));
+        const loginItem = menu.findAllComponents(ElMenuItem).find((item) => item.text() === i18n.global.t('header.login'));
         await loginItem.trigger('click', {});
 
         expect(mockRouter.push).toHaveBeenCalledWith('/login');
