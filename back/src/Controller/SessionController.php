@@ -438,10 +438,7 @@ class SessionController extends AbstractController
 
             $this->participantManager->removeParticipant($participant, $reason);
 
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'session.remove.success',
-            ]);
+            return new JsonResponse(['success' => true]);
         } catch (Exception $e) {
             $this->logger->error('Error removing participant', [
                 'error' => $e->getMessage(),

@@ -450,7 +450,6 @@
             "button": "Quitter"
         },
         "remove": {
-            "success": "Participant supprimé avec succès",
             "error": "Erreur lors de la suppression du participant",
             "errors": {
                 "pseudo_required": "Le pseudo est requis",

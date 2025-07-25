@@ -344,7 +344,6 @@ class SessionControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($data['success']);
-        $this->assertEquals('session.remove.success', $data['message']);
     }
 
     public function testEndSessionNotHost(): void

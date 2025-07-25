@@ -471,7 +471,6 @@
             "kicked_notification": "You have been removed from the session by the host."
         },
         "remove": {
-            "success": "Participant removed successfully",
             "error": "Error removing participant",
             "errors": {
                 "pseudo_required": "Pseudo is required",

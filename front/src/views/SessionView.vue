@@ -131,9 +131,8 @@
             });
 
             if (!isHost.value && currentUserPseudo.value) {
-                const result = await sessionStore.removeParticipant(sessionCode.value, currentUserPseudo.value, 'leave');
+                await sessionStore.removeParticipant(sessionCode.value, currentUserPseudo.value, 'leave');
                 localStorage.removeItem('guestSessionCode');
-                ElMessage.success(t(result.message));
             }
 
             mercureStore.disconnect();
