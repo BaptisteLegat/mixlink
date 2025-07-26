@@ -178,6 +178,7 @@
         "welcome_message": "Bienvenue sur mixlink ! Connectez-vous pour créer et partager des playlists entre différentes plateformes",
         "connect_with_google": "Se connecter avec Google",
         "connect_with_spotify": "Se connecter avec Spotify",
+        "connect_with_soundcloud": "Se connecter avec SoundCloud",
         "terms_notice": "En vous connectant, vous acceptez nos",
         "terms_link": "Conditions d'utilisation"
     },
@@ -193,7 +194,8 @@
         "error_fetch_profile": "Erreur lors de la récupération du profil.",
         "error_logout": "Erreur lors de la déconnexion.",
         "error_delete_account": "Erreur lors de la suppression du compte.",
-        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement."
+        "error_request_failed": "La requête a échoué. Veuillez réessayer ultérieurement.",
+        "error_update_email": "Erreur lors de la mise à jour de l'email."
     },
     "routes": {
         "terms": "Conditions d'utilisation",
@@ -514,5 +516,12 @@
             "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
             "error_failed_to_change_subscription": "Échec du changement d'abonnement."
         }
+    },
+    "soundcloud": {
+        "email_placeholder": "Votre adresse email",
+        "email_submit": "Valider l'email",
+        "email_success": "Votre email a bien été enregistré !",
+        "email_error": "Veuillez saisir une adresse email valide.",
+        "email_info": "Pour le bon fonctionnement de l'application avec SoundCloud, vous devez définir une adresse email. Si vous connectez d'autres méthodes d'authentification, utilisez la même adresse email."
     }
 }

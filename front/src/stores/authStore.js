@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { fetchUserProfile, apiLogout, apiDeleteAccount, apiDisconnectProvider } from '@/api';
+import { fetchUserProfile, apiLogout, apiDeleteAccount, apiDisconnectProvider, updateSoundCloudEmail } from '@/api';
 import { subscribeToPlan } from '@/services/subscriptionService';
 import { useRouter } from 'vue-router';
 import { useSessionStore } from '@/stores/sessionStore';
@@ -99,6 +99,14 @@ export const useAuthStore = defineStore('auth', () => {
         return response;
     }
 
+    async function setSoundCloudEmail(email) {
+        const result = await updateSoundCloudEmail(email);
+        if (result.success) {
+            await fetchUser();
+        }
+        return result;
+    }
+
     return {
         user,
         isAuthenticated,
@@ -111,5 +119,6 @@ export const useAuthStore = defineStore('auth', () => {
         deleteAccount,
         disconnectProvider,
         resetUserState,
+        setSoundCloudEmail,
     };
 });

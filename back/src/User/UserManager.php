@@ -2,6 +2,7 @@
 
 namespace App\User;
 
+use App\ApiResource\ApiReference;
 use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
@@ -10,8 +11,10 @@ use App\Subscription\SubscriptionManager;
 use App\Trait\TraceableTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use Psr\Log\LoggerInterface;
 
 class UserManager
@@ -30,13 +33,18 @@ class UserManager
 
     public function create(OAuthUserData $oauthUserData, string $provider): User
     {
-        /** @var GoogleUser|SpotifyResourceOwner $resourceOwner */
+        /** @var GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner */
         $resourceOwner = $oauthUserData->getUser();
-        $email = (string) $resourceOwner->getEmail();
+
+        $email = '';
+
+        if (!$resourceOwner instanceof SoundCloudResourceOwner) {
+            $email = (string) $resourceOwner->getEmail();
+        }
 
         $filters = $this->entityManager->getFilters();
         $filters->disable('softdeleteable');
-        $existingUser = $this->userRepository->findOneBy(['email' => (string) $resourceOwner->getEmail()]);
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
         $filters->enable('softdeleteable');
 
         if ($existingUser && null !== $existingUser->getDeletedAt()) {
@@ -53,6 +61,7 @@ class UserManager
 
         $this->providerManager->createOrUpdateProvider($oauthUserData, $provider, $user);
 
+        $this->entityManager->refresh($user);
         $this->userRepository->save($user, true);
 
         return $user;
@@ -111,5 +120,33 @@ class UserManager
                 ]);
             }
         }
+    }
+
+    public function updateEmailForSoundCloudUser(User $user, string $email): void
+    {
+        $activeProviders = array_filter($user->getProviders()->toArray(), function ($provider) {
+            return null === $provider->getDeletedAt();
+        });
+        if (1 !== count($activeProviders) || ApiReference::SOUNDCLOUD !== $activeProviders[0]->getName()) {
+            throw new InvalidArgumentException('profile.email.not_soundcloud_only');
+        }
+
+        $user
+            ->setEmail($email)
+            ->setCreatedBy($email)
+            ->setUpdatedBy($email)
+        ;
+        $this->setTimestampable($user, true);
+        $this->setBlameable($user, $email, true);
+
+        $provider = $activeProviders[0];
+        $provider
+            ->setCreatedBy($email)
+            ->setUpdatedBy($email)
+        ;
+
+        $this->setTimestampable($provider, true);
+        $this->setBlameable($provider, $email, true);
+        $this->userRepository->save($user, true);
     }
 }

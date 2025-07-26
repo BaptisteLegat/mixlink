@@ -33,10 +33,10 @@ class Provider implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $accessToken = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $refreshToken = null;
 
     public function getId(): ?Uuid

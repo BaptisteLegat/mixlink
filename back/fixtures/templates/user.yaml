@@ -35,7 +35,7 @@ App\Entity\User:
   bob (template):
     firstName: 'Bob'
     lastName: null
-    email: 'bob@test.fr'
+    email: null
     roles: ['ROLE_USER']
     profilePicture: null
     createdBy: "anon."

@@ -29,14 +29,14 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $firstName;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $firstName = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $lastName = null;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
-    private string $email;
+    #[ORM\Column(type: 'string', length: 255, unique: true, nullable: true)]
+    private ?string $email = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -73,12 +73,12 @@ class User implements BlameableInterface, TimestampableInterface
         return $this->id;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
 
@@ -97,12 +97,12 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 

@@ -8,6 +8,7 @@ use App\Security\OAuthService;
 use App\User\UserManager;
 use App\Voter\AuthenticationVoter;
 use Exception;
+use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +32,7 @@ class AuthenticationController extends AbstractController
     ) {
     }
 
-    #[Route('/auth/{provider}', name: 'app_auth', methods: ['GET'], requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}', name: 'app_auth', methods: ['GET'], requirements: ['provider' => 'google|spotify|soundcloud'])]
     #[OA\Get(
         path: '/api/auth/{provider}',
         summary: 'Initiate OAuth authentication',
@@ -43,7 +44,7 @@ class AuthenticationController extends AbstractController
                 in: 'path',
                 required: true,
                 description: 'OAuth provider',
-                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify'])
+                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify', 'soundcloud'])
             ),
         ],
         responses: [
@@ -61,7 +62,7 @@ class AuthenticationController extends AbstractController
         return $this->oAuthService->getRedirectResponse($provider);
     }
 
-    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', methods: ['GET'], requirements: ['provider' => 'google|spotify'])]
+    #[Route('/auth/{provider}/callback', name: 'app_auth_callback', methods: ['GET'], requirements: ['provider' => 'google|spotify|soundcloud'])]
     #[OA\Get(
         path: '/api/auth/{provider}/callback',
         summary: 'OAuth callback handler',
@@ -73,7 +74,7 @@ class AuthenticationController extends AbstractController
                 in: 'path',
                 required: true,
                 description: 'OAuth provider',
-                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify'])
+                schema: new OA\Schema(type: 'string', enum: ['google', 'spotify', 'soundcloud'])
             ),
             new OA\Parameter(
                 name: 'code',
@@ -244,5 +245,78 @@ class AuthenticationController extends AbstractController
         $response->headers->clearCookie('AUTH_TOKEN');
 
         return $response;
+    }
+
+    #[Route('/me/email', name: 'api_me_set_email', methods: ['PATCH'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
+    #[OA\Patch(
+        path: '/api/me/email',
+        summary: 'Define email for SoundCloud user',
+        description: 'Allows a user logged in only via SoundCloud to enter their email address.',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', example: 'user@email.com'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Email updated',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                ])
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid request',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'error', type: 'string', example: 'Invalid request'),
+                ])
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Not allowed',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'error', type: 'string', example: 'Not allowed'),
+                ])
+            ),
+        ]
+    )]
+    public function setEmailForSoundCloud(Request $request): JsonResponse
+    {
+        /** @var string $accessToken */
+        $accessToken = $request->cookies->get('AUTH_TOKEN');
+        /** @var User $user */
+        $user = $this->providerManager->findByAccessToken($accessToken);
+
+        $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'profile.email.invalid'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $email = isset($data['email']) && is_string($data['email']) ? $data['email'] : null;
+        if (null === $email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse(['error' => 'profile.email.invalid'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->userManager->updateEmailForSoundCloudUser($user, $email);
+        } catch (InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_FORBIDDEN);
+        } catch (Exception $e) {
+            $this->logger->error('Error updating SoundCloud email', [
+                'userId' => $user->getId(),
+                'message' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse(['error' => 'profile.email.update_error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(['success' => true]);
     }
 }

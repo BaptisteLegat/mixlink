@@ -3,7 +3,6 @@
 namespace App\Tests\Functional;
 
 use App\Provider\ProviderManager;
-use App\Repository\ProviderRepository;
 use App\Repository\UserRepository;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

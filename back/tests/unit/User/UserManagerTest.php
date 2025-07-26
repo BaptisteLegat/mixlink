@@ -17,6 +17,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\FilterCollection;
 use Exception;
+use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -102,6 +103,12 @@ class UserManagerTest extends TestCase
             ->with($oAuthUserData, ApiReference::GOOGLE, $user)
         ;
 
+        $this->entityManagerMocked
+            ->expects($this->once())
+            ->method('refresh')
+            ->with($user)
+        ;
+
         $this->userRepoMocked
             ->expects($this->once())
             ->method('save')
@@ -156,6 +163,12 @@ class UserManagerTest extends TestCase
             ->expects($this->once())
             ->method('createOrUpdateProvider')
             ->with($oAuthUserData, ApiReference::GOOGLE, $user)
+        ;
+
+        $this->entityManagerMocked
+            ->expects($this->once())
+            ->method('refresh')
+            ->with($user)
         ;
 
         $this->userRepoMocked
@@ -220,6 +233,12 @@ class UserManagerTest extends TestCase
             ->expects($this->once())
             ->method('createOrUpdateProvider')
             ->with($oAuthUserData, ApiReference::GOOGLE, $user)
+        ;
+
+        $this->entityManagerMocked
+            ->expects($this->once())
+            ->method('refresh')
+            ->with($user)
         ;
 
         $this->userRepoMocked
@@ -412,5 +431,53 @@ class UserManagerTest extends TestCase
         $result = $this->userManager->create($oAuthUserData, ApiReference::SPOTIFY);
 
         $this->assertSame($user, $result);
+    }
+
+    public function testUpdateEmailForSoundCloudUserSuccess(): void
+    {
+        $user = new User();
+        $provider = new Provider()->setName(ApiReference::SOUNDCLOUD);
+        $user->addProvider($provider);
+        $provider->setUser($user);
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $this->userManager->updateEmailForSoundCloudUser($user, 'new@email.com');
+
+        $this->assertSame('new@email.com', $user->getEmail());
+        $this->assertSame('new@email.com', $provider->getCreatedBy());
+        $this->assertSame('new@email.com', $provider->getUpdatedBy());
+    }
+
+    public function testUpdateEmailForSoundCloudUserThrowsIfNotSoundCloud(): void
+    {
+        $user = new User();
+        $provider = new Provider()->setName(ApiReference::GOOGLE);
+        $user->addProvider($provider);
+        $provider->setUser($user);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+
+        $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
+    }
+
+    public function testUpdateEmailForSoundCloudUserThrowsIfMultipleProviders(): void
+    {
+        $user = new User();
+        $provider1 = new Provider()->setName(ApiReference::SOUNDCLOUD);
+        $provider2 = new Provider()->setName(ApiReference::SOUNDCLOUD);
+        $user->addProvider($provider1);
+        $user->addProvider($provider2);
+        $provider1->setUser($user);
+        $provider2->setUser($user);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+
+        $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
     }
 }

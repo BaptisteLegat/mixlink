@@ -24,6 +24,9 @@ App\Entity\Provider:
   deezer-1 (extends deezer):
     user: '@alice-johnson-1'
 
+  soundcloud-1 (extends soundcloud):
+    user: '@bob-1'
+
 App\Entity\Subscription:
   subscription-1 (extends subscription):
     plan: '@free'
@@ -37,7 +40,12 @@ App\Entity\Subscription:
     plan: '@custom'
     user: '@alice-johnson-1'
 
+  subscription-4 (extends subscription):
+    plan: '@free'
+    user: '@bob-1'
+
 App\Entity\User:
   john-doe-1 (extends john-doe): ~
   jane-smith-1 (extends jane-smith): ~
   alice-johnson-1 (extends alice-johnson): ~
+  bob-1 (extends bob): ~
