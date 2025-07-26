@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.2.1] - 2025-07-26
+
+### Added
+- Add SoundCloud provider to the OAuth providers list
+
+### Fixed
+- Fixed the session cookie domain to be `.mix-link.fr`
+
 ## [1.2.0] - 2025-07-25
 
 ### Added
