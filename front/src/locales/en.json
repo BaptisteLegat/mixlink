@@ -419,7 +419,6 @@
             "join_button": "Join",
             "success": "You have joined the session successfully!",
             "error": "Error joining the session",
-            "session_not_found": "Session not found",
             "already_joined": "You have already joined this session",
             "validation": {
                 "code_required": "Session code is required",
@@ -429,7 +428,8 @@
             },
             "errors": {
                 "pseudo_taken": "This nickname is already taken",
-                "session_full": "The session is full"
+                "session_full": "The session is full",
+                "session_not_found": "Session not found"
             }
         },
         "rejoin": {
@@ -458,7 +458,8 @@
         },
         "error": {
             "not_found_description": "This session does not exist or has been ended",
-            "back_home": "Back to Home"
+            "back_home": "Back to Home",
+            "not_found": "Session not found"
         },
         "counter": {
             "participants": "{current}/{max} participants"
@@ -473,7 +474,6 @@
             "kicked_notification": "You have been removed from the session by the host."
         },
         "remove": {
-            "success": "Participant removed successfully",
             "error": "Error removing participant",
             "errors": {
                 "pseudo_required": "Pseudo is required",

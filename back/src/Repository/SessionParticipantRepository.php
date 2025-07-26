@@ -17,6 +17,9 @@ class SessionParticipantRepository extends ServiceEntityRepository
         parent::__construct($registry, SessionParticipant::class);
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function save(SessionParticipant $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -26,6 +29,9 @@ class SessionParticipantRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
     public function remove(SessionParticipant $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.2.0] - 2025-07-25
+
+### Added
+- Add session logic system
+- Add session code generation
+- Add session participant remove
+- Add session participant kick
+- Add session participant list
+- Add session participant get by code
+- Add session participant create
+- Add Mercure integration
+
+### Changed
+- Updated the README.md file to include how to run the coverage tests and the configuration for use Stripe webhooks in local environment
+
 ## [1.1.2] - 2025-07-14
 
 ### Fixed

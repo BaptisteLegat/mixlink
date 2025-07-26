@@ -424,7 +424,6 @@
             "join_button": "Rejoindre",
             "success": "Vous avez rejoint la session avec succès !",
             "error": "Erreur lors de la connexion à la session",
-            "session_not_found": "Session introuvable",
             "already_joined": "Vous avez déjà rejoint cette session",
             "validation": {
                 "code_required": "Le code de session est requis",
@@ -433,6 +432,7 @@
                 "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
             },
             "errors": {
+                "session_not_found": "Session introuvable",
                 "pseudo_taken": "Ce pseudo est déjà pris",
                 "session_full": "La session est pleine"
             }
@@ -452,7 +452,6 @@
             "button": "Quitter"
         },
         "remove": {
-            "success": "Participant supprimé avec succès",
             "error": "Erreur lors de la suppression du participant",
             "errors": {
                 "pseudo_required": "Le pseudo est requis",
@@ -474,7 +473,8 @@
         },
         "error": {
             "not_found_description": "Cette session n'existe pas ou a été terminée",
-            "back_home": "Retour à l'accueil"
+            "back_home": "Retour à l'accueil",
+            "not_found": "Session introuvable"
         },
         "counter": {
             "participants": "{current}/{max} participants"

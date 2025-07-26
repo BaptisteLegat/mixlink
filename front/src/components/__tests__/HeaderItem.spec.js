@@ -22,13 +22,24 @@ vi.mock('@vueuse/core', () => ({
     useMediaQuery: vi.fn(() => false),
 }));
 
+vi.mock('vue-router', () => ({
+    useRouter: () => mockRouter,
+    useRoute: () => ({
+        path: '/',
+        name: 'home',
+        params: {},
+        query: {},
+        fullPath: '/',
+        matched: [],
+        hash: '',
+        redirectedFrom: undefined,
+        meta: {},
+    }),
+}));
+
 const mockRouter = {
     push: vi.fn(),
 };
-
-vi.mock('vue-router', () => ({
-    useRouter: () => mockRouter,
-}));
 
 describe('Header Component', () => {
     let wrapper;
@@ -44,12 +55,26 @@ describe('Header Component', () => {
                     header: {
                         login: 'Login',
                         logout: 'Logout',
+                        join_session: 'Join session',
+                        join_current_session: 'Join current session',
+                        create_session: 'Create session',
+                        profile: 'Profile',
+                    },
+                    session: {
+                        rejoin: { button: 'Rejoin session' },
                     },
                 },
                 fr: {
                     header: {
                         login: 'Connexion',
                         logout: 'Déconnexion',
+                        join_session: 'Rejoindre la session',
+                        join_current_session: 'Rejoindre la session en cours',
+                        create_session: 'Créer une session',
+                        profile: 'Profil',
+                    },
+                    session: {
+                        rejoin: { button: 'Rejoindre la session' },
                     },
                 },
             },
@@ -91,18 +116,18 @@ describe('Header Component', () => {
     it('displays the logo properly', () => {
         const logo = wrapper.find('img');
         expect(logo.exists()).toBe(true);
-        expect(logo.attributes('src')).toBe('logo.svg');
+        expect(logo.attributes('src')).toBe('/logo.svg');
         expect(logo.attributes('alt')).toBe('mixlink');
     });
 
     it('displays login button when not authenticated', () => {
-        const loginButton = wrapper.find('.el-button');
-        expect(loginButton.exists()).toBe(true);
-        expect(loginButton.text()).toBe('Login');
+        const loginButton = wrapper.findAll('.el-button').find((btn) => btn.text() === i18n.global.t('header.login'));
+        expect(loginButton).toBeTruthy();
+        expect(loginButton.text()).toBe(i18n.global.t('header.login'));
     });
 
     it('navigates to login page when login button is clicked', async () => {
-        const loginButton = wrapper.find('.el-button');
+        const loginButton = wrapper.findAll('.el-button').find((btn) => btn.text() === i18n.global.t('header.login'));
         await loginButton.trigger('click');
         expect(mockRouter.push).toHaveBeenCalledWith('/login');
     });
@@ -130,8 +155,28 @@ describe('Header Component - Mobile View', () => {
             legacy: false,
             locale: 'en',
             messages: {
-                en: { header: { login: 'Login', logout: 'Logout' } },
-                fr: { header: { login: 'Connexion', logout: 'Déconnexion' } },
+                en: {
+                    header: {
+                        login: 'Login',
+                        logout: 'Logout',
+                        join_session: 'Join session',
+                        join_current_session: 'Join current session',
+                        create_session: 'Create session',
+                        profile: 'Profile',
+                    },
+                    session: { rejoin: { button: 'Rejoin session' } },
+                },
+                fr: {
+                    header: {
+                        login: 'Connexion',
+                        logout: 'Déconnexion',
+                        join_session: 'Rejoindre la session',
+                        join_current_session: 'Rejoindre la session en cours',
+                        create_session: 'Créer une session',
+                        profile: 'Profil',
+                    },
+                    session: { rejoin: { button: 'Rejoindre la session' } },
+                },
             },
         });
 

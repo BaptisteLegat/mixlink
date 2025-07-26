@@ -12,23 +12,21 @@ class SessionMapper
 {
     public function mapEntity(CreateSessionRequest $request, User $host): Session
     {
-        $session = new Session()
-            ->setName($request->name)
-            ->setMaxParticipants($request->maxParticipants)
-            ->setHost($host)
-        ;
+        $session = new Session();
+        $session->setName($request->name);
+        $session->setMaxParticipants($request->maxParticipants);
+        $session->setHost($host);
 
         return $session;
     }
 
     public function mapModel(Session $session): SessionModel
     {
-        $model = new SessionModel()
-            ->setId($session->getId()?->toRfc4122() ?? '')
-            ->setName($session->getName())
-            ->setCode($session->getCode())
-            ->setMaxParticipants($session->getMaxParticipants())
-        ;
+        $model = new SessionModel();
+        $model->setId($session->getId()?->toRfc4122() ?? '');
+        $model->setName($session->getName());
+        $model->setCode($session->getCode());
+        $model->setMaxParticipants($session->getMaxParticipants());
 
         $host = $session->getHost();
         if (null === $host) {
