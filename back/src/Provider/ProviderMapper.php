@@ -23,6 +23,9 @@ class ProviderMapper
         $provider->setRefreshToken($oauthUserData->getRefreshToken());
         $provider->setUser($user);
 
+        $resourceOwner = $oauthUserData->getUser();
+        $provider->setProviderUserId((string) $resourceOwner->getId());
+
         return $provider;
     }
 

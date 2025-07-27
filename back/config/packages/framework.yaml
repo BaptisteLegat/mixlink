@@ -9,7 +9,6 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
         cookie_lifetime: 0
-        cookie_domain: '.mix-link.fr'
 
     php_errors:
         log: true
@@ -34,3 +33,6 @@ when@prod:
     framework:
         trusted_proxies: '127.0.0.1,REMOTE_ADDR'
         trusted_headers: [ 'x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-host' ]
+
+        session:
+            cookie_domain: '.mix-link.fr'

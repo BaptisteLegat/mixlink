@@ -47,10 +47,7 @@ class ProviderManager
 
         $email = $user->getEmail() ?? '';
 
-        $this->setTimestampable($provider, $isUpdate);
-        $this->setBlameable($provider, $email, $isUpdate);
-
-        $this->providerRepository->save($provider, true);
+        $this->saveProvider($provider, $email, $isUpdate);
     }
 
     public function findByAccessToken(string $accessToken): ?User
@@ -109,5 +106,24 @@ class ProviderManager
         $userFromProvider = $provider->getUser();
 
         return null !== $currentUser && null !== $userFromProvider && $currentUser->getId() === $userFromProvider->getId();
+    }
+
+    public function findByProviderUserId(string $providerName, string $providerUserId): ?Provider
+    {
+        return $this->providerRepository->findOneBy([
+            'name' => $providerName,
+            'providerUserId' => $providerUserId,
+        ]);
+    }
+
+    /**
+     * @SuppressWarnings("PHPMD.BooleanArgumentFlag")
+     */
+    public function saveProvider(Provider $provider, string $email, bool $isUpdate = false): void
+    {
+        $this->setTimestampable($provider, $isUpdate);
+        $this->setBlameable($provider, $email, $isUpdate);
+
+        $this->providerRepository->save($provider, true);
     }
 }

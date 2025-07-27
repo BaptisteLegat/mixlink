@@ -137,6 +137,7 @@
                                             <span class="provider-status">{{ t('profile.connected') }}</span>
                                         </div>
                                         <el-button
+                                            v-if="authStore.user?.email"
                                             type="danger"
                                             circle
                                             size="small"
@@ -148,7 +149,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="danger-zone">
+                            <div class="danger-zone" v-if="authStore.user?.email">
                                 <el-text tag="h3" class="danger-title">{{ t('profile.danger_zone.title') }}</el-text>
                                 <el-space direction="vertical" :fill="true" :size="15">
                                     <div class="danger-action">
@@ -166,13 +167,15 @@
             <DeleteAccountModal ref="deleteAccountModal" @account-deleted="handleAccountDeleted" />
             <DisconnectProviderModal ref="disconnectProviderModal" />
         </el-container>
-        <el-container v-else>
+        <el-container v-else class="centered-container">
             <el-row justify="center">
                 <el-col :span="24" :lg="18" :xl="16">
                     <el-text tag="h2" class="section-title">{{ t('profile.not_authenticated') }}</el-text>
-                    <el-button type="primary" @click="$router.push('/login')">
-                        {{ t('header.login') }}
-                    </el-button>
+                    <div class="center-btn">
+                        <el-button type="primary" @click="$router.push('/login')">
+                            {{ t('header.login') }}
+                        </el-button>
+                    </div>
                 </el-col>
             </el-row>
         </el-container>
@@ -355,5 +358,17 @@
         color: var(--el-color-danger);
         font-weight: bold;
         margin-bottom: 16px;
+    }
+
+    .centered-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 160px);
+    }
+    .center-btn {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
     }
 </style>

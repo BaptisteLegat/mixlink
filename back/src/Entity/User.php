@@ -228,4 +228,9 @@ class User implements BlameableInterface, TimestampableInterface
 
         return $this;
     }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->id->toRfc4122();
+    }
 }

@@ -48,4 +48,15 @@ class UserRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function hardDelete(User $user): void
+    {
+        $this->getEntityManager()->createQueryBuilder()
+            ->delete(User::class, 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $user->getId()->toBinary())
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

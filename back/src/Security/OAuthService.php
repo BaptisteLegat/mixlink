@@ -22,8 +22,7 @@ class OAuthService
     ];
 
     public const array SOUNDCLOUD_SCOPES = [
-        'user-read-email',
-        'user-read-private',
+        '*',
     ];
 
     public function __construct(private ClientRegistry $clientRegistry)

@@ -509,4 +509,33 @@ class ProviderManagerTest extends TestCase
 
         $this->assertFalse($result);
     }
+
+    public function testFindByProviderUserId(): void
+    {
+        $providerName = ApiReference::GOOGLE;
+        $providerUserId = '1234567890';
+        $provider = new Provider()->setProviderUserId($providerUserId);
+
+        $this->providerRepositoryMocked
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->with(['name' => $providerName, 'providerUserId' => $providerUserId])
+            ->willReturn($provider)
+        ;
+
+        $result = $this->providerManager->findByProviderUserId($providerName, $providerUserId);
+
+        $this->assertSame($provider, $result);
+    }
+
+    public function testSaveProvider(): void
+    {
+        $provider = new Provider();
+        $email = 'test@gmail.com';
+
+        $this->providerManager->saveProvider($provider, $email, true);
+
+        $this->assertNotNull($provider->getUpdatedAt());
+        $this->assertSame($email, $provider->getUpdatedBy());
+    }
 }
