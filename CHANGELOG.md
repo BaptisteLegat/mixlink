@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.2.2] - 2025-07-27
+
+### Added
+- Added a custom authenticator (AuthTokenAuthenticator) for API routes in `security.yaml` to handle stateless authentication with access tokens.
+
+### Fixed
+- Fixed a bug where adding an email already used by another account to a SoundCloud user could cause a duplicate email constraint violation. Now, the SoundCloud user is merged with the existing user, and all providers are unified under a single account.
+- Fixed an issue where connecting multiple times with the same SoundCloud account (without email) would create duplicate users without email. Now, the same SoundCloud account always maps to a single user.
+- Fixed responsive layout and SoundCloud icon display on the profile page (frontend).
+
 ## [1.2.1] - 2025-07-26
 
 ### Added
