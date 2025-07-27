@@ -27,6 +27,17 @@ App\Entity\Provider:
   soundcloud-1 (extends soundcloud):
     user: '@bob-1'
 
+  fusion-test-soundcloud-provider:
+    name: 'soundcloud'
+    accessToken: 'fusion_test_soundcloud_token'
+    refreshToken: 'fusion_test_soundcloud_refresh'
+    providerUserId: 'fusion_test_sc_id'
+    user: '@fusion-test-user'
+    createdBy: "test"
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "test"
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+
 App\Entity\Subscription:
   subscription-1 (extends subscription):
     plan: '@free'
@@ -49,3 +60,11 @@ App\Entity\User:
   jane-smith-1 (extends jane-smith): ~
   alice-johnson-1 (extends alice-johnson): ~
   bob-1 (extends bob): ~
+  fusion-test-user:
+    firstName: 'FusionTest'
+    roles: ['ROLE_USER']
+    createdBy: "test"
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "test"
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    providers: ['@fusion-test-soundcloud-provider']

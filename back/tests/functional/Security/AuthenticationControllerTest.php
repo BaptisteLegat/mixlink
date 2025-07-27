@@ -323,6 +323,34 @@ class AuthenticationControllerTest extends WebTestCase
         $this->assertEquals('profile.email.update_error', $responseData['error']);
     }
 
+    public function testSetEmailForSoundCloudSuccessWithExistingUser(): void
+    {
+        $user = $this->userRepository->findOneBy(['firstName' => 'FusionTest']);
+        $this->providerManagerMock
+            ->method('findByAccessToken')
+            ->willReturn($user)
+        ;
+
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'fusion_test_soundcloud_token'));
+        $payload = json_encode(['email' => 'john.doe@test.fr']);
+        $this->client->request('PATCH', '/api/me/email', [], [], ['CONTENT_TYPE' => 'application/json'], $payload);
+        $this->assertResponseStatusCodeSame(200);
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($responseData['success']);
+
+        $user = $this->userRepository->findOneBy(['email' => 'john.doe@test.fr']);
+        $this->assertNotNull($user);
+        $this->assertEquals('john.doe@test.fr', $user->getEmail());
+        $this->assertCount(2, $user->getProviders());
+
+        $soundcloudProvider = $user->getProviders()->filter(fn ($provider) => 'soundcloud' === $provider->getName())->first();
+        $this->assertNotNull($soundcloudProvider);
+
+        $user = $this->userRepository->findOneBy(['firstName' => 'FusionTest']);
+        $this->assertNull($user);
+    }
+
     public function testSetEmailForSoundCloudSuccess(): void
     {
         $user = $this->userRepository->findOneBy(['firstName' => 'Bob']);

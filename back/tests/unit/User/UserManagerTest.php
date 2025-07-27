@@ -20,9 +20,12 @@ use Exception;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use Symfony\Component\Uid\Uuid;
 
 class UserManagerTest extends TestCase
 {
@@ -479,5 +482,489 @@ class UserManagerTest extends TestCase
         $this->expectExceptionMessage('profile.email.not_soundcloud_only');
 
         $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
+    }
+
+    public function testCreateSoundCloudUserProviderNotFound(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_123');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_123')
+            ->willReturn(null)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($soundcloud, ApiReference::SOUNDCLOUD, null)
+            ->willReturn(new User())
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::SOUNDCLOUD, $this->isInstanceOf(User::class))
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($this->isInstanceOf(User::class))
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($this->isInstanceOf(User::class), true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    public function testCreateSoundCloudUserProviderFoundButUserNull(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_456');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $providerMock = $this->createMock(Provider::class);
+        $providerMock->method('getUser')->willReturn(null);
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_456')
+            ->willReturn($providerMock)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($soundcloud, ApiReference::SOUNDCLOUD, null)
+            ->willReturn(new User())
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::SOUNDCLOUD, $this->isInstanceOf(User::class))
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($this->isInstanceOf(User::class))
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($this->isInstanceOf(User::class), true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    public function testCreateSoundCloudUserProviderSoftDeletedEmailNullThrows(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_789');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $providerMock = $this->createMock(Provider::class);
+        $providerMock->method('getUser')->willReturn(new User());
+        $providerMock->method('getDeletedAt')->willReturn(new DateTime());
+        $providerMock->expects($this->once())->method('setDeletedAt')->with(null);
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_789')
+            ->willReturn($providerMock)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Email is required for SoundCloud user');
+
+        $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+    }
+
+    public function testCreateSoundCloudUserProviderSoftDeletedEmailValid(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_999');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $user = new User()->setEmail('soundcloud@test.com');
+        $providerMock = $this->createMock(Provider::class);
+        $providerMock->method('getUser')->willReturn($user);
+        $providerMock->method('getDeletedAt')->willReturn(new DateTime());
+        $providerMock->expects($this->once())->method('setDeletedAt')->with(null);
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_999')
+            ->willReturn($providerMock)
+        ;
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('saveProvider')
+            ->with($providerMock, 'soundcloud@test.com', true)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($soundcloud, ApiReference::SOUNDCLOUD, $user)
+            ->willReturn($user)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::SOUNDCLOUD, $user)
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($user)
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+        $this->assertSame($user, $result);
+    }
+
+    public function testCreateWithEmptyEmail(): void
+    {
+        $google = $this->createMock(GoogleUser::class);
+        $google->method('getEmail')->willReturn('');
+        $oAuthUserData = new OAuthUserData($google, 'access_token');
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($google, ApiReference::GOOGLE, null)
+            ->willReturn(new User())
+        ;
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::GOOGLE, $this->isInstanceOf(User::class))
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($this->isInstanceOf(User::class))
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($this->isInstanceOf(User::class), true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::GOOGLE);
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    public function testUpdateEmailForSoundCloudUserWithActiveProviderNoReactivation(): void
+    {
+        $user = new User();
+        $provider = $this->createMock(Provider::class);
+        $provider->method('getName')->willReturn(ApiReference::SOUNDCLOUD);
+        $provider->method('getDeletedAt')->willReturn(null);
+        $provider->expects($this->never())->method('setDeletedAt');
+        $provider->method('setCreatedBy')->willReturn($provider);
+        $provider->method('setUpdatedBy')->willReturn($provider);
+        $user->addProvider($provider);
+        $provider->setUser($user);
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('findOneBy')
+            ->with(['email' => 'new@email.com'])
+            ->willReturn(null);
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $this->userManager->updateEmailForSoundCloudUser($user, 'new@email.com');
+        $this->assertSame('new@email.com', $user->getEmail());
+    }
+
+    public function testCreateReactivatesSoftDeletedProvider(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_softdel');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $user = new User();
+        $user->setEmail('soundcloud@reactive.com');
+        $providerMock = $this->createMock(Provider::class);
+        $providerMock->method('getUser')->willReturn($user);
+        $providerMock->method('getDeletedAt')->willReturn(new DateTime());
+        $providerMock->expects($this->once())
+            ->method('setDeletedAt')
+            ->with(null)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_softdel')
+            ->willReturn($providerMock)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('saveProvider')
+            ->with($providerMock, 'soundcloud@reactive.com', true)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($soundcloud, ApiReference::SOUNDCLOUD, $user)
+            ->willReturn($user)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::SOUNDCLOUD, $user)
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($user)
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    public function testCreateSoundCloudUserProviderNotSoftDeleted(): void
+    {
+        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud->method('getId')->willReturn('sc_321');
+        $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
+
+        $user = new User();
+        $providerMock = $this->createMock(Provider::class);
+        $providerMock->method('getUser')->willReturn($user);
+        $providerMock->method('getDeletedAt')->willReturn(null);
+        $providerMock->expects($this->never())->method('setDeletedAt');
+        $this->providerManagerMocked->expects($this->never())->method('saveProvider');
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByProviderUserId')
+            ->with(ApiReference::SOUNDCLOUD, 'sc_321')
+            ->willReturn($providerMock)
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->once())
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userMapperMocked->expects($this->once())
+            ->method('mapEntity')
+            ->with($soundcloud, ApiReference::SOUNDCLOUD, $user)
+            ->willReturn($user)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::SOUNDCLOUD, $user)
+        ;
+
+        $this->entityManagerMocked->expects($this->once())
+            ->method('refresh')
+            ->with($user)
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::SOUNDCLOUD);
+        $this->assertInstanceOf(User::class, $result);
+    }
+
+    public function testUpdateEmailForSoundCloudUserWithExistingUser(): void
+    {
+        $user = new User();
+        $user->setEmail('old@email.com');
+        $provider = new Provider();
+        $provider->setName(ApiReference::SOUNDCLOUD);
+        $user->addProvider($provider);
+        $provider->setUser($user);
+
+        $existingUser = new User();
+        $existingUser->setEmail('new@email.com');
+        $existingUserId = Uuid::v4();
+        $reflection = new ReflectionClass($existingUser);
+        $idProp = $reflection->getProperty('id');
+        $idProp->setAccessible(true);
+        $idProp->setValue($existingUser, $existingUserId);
+
+        $userId = Uuid::v4();
+        $reflectionUser = new ReflectionClass($user);
+        $idPropUser = $reflectionUser->getProperty('id');
+        $idPropUser->setAccessible(true);
+        $idPropUser->setValue($user, $userId);
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('findOneBy')
+            ->with(['email' => 'new@email.com'])
+            ->willReturn($existingUser)
+        ;
+
+        $this->providerManagerMocked->expects($this->once())
+            ->method('saveProvider')
+            ->with($provider, 'new@email.com', true)
+        ;
+
+        $this->userRepoMocked->expects($this->once())
+            ->method('hardDelete')
+            ->with($user)
+        ;
+
+        $this->userManager->updateEmailForSoundCloudUser($user, 'new@email.com');
+        $this->assertSame($existingUser, $provider->getUser());
+    }
+
+    public function testReactivateDeletedUserWithDifferentProviderName(): void
+    {
+        $provider = new Provider()
+            ->setName(ApiReference::SPOTIFY)
+            ->setDeletedAt(new DateTime())
+        ;
+
+        $user = new User()
+            ->setDeletedAt(new DateTime())
+            ->addProvider($provider)
+        ;
+
+        $google = new GoogleUser([
+            'sub' => '1234567890',
+            'name' => 'John Doe',
+            'given_name' => 'John',
+            'family_name' => 'Doe',
+            'email' => 'test@gmail.com',
+            'picture' => '',
+            'locale' => 'en',
+        ]);
+
+        $oAuthUserData = new OAuthUserData($google, 'access_token');
+
+        $this->filterCollectionMock->expects($this->exactly(2))
+            ->method('disable')
+            ->with('softdeleteable')
+        ;
+
+        $this->filterCollectionMock->expects($this->exactly(2))
+            ->method('enable')
+            ->with('softdeleteable')
+        ;
+
+        $this->userRepoMocked
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->with(['email' => 'test@gmail.com'])
+            ->willReturn($user)
+        ;
+
+        $this->userMapperMocked
+            ->expects($this->once())
+            ->method('mapEntity')
+            ->with($google, ApiReference::GOOGLE, $user)
+            ->willReturn($user)
+        ;
+
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('createOrUpdateProvider')
+            ->with($oAuthUserData, ApiReference::GOOGLE, $user)
+        ;
+
+        $this->entityManagerMocked
+            ->expects($this->once())
+            ->method('refresh')
+            ->with($user)
+        ;
+
+        $this->userRepoMocked
+            ->expects($this->once())
+            ->method('save')
+            ->with($user, true)
+        ;
+
+        $result = $this->userManager->create($oAuthUserData, ApiReference::GOOGLE);
+
+        $this->assertSame($user, $result);
+        $this->assertNull($user->getDeletedAt());
+
+        foreach ($user->getProviders() as $p) {
+            if (ApiReference::SPOTIFY === $p->getName()) {
+                $this->assertNotNull($p->getDeletedAt());
+            }
+        }
     }
 }

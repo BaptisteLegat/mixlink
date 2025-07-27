@@ -8,7 +8,9 @@ use App\Entity\User;
 use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
 use App\Security\OAuthUserData;
+use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use PHPUnit\Framework\TestCase;
 
 class ProviderMapperTest extends TestCase
@@ -24,11 +26,10 @@ class ProviderMapperTest extends TestCase
     {
         $google = new GoogleUser([
             'sub' => '1234567890',
-            'name' => 'John Doe',
             'email' => 'test@gmail.com',
         ]);
 
-        $oauthUserData = new OAuthUserData($google, 'access_token');
+        $oauthUserData = new OAuthUserData($google, 'access_token', 'refresh_token');
 
         $providerName = ApiReference::GOOGLE;
         $user = (new User())->setEmail('test@gmail.com');
@@ -41,17 +42,20 @@ class ProviderMapperTest extends TestCase
         $this->assertSame($user, $provider->getUser());
         $this->assertSame($oauthUserData->getAccessToken(), $provider->getAccessToken());
         $this->assertSame($oauthUserData->getRefreshToken(), $provider->getRefreshToken());
+        $this->assertSame('1234567890', $provider->getProviderUserId());
+        $this->assertSame('test@gmail.com', $provider->getUser()->getEmail());
     }
 
     public function testMapEntitySpotify(): void
     {
-        $google = new GoogleUser([
+        $spotify = new SpotifyResourceOwner([
             'sub' => '1234567890',
             'name' => 'John Doe',
             'email' => 'test@gmail.com',
+            'id' => '1234567890',
         ]);
 
-        $oauthUserData = new OAuthUserData($google, 'access_token');
+        $oauthUserData = new OAuthUserData($spotify, 'access_token', 'refresh_token');
 
         $providerName = ApiReference::SPOTIFY;
         $user = (new User())->setEmail('test@gmail.com');
@@ -64,6 +68,33 @@ class ProviderMapperTest extends TestCase
         $this->assertSame($user, $provider->getUser());
         $this->assertSame($oauthUserData->getAccessToken(), $provider->getAccessToken());
         $this->assertSame($oauthUserData->getRefreshToken(), $provider->getRefreshToken());
+        $this->assertSame('1234567890', $provider->getProviderUserId());
+        $this->assertSame('test@gmail.com', $provider->getUser()->getEmail());
+    }
+
+    public function testMapEntitySoundCloud(): void
+    {
+        $soundcloud = new SoundCloudResourceOwner([
+            'id' => 'sc_123',
+            'full_name' => 'SC User',
+            'avatar_url' => 'http://soundcloud.com/avatar.jpg',
+        ]);
+
+        $oauthUserData = new OAuthUserData($soundcloud, 'access_token', 'refresh_token');
+
+        $providerName = ApiReference::SOUNDCLOUD;
+        $user = (new User())->setEmail('soundcloud@test.com');
+        $existingProvider = null;
+
+        $provider = $this->providerMapper->mapEntity($oauthUserData, $providerName, $user, $existingProvider);
+
+        $this->assertInstanceOf(Provider::class, $provider);
+        $this->assertSame($providerName, $provider->getName());
+        $this->assertSame($user, $provider->getUser());
+        $this->assertSame($oauthUserData->getAccessToken(), $provider->getAccessToken());
+        $this->assertSame($oauthUserData->getRefreshToken(), $provider->getRefreshToken());
+        $this->assertSame('sc_123', $provider->getProviderUserId());
+        $this->assertSame('soundcloud@test.com', $provider->getUser()->getEmail());
     }
 
     public function testMapEntityWithExistingProviderGoogle(): void
@@ -98,22 +129,21 @@ class ProviderMapperTest extends TestCase
 
     public function testMapEntityWithExistingProviderSpotify(): void
     {
-        $google = new GoogleUser([
+        $spotify = new SpotifyResourceOwner([
             'sub' => '1234567890',
             'name' => 'John Doe',
             'email' => 'test@gmail.com',
-            'access_token' => 'access_token',
-            'refresh_token' => 'refresh_token',
+            'id' => '1234567890',
         ]);
 
-        $oauthUserData = new OAuthUserData($google, 'access_token');
+        $oauthUserData = new OAuthUserData($spotify, 'access_token', 'refresh_token');
 
         $providerName = ApiReference::SPOTIFY;
         $user = (new User())->setEmail('test@gmail.com');
         $existingProvider = (new Provider())
             ->setName($providerName)
             ->setUser($user)
-            ->setName($google->getName())
+            ->setProviderUserId('1234567890')
             ->setAccessToken('old_access_token')
         ;
 
@@ -126,16 +156,46 @@ class ProviderMapperTest extends TestCase
         $this->assertSame($oauthUserData->getRefreshToken(), $provider->getRefreshToken());
     }
 
+    public function testMapEntityWithExistingProviderSoundCloud(): void
+    {
+        $soundcloud = new SoundCloudResourceOwner([
+            'id' => 'sc_456',
+            'full_name' => 'SC User 2',
+            'avatar_url' => 'http://soundcloud.com/avatar2.jpg',
+        ]);
+
+        $oauthUserData = new OAuthUserData($soundcloud, 'access_token', 'refresh_token');
+
+        $providerName = ApiReference::SOUNDCLOUD;
+        $user = (new User())->setEmail('soundcloud2@test.com');
+        $existingProvider = (new Provider())
+            ->setName($providerName)
+            ->setUser($user)
+            ->setAccessToken('old_access_token')
+            ->setProviderUserId('test')
+        ;
+
+        $provider = $this->providerMapper->mapEntity($oauthUserData, $providerName, $user, $existingProvider);
+
+        $this->assertInstanceOf(Provider::class, $provider);
+        $this->assertSame($providerName, $provider->getName());
+        $this->assertSame($user, $provider->getUser());
+        $this->assertSame($oauthUserData->getAccessToken(), $provider->getAccessToken());
+        $this->assertSame($oauthUserData->getRefreshToken(), $provider->getRefreshToken());
+        $this->assertSame('sc_456', $provider->getProviderUserId());
+    }
+
     public function testMapModel(): void
     {
         $name = ApiReference::GOOGLE;
         $accessToken = 'test_access_token';
         $refreshToken = 'test_refresh_token';
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken($accessToken);
-        $provider->setRefreshToken($refreshToken);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken($accessToken)
+            ->setRefreshToken($refreshToken)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider);
 
@@ -151,10 +211,11 @@ class ProviderMapperTest extends TestCase
         $refreshToken = 'test_refresh_token';
         $currentAccessToken = 'test_access_token';
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken($accessToken);
-        $provider->setRefreshToken($refreshToken);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken($accessToken)
+            ->setRefreshToken($refreshToken)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
 
@@ -170,10 +231,11 @@ class ProviderMapperTest extends TestCase
         $refreshToken = 'test_refresh_token';
         $currentAccessToken = 'different_access_token';
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken($accessToken);
-        $provider->setRefreshToken($refreshToken);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken($accessToken)
+            ->setRefreshToken($refreshToken)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
 
@@ -186,10 +248,11 @@ class ProviderMapperTest extends TestCase
     {
         $name = ApiReference::SPOTIFY;
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken(null);
-        $provider->setRefreshToken(null);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken(null)
+            ->setRefreshToken(null)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider);
 
@@ -204,10 +267,11 @@ class ProviderMapperTest extends TestCase
         $accessToken = '';
         $refreshToken = '';
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken($accessToken);
-        $provider->setRefreshToken($refreshToken);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken($accessToken)
+            ->setRefreshToken($refreshToken)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider);
 
@@ -223,10 +287,11 @@ class ProviderMapperTest extends TestCase
         $refreshToken = 'test_refresh_token';
         $currentAccessToken = null;
 
-        $provider = new Provider();
-        $provider->setName($name);
-        $provider->setAccessToken($accessToken);
-        $provider->setRefreshToken($refreshToken);
+        $provider = new Provider()
+            ->setName($name)
+            ->setAccessToken($accessToken)
+            ->setRefreshToken($refreshToken)
+        ;
 
         $providerModel = $this->providerMapper->mapModel($provider, $currentAccessToken);
 

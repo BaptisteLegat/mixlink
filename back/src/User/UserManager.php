@@ -3,6 +3,7 @@
 namespace App\User;
 
 use App\ApiResource\ApiReference;
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
@@ -42,12 +43,8 @@ class UserManager
             $email = (string) $resourceOwner->getEmail();
         }
 
-        $filters = $this->entityManager->getFilters();
-        $filters->disable('softdeleteable');
-        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
-        $filters->enable('softdeleteable');
-
-        if ($existingUser && null !== $existingUser->getDeletedAt()) {
+        $existingUser = $this->findExistingUser($resourceOwner, $provider, $email);
+        if ($existingUser && $existingUser->getDeletedAt()) {
             $this->reactivateUser($existingUser, $provider);
         }
 
@@ -67,6 +64,80 @@ class UserManager
         return $user;
     }
 
+    /**
+     * @param GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner
+     */
+    private function findExistingUser($resourceOwner, string $provider, string $email): ?User
+    {
+        if (ApiReference::SOUNDCLOUD === $provider) {
+            return $this->findSoundCloudUser($resourceOwner, $provider);
+        }
+
+        return $this->findUserByEmail($email);
+    }
+
+    /**
+     * @param GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner
+     */
+    private function findSoundCloudUser($resourceOwner, string $provider): ?User
+    {
+        $providerUserId = (string) $resourceOwner->getId();
+        $filters = $this->entityManager->getFilters();
+        $filters->disable('softdeleteable');
+
+        $existingProvider = $this->providerManager->findByProviderUserId($provider, $providerUserId);
+        if (null === $existingProvider) {
+            $filters->enable('softdeleteable');
+
+            return null;
+        }
+
+        $user = $existingProvider->getUser();
+        if (null === $user) {
+            $filters->enable('softdeleteable');
+
+            return null;
+        }
+
+        $this->handleSoftDeletedProvider($existingProvider, $user);
+
+        $filters->enable('softdeleteable');
+
+        return $user;
+    }
+
+    private function handleSoftDeletedProvider(Provider $existingProvider, User $user): void
+    {
+        if (null === $existingProvider->getDeletedAt()) {
+            return;
+        }
+
+        $existingProvider->setDeletedAt(null);
+
+        $userEmail = $user->getEmail();
+        if (null === $userEmail || '' === $userEmail) {
+            throw new InvalidArgumentException('Email is required for SoundCloud user');
+        }
+
+        $this->providerManager->saveProvider($existingProvider, $userEmail, true);
+    }
+
+    private function findUserByEmail(string $email): ?User
+    {
+        if (!$email) {
+            return null;
+        }
+
+        $filters = $this->entityManager->getFilters();
+        $filters->disable('softdeleteable');
+
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
+
+        $filters->enable('softdeleteable');
+
+        return $existingUser;
+    }
+
     private function reactivateUser(User $user, string $providerName): void
     {
         $user->setDeletedAt(null);
@@ -74,15 +145,22 @@ class UserManager
         $filters = $this->entityManager->getFilters();
         $filters->disable('softdeleteable');
 
-        foreach ($user->getProviders() as $provider) {
-            if ($provider->getName() === $providerName && null !== $provider->getDeletedAt()) {
-                $provider->setDeletedAt(null);
-
-                break;
-            }
-        }
+        $this->reactivateUserProvider($user, $providerName);
 
         $filters->enable('softdeleteable');
+    }
+
+    private function reactivateUserProvider(User $user, string $providerName): void
+    {
+        foreach ($user->getProviders() as $provider) {
+            if ($provider->getName() !== $providerName || !$provider->getDeletedAt()) {
+                continue;
+            }
+
+            $provider->setDeletedAt(null);
+
+            break;
+        }
     }
 
     public function getUserModel(User $user, ?string $currentAccessToken = null): UserModel
@@ -127,8 +205,20 @@ class UserManager
         $activeProviders = array_filter($user->getProviders()->toArray(), function ($provider) {
             return null === $provider->getDeletedAt();
         });
+
         if (1 !== count($activeProviders) || ApiReference::SOUNDCLOUD !== $activeProviders[0]->getName()) {
             throw new InvalidArgumentException('profile.email.not_soundcloud_only');
+        }
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
+        if ($existingUser && $existingUser->getId() !== $user->getId()) {
+            foreach ($user->getProviders() as $provider) {
+                $provider->setUser($existingUser);
+                $this->providerManager->saveProvider($provider, $email, true);
+            }
+            $this->entityManager->flush();
+            $this->userRepository->hardDelete($user);
+
+            return;
         }
 
         $user

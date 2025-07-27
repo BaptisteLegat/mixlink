@@ -21,6 +21,11 @@ security:
             http_basic:
                 realm: "API Documentation"
             provider: in_memory
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticator: App\Security\AuthTokenAuthenticator
+            provider: users_in_memory
         main:
             lazy: true
             provider: users_in_memory

@@ -9,6 +9,7 @@ use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -21,7 +22,7 @@ class Provider implements BlameableInterface, TimestampableInterface
     use SoftDeleteableEntity;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
@@ -38,6 +39,9 @@ class Provider implements BlameableInterface, TimestampableInterface
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $refreshToken = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $providerUserId = null;
 
     public function getId(): ?Uuid
     {
@@ -88,6 +92,18 @@ class Provider implements BlameableInterface, TimestampableInterface
     public function setRefreshToken(?string $refreshToken): self
     {
         $this->refreshToken = $refreshToken;
+
+        return $this;
+    }
+
+    public function getProviderUserId(): ?string
+    {
+        return $this->providerUserId;
+    }
+
+    public function setProviderUserId(?string $providerUserId): self
+    {
+        $this->providerUserId = $providerUserId;
 
         return $this;
     }

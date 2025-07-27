@@ -3,6 +3,7 @@ App\Entity\Provider:
     name: 'spotify'
     accessToken: 'spotify_access_token_123'
     refreshToken: 'spotify_refresh_token_456'
+    providerUserId: 'spotify_user_id_123'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
@@ -12,6 +13,7 @@ App\Entity\Provider:
     name: 'spotify_second'
     accessToken: 'spotify_second_access_token_234'
     refreshToken: 'spotify_second_refresh_token_567'
+    providerUserId: 'spotify_user_id_234'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
@@ -21,6 +23,7 @@ App\Entity\Provider:
     name: 'google'
     accessToken: 'google_access_token_789'
     refreshToken: 'google_refresh_token_012'
+    providerUserId: 'google_user_id_789'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
@@ -30,6 +33,7 @@ App\Entity\Provider:
     name: 'deezer'
     accessToken: 'deezer_access_token_345'
     refreshToken: 'deezer_refresh_token_678'
+    providerUserId: 'deezer_user_id_345'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
@@ -39,6 +43,7 @@ App\Entity\Provider:
     name: 'soundcloud'
     accessToken: 'soundcloud_access_token_910'
     refreshToken: 'soundcloud_refresh_token_131'
+    providerUserId: 'soundcloud_user_id_910'
     createdBy: "anon."
     createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
     updatedBy: "anon."
