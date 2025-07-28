@@ -16,7 +16,10 @@ export const useSessionStore = defineStore('session', () => {
         try {
             const response = await fetchWithAuth('/api/session', {
                 method: 'POST',
-                body: JSON.stringify(sessionData),
+                body: JSON.stringify({
+                    ...sessionData,
+                    playlistName: sessionData.playlistName,
+                }),
             });
 
             if (!response.ok) {

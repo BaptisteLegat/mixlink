@@ -10,6 +10,7 @@
     import GuestJoinCard from '@/components/session/GuestJoinCard.vue';
     import ParticipantsCard from '@/components/session/ParticipantsCard.vue';
     import PlaylistCard from '@/components/session/PlaylistCard.vue';
+    import MusicSearchBar from '@/components/session/MusicSearchBar.vue';
 
     const { t } = useI18n();
     const route = useRoute();
@@ -290,6 +291,7 @@
                 :isHost="isHost"
                 @kick-participant="kickParticipant"
             />
+            <MusicSearchBar />
             <PlaylistCard />
         </div>
     </div>

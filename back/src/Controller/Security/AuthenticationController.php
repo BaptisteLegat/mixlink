@@ -118,7 +118,10 @@ class AuthenticationController extends AbstractController
 
             return $response;
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $this->logger->error('Error during OAuth callback', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return new RedirectResponse($_ENV['FRONTEND_URL']);
         }
@@ -307,11 +310,12 @@ class AuthenticationController extends AbstractController
         try {
             $this->userManager->updateEmailForSoundCloudUser($user, $email);
         } catch (InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'profile.email.not_soundcloud_only'], Response::HTTP_FORBIDDEN);
         } catch (Exception $e) {
             $this->logger->error('Error updating SoundCloud email', [
                 'userId' => $user->getId(),
                 'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return new JsonResponse(['error' => 'profile.email.update_error'], Response::HTTP_INTERNAL_SERVER_ERROR);

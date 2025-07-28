@@ -120,8 +120,8 @@
             "change_plan_cta": "Changer de plan",
             "free": {
                 "title": "Gratuit",
-                "feature1": "Créez jusqu'à 5 playlists",
-                "feature2": "Ajout jusqu'à 50 morceaux par playlist",
+                "feature1": "Créez jusqu'à 3 playlists",
+                "feature2": "Ajout jusqu'à 30 morceaux par playlist",
                 "feature3": "Maximum 3 participants par session",
                 "cta": "Commencer, gratuitement"
             },
@@ -374,8 +374,13 @@
         "form": {
             "name": "Nom",
             "name_placeholder": "Nom de la session",
+            "playlist_name": "Nom de la playlist",
+            "playlist_name_placeholder": "Nom de la playlist à exporter",
             "participants_limit": "Avec votre plan {plan}, vous pouvez inviter jusqu'à {limit} participants",
             "validation": {
+                "playlist_name_required": "Le nom de la playlist est requis",
+                "playlist_name_min": "Le nom de la playlist doit contenir au moins 3 caractères",
+                "playlist_name_max": "Le nom de la playlist ne peut pas dépasser 50 caractères",
                 "name_required": "Le nom est requis",
                 "name_min": "Le nom doit contenir au moins 3 caractères",
                 "name_max": "Le nom ne peut pas dépasser 50 caractères"
@@ -523,5 +528,15 @@
         "email_success": "Votre email a bien été enregistré !",
         "email_error": "Veuillez saisir une adresse email valide.",
         "email_info": "Pour le bon fonctionnement de l'application avec SoundCloud, vous devez définir une adresse email. Si vous connectez d'autres méthodes d'authentification, utilisez la même adresse email."
+    },
+    "music_search": {
+        "placeholder": "Rechercher un morceau, un artiste...",
+        "search_button": "Rechercher",
+        "input_required": "Veuillez saisir un terme de recherche.",
+        "no_results": "Aucun résultat trouvé.",
+        "title": "Titre",
+        "artists": "Artistes",
+        "add_button": "Ajouter",
+        "added": "'{{title}}' ajouté !"
     }
 }

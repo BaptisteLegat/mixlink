@@ -8,7 +8,9 @@ use App\Repository\PlanRepository;
 use App\Service\StripeService;
 use App\Subscription\SubscriptionManager;
 use App\Voter\AuthenticationVoter;
+use Exception;
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +26,7 @@ class SubscriptionController extends AbstractController
         private StripeService $stripeService,
         private ProviderManager $providerManager,
         private SubscriptionManager $subscriptionManager,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -164,9 +167,19 @@ class SubscriptionController extends AbstractController
             return new JsonResponse(['error' => 'subscription.cancel.error_no_active_subscription'], Response::HTTP_NOT_FOUND);
         }
 
-        $result = $this->subscriptionManager->cancelSubscription($user);
+        try {
+            $result = $this->subscriptionManager->cancelSubscription($user);
+            if (!$result) {
+                throw new Exception('Failed to cancel subscription');
+            }
+        } catch (Exception $e) {
+            $this->logger->error('Error cancelling subscription', [
+                'userId' => $user->getId(),
+                'subscription' => $subscription,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-        if (!$result) {
             return new JsonResponse(['error' => 'subscription.cancel.error_failed_to_cancel_subscription'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -244,9 +257,18 @@ class SubscriptionController extends AbstractController
             return new JsonResponse(['error' => 'subscription.change.error_already_subscribed_to_this_plan'], Response::HTTP_BAD_REQUEST);
         }
 
-        $result = $this->subscriptionManager->changeSubscriptionPlan($user, $newPlan);
+        try {
+            $result = $this->subscriptionManager->changeSubscriptionPlan($user, $newPlan);
+            if (!$result) {
+                throw new Exception('Failed to change subscription plan');
+            }
+        } catch (Exception $e) {
+            $this->logger->error('Error changing subscription plan', [
+                'userId' => $user->getId(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-        if (!$result) {
             return new JsonResponse(['error' => 'subscription.change.error_failed_to_change_subscription'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 

@@ -463,7 +463,7 @@ class UserManagerTest extends TestCase
         $provider->setUser($user);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+        $this->expectExceptionMessage('The user has not only a SoundCloud provider');
 
         $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
     }
@@ -479,7 +479,7 @@ class UserManagerTest extends TestCase
         $provider2->setUser($user);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+        $this->expectExceptionMessage('The user has not only a SoundCloud provider');
 
         $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
     }

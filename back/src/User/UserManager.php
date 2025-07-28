@@ -207,7 +207,7 @@ class UserManager
         });
 
         if (1 !== count($activeProviders) || ApiReference::SOUNDCLOUD !== $activeProviders[0]->getName()) {
-            throw new InvalidArgumentException('profile.email.not_soundcloud_only');
+            throw new InvalidArgumentException('The user has not only a SoundCloud provider');
         }
         $existingUser = $this->userRepository->findOneBy(['email' => $email]);
         if ($existingUser && $existingUser->getId() !== $user->getId()) {

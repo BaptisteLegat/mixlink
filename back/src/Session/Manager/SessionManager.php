@@ -4,6 +4,7 @@ namespace App\Session\Manager;
 
 use App\Entity\Session;
 use App\Entity\User;
+use App\Playlist\PlaylistManager;
 use App\Repository\SessionRepository;
 use App\Session\Mapper\SessionMapper;
 use App\Session\Model\Request\CreateSessionRequest;
@@ -22,6 +23,7 @@ class SessionManager
         private SessionMapper $sessionMapper,
         private SessionMercurePublisher $mercurePublisher,
         private SessionParticipantManager $sessionParticipantManager,
+        private PlaylistManager $playlistManager,
     ) {
     }
 
@@ -35,13 +37,14 @@ class SessionManager
 
         $this->sessionRepository->save($session, true);
 
-        $this->sessionParticipantManager->joinSession($session, (string) $host->getFirstName());
+        $code = $session->getCode();
+        if (null === $code) {
+            throw new InvalidArgumentException('Session code is null');
+        }
 
-        $this->logger->info('Session created', [
-            'sessionId' => $session->getId()?->toRfc4122(),
-            'hostId' => $host->getId()?->toRfc4122(),
-            'sessionCode' => $session->getCode(),
-        ]);
+        $this->playlistManager->createSessionPlaylist($host, $code, (string) $session->getName());
+
+        $this->sessionParticipantManager->joinSession($session, (string) $host->getFirstName());
 
         return $session;
     }
@@ -52,18 +55,15 @@ class SessionManager
             throw new InvalidArgumentException('Only the host can end the session');
         }
 
-        $sessionId = $session->getId()?->toRfc4122();
         $sessionCode = $session->getCode();
 
         $this->mercurePublisher->publishSessionUpdate($session, 'session_ended');
 
         $this->sessionRepository->remove($session, true);
 
-        $this->logger->info('Session ended and deleted', [
-            'sessionId' => $sessionId,
-            'hostId' => $user->getId()?->toRfc4122(),
-            'sessionCode' => $sessionCode,
-        ]);
+        if (null !== $sessionCode) {
+            $this->playlistManager->deletePlaylistBySessionCode($sessionCode);
+        }
     }
 
     public function deleteSession(Session $session, User $user): void

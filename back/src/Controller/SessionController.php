@@ -46,9 +46,10 @@ class SessionController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 type: 'object',
-                required: ['name'],
+                required: ['name', 'playlistName'],
                 properties: [
                     new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
+                    new OA\Property(property: 'playlistName', type: 'string', description: 'Playlist name (required)', example: 'Ma playlist collaborative'),
                     new OA\Property(property: 'description', type: 'string', nullable: true, description: 'Session description', example: 'Une session pour créer une playlist ensemble'),
                     new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10, minimum: 1, maximum: 10),
                 ]

@@ -120,8 +120,8 @@
             "change_plan_cta": "Change plan",
             "free": {
                 "title": "Free",
-                "feature1": "Create up to 5 playlists",
-                "feature2": "Add up to 50 songs per playlist",
+                "feature1": "Create up to 3 playlists",
+                "feature2": "Add up to 30 songs per playlist",
                 "feature3": "Maximum of 3 participants per session",
                 "cta": "Get Started, Free"
             },
@@ -371,11 +371,16 @@
         "form": {
             "name": "Name",
             "name_placeholder": "Session name",
+            "playlist_name": "Playlist name",
+            "playlist_name_placeholder": "Name of the playlist to export",
             "participants_limit": "With your {plan} plan, you can invite up to {limit} participants",
             "validation": {
                 "name_required": "Name is required",
                 "name_min": "Name must be at least 3 characters",
-                "name_max": "Name cannot exceed 50 characters"
+                "name_max": "Name cannot exceed 50 characters",
+                "playlist_name_required": "Playlist name is required",
+                "playlist_name_min": "Playlist name must be at least 3 characters",
+                "playlist_name_max": "Playlist name cannot exceed 50 characters"
             }
         },
         "share": {
@@ -518,5 +523,16 @@
         "email_success": "Your email has been successfully registered!",
         "email_error": "Please enter a valid email.",
         "email_info": "For the proper functioning of the application with SoundCloud, you must define an email address. If you connect other authentication methods, use the same email address."
+    },
+    "music_search": {
+        "placeholder": "Search for a song, artist...",
+        "search_button": "Search",
+        "input_required": "Please enter a search term.",
+        "no_results": "No results found.",
+        "title": "Title",
+        "artists": "Artists",
+        "add_button": "Add",
+        "added": "'{{title}}' added!",
+        "show_more": "Show more"
     }
 }

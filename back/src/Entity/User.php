@@ -62,10 +62,17 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'host', cascade: ['persist', 'remove'])]
     private Collection $sessions;
 
+    /**
+     * @var Collection|Playlist[]
+     */
+    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Collection $playlists;
+
     public function __construct()
     {
         $this->providers = new ArrayCollection();
         $this->sessions = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -182,7 +189,6 @@ class User implements BlameableInterface, TimestampableInterface
 
     public function setSubscription(?Subscription $subscription): self
     {
-        // set the owning side of the relation if necessary
         if ($subscription && $subscription->getUser() !== $this) {
             $subscription->setUser($this);
         }
@@ -223,6 +229,35 @@ class User implements BlameableInterface, TimestampableInterface
         if ($this->sessions->removeElement($session)) {
             if ($session->getHost() === $this) {
                 $session->setHost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Playlist>
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->removeElement($playlist)) {
+            if ($playlist->getUser() === $this) {
+                $playlist->setUser(null);
             }
         }
 

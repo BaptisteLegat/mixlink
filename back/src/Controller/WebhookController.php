@@ -86,7 +86,9 @@ class WebhookController extends AbstractController
         try {
             $event = $this->stripeService->constructWebhookEvent($payload, $signature);
         } catch (Exception $e) {
-            $this->logger->error('Invalid signature: '.$e->getMessage());
+            $this->logger->error('Invalid signature: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return new Response('Invalid signature: '.$e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

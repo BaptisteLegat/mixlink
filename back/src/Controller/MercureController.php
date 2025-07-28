@@ -8,6 +8,7 @@ use App\Provider\ProviderManager;
 use App\Session\Manager\SessionManager;
 use App\Voter\AuthenticationVoter;
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +24,7 @@ class MercureController extends AbstractController
         private SessionManager $sessionManager,
         private ProviderManager $providerManager,
         private MercureManager $mercureManager,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -78,6 +80,12 @@ class MercureController extends AbstractController
 
             return new JsonResponse($result);
         } catch (RuntimeException $e) {
+            $this->logger->error('Error generating Mercure token for session', [
+                'sessionCode' => $sessionCode,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return new JsonResponse(['error' => 'common.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -148,6 +156,12 @@ class MercureController extends AbstractController
 
             return new JsonResponse($result);
         } catch (RuntimeException $e) {
+            $this->logger->error('Error generating Mercure token for session host', [
+                'sessionCode' => $sessionCode,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return new JsonResponse(['error' => 'common.error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

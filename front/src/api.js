@@ -86,3 +86,17 @@ export async function updateSoundCloudEmail(email) {
 export function getOAuthUrl(provider) {
     return `${import.meta.env.VITE_API_BASE_URL}/api/auth/${provider}`;
 }
+
+export async function searchMusicApi(query) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search/music?q=${encodeURIComponent(query)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'search.error.unknown');
+    }
+    return data;
+}

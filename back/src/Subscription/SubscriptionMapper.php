@@ -25,23 +25,20 @@ class SubscriptionMapper
     ): Subscription {
         $subscription = $existingSubscription ?? new Subscription();
 
-        $subscription->setUser($user);
-        $subscription->setPlan($plan);
-        $subscription->setStripeSubscriptionId($stripeSubscriptionId);
-        $subscription->setStartDate($startDate);
-        $subscription->setEndDate($endDate);
-        // Réinitialiser les valeurs d'annulation lors d'une nouvelle souscription ou d'un changement
-        $subscription->setCanceledAt(null);
-        $subscription->setStatus('active');
-
-        return $subscription;
+        return $subscription
+            ->setUser($user)
+            ->setPlan($plan)
+            ->setStripeSubscriptionId($stripeSubscriptionId)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate)
+            ->setCanceledAt(null)
+            ->setStatus('active')
+        ;
     }
 
     public function mapModel(Subscription $subscription): SubscriptionModel
     {
-        $subscriptionModel = new SubscriptionModel();
-
-        $subscriptionModel
+        $subscriptionModel = (new SubscriptionModel())
             ->setId((string) $subscription->getId())
             ->setStripeSubscriptionId($subscription->getStripeSubscriptionId())
             ->setStartDate($subscription->getStartDate())

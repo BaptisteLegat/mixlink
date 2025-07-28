@@ -19,6 +19,7 @@
 
     const form = ref({
         name: '',
+        playlistName: '',
         maxParticipants: 3,
     });
 
@@ -50,6 +51,11 @@
             { min: 3, message: t('session.form.validation.name_min'), trigger: 'blur' },
             { max: 50, message: t('session.form.validation.name_max'), trigger: 'blur' },
         ],
+        playlistName: [
+            { required: true, message: t('session.form.validation.playlist_name_required'), trigger: 'blur' },
+            { min: 3, message: t('session.form.validation.playlist_name_min'), trigger: 'blur' },
+            { max: 50, message: t('session.form.validation.playlist_name_max'), trigger: 'blur' },
+        ],
     };
 
     const formRef = ref(null);
@@ -68,6 +74,7 @@
     function resetForm() {
         form.value = {
             name: '',
+            playlistName: '',
             maxParticipants: maxParticipantsLimit.value,
         };
         if (formRef.value) {
@@ -243,11 +250,13 @@
         </div>
 
         <div v-else class="create-session-form">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
                 <el-form-item :label="t('session.form.name')" prop="name">
                     <el-input v-model="form.name" :placeholder="t('session.form.name_placeholder')" maxlength="50" show-word-limit />
                 </el-form-item>
-
+                <el-form-item :label="t('session.form.playlist_name')" prop="playlistName">
+                    <el-input v-model="form.playlistName" :placeholder="t('session.form.playlist_name_placeholder')" maxlength="50" show-word-limit />
+                </el-form-item>
                 <el-alert
                     :title="t('session.form.participants_limit', { limit: maxParticipantsLimit, plan: planTitle })"
                     type="info"
@@ -284,38 +293,92 @@
 </template>
 
 <style lang="scss" scoped>
-    .create-session-form {
-        .el-form-item {
-            margin-bottom: 20px;
+.create-session-form {
+    .el-form-item {
+        margin-bottom: 30px;
+        align-items: flex-start;
+        .el-form-item__label {
+            white-space: nowrap;
+            font-weight: 500;
+            color: var(--el-text-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .el-form-item__content {
+            width: 100%;
+        }
+        .el-form-item__error {
+            margin-top: 2px;
+            font-size: 13px;
         }
     }
+}
 
-    .share-session {
-        .session-info {
-            margin-bottom: 20px;
-        }
+.el-dialog {
+    background: var(--el-bg-color-overlay, #18181c);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    padding: 0 0 12px 0;
+    max-width: 500px;
+    width: 95vw;
+}
 
-        .share-options {
-            .share-item {
-                margin-bottom: 15px;
+.el-dialog__header {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-                label {
-                    display: block;
-                    margin-bottom: 5px;
-                    font-weight: 500;
-                }
+.el-dialog__body {
+    padding-top: 0;
+}
 
-                .share-input-group {
-                    display: flex;
-                    align-items: center;
-                }
+.el-form-item__label.is-required::before {
+    color: #e57373;
+    font-size: 1.1em;
+    margin-right: 3px;
+    position: relative;
+    top: 1px;
+}
+
+@media (max-width: 600px) {
+    .el-dialog {
+        max-width: 98vw;
+        padding: 0 0 8px 0;
+    }
+    .el-dialog__header {
+        font-size: 1.1rem;
+    }
+    .el-form-item__label {
+        font-size: 15px;
+    }
+}
+
+.share-session, .existing-session {
+    .session-info {
+        margin-bottom: 20px;
+    }
+    .share-options {
+        .share-item {
+            margin-bottom: 15px;
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+            }
+            .share-input-group {
+                display: flex;
+                align-items: center;
             }
         }
     }
+}
 
-    .dialog-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
 </style>

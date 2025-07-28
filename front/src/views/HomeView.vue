@@ -6,11 +6,17 @@
     import FeaturesSection from '@/components/home/FeaturesSection.vue';
     import PricingSection from '@/components/home/PricingSection.vue';
     import CtaSection from '@/components/home/CtaSection.vue';
+    import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
 
     const heroRef = ref(null);
     const featuresRef = ref(null);
     const pricingRef = ref(null);
     const ctaRef = ref(null);
+    const createSessionModalRef = ref(null);
+
+    function openCreateSessionModal() {
+        createSessionModalRef.value.showDialog();
+    }
 
     onMounted(() => {
         useMotion(heroRef, {
@@ -67,9 +73,10 @@
             <PricingSection />
         </div>
         <div ref="ctaRef">
-            <CtaSection />
+            <CtaSection @openCreateSessionModal="openCreateSessionModal" />
         </div>
     </el-container>
+    <CreateSessionModal ref="createSessionModalRef" />
 </template>
 
 <style lang="scss" scoped>

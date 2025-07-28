@@ -11,6 +11,8 @@ parameters:
     stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
     mercure_publisher_jwt_key: '%env(MERCURE_PUBLISHER_JWT_KEY)%'
     mercure_public_url: '%env(MERCURE_PUBLIC_URL)%'
+    spotify_client_id: '%env(SPOTIFY_CLIENT_ID)%'
+    spotify_client_secret: '%env(SPOTIFY_CLIENT_SECRET)%'
 services:
     # default configuration for services in *this* file
     _defaults:
