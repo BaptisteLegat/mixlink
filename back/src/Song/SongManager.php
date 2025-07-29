@@ -17,20 +17,17 @@ class SongManager
     ) {
     }
 
-    /**
-     * @param array<string, string|null> $data
-     */
-    public function findOrCreateSong(array $data): Song
+    public function findOrCreateSong(SongModel $songModel, string $userEmail): Song
     {
-        if (empty($data['spotifyId']) || empty($data['title']) || empty($data['artists'])) {
-            throw new InvalidArgumentException('Invalid song data');
+        if (null === $songModel->getSpotifyId() || '' === $songModel->getSpotifyId()) {
+            throw new InvalidArgumentException('Spotify ID is required');
         }
 
-        $song = $this->songRepository->findOneBy(['spotifyId' => $data['spotifyId']]);
+        $song = $this->songRepository->findOneBy(['spotifyId' => $songModel->getSpotifyId()]);
         if (null === $song) {
-            $song = $this->songMapper->mapEntity($data);
+            $song = $this->songMapper->mapEntity($songModel);
             $this->setTimestampable($song);
-            $this->setBlameable($song, $data['createdBy'] ?? '');
+            $this->setBlameable($song, $userEmail);
             $this->songRepository->save($song, true);
         }
 

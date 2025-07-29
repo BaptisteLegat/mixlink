@@ -207,6 +207,8 @@
                 router.push('/');
 
                 break;
+            case 'playlist_updated':
+                break;
             default:
                 console.log('Unknown Mercure event:', data.event);
         }
@@ -275,7 +277,7 @@
             </el-result>
         </div>
         <div v-else class="session-container">
-            <SessionHeader :session="session" :isHost="isHost" @end-session="endSession" @leave-session="leaveSession" />
+            <SessionHeader :session="session" :isHost="isHost" :hasJoined="hasJoined" @end-session="endSession" @leave-session="leaveSession" />
             <GuestJoinCard
                 v-if="!hasJoined"
                 :currentUserPseudo="currentUserPseudo"
@@ -291,8 +293,8 @@
                 :isHost="isHost"
                 @kick-participant="kickParticipant"
             />
-            <MusicSearchBar />
-            <PlaylistCard />
+            <MusicSearchBar v-if="hasJoined" />
+            <PlaylistCard v-if="hasJoined" :playlist="sessionStore.currentSession?.playlist" />
         </div>
     </div>
 </template>

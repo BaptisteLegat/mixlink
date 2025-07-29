@@ -9,7 +9,9 @@ use App\Playlist\Mapper\PlaylistMapper;
 use App\Playlist\Model\PlaylistModel;
 use App\Repository\PlaylistRepository;
 use App\Song\SongManager;
+use App\Song\SongModel;
 use App\Trait\TraceableTrait;
+use InvalidArgumentException;
 
 class PlaylistManager
 {
@@ -45,21 +47,40 @@ class PlaylistManager
         $this->playlistRepository->hardDeleteBySessionCode($sessionCode);
     }
 
-    public function findPlaylistById(string $id): ?Playlist
+    public function addSongToPlaylist(Playlist $playlist, SongModel $songModel): Song
     {
-        return $this->playlistRepository->find($id);
-    }
+        foreach ($playlist->getSongs() as $existingSong) {
+            if ($existingSong->getSpotifyId() === $songModel->getSpotifyId()) {
+                throw new InvalidArgumentException('Song already in playlist');
+            }
+        }
 
-    /**
-     * @param array<string, string|null> $data
-     */
-    public function addSongToPlaylist(Playlist $playlist, array $data): Song
-    {
-        $data['createdBy'] = $playlist->getUser()?->getEmail() ?? '';
-        $song = $this->songManager->findOrCreateSong($data);
+        $userEmail = $playlist->getUser()?->getEmail() ?? '';
+
+        $song = $this->songManager->findOrCreateSong($songModel, $userEmail);
+
         $playlist->addSong($song);
+
         $this->playlistRepository->save($playlist, true);
 
         return $song;
+    }
+
+    public function removeSongFromPlaylist(Playlist $playlist, string $spotifyId): void
+    {
+        foreach ($playlist->getSongs() as $song) {
+            if ($song->getSpotifyId() === $spotifyId) {
+                $playlist->removeSong($song);
+                $this->playlistRepository->save($playlist, true);
+
+                return;
+            }
+        }
+        throw new InvalidArgumentException('Song not found in playlist');
+    }
+
+    public function getPlaylistBySessionCode(string $sessionCode): ?Playlist
+    {
+        return $this->playlistRepository->findOneBySessionCode($sessionCode);
     }
 }

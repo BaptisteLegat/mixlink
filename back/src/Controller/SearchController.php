@@ -46,7 +46,6 @@ class SearchController extends AbstractController
                             new OA\Property(property: 'artists', type: 'array', items: new OA\Items(type: 'string')),
                             new OA\Property(property: 'image', type: 'string', nullable: true),
                             new OA\Property(property: 'preview_url', type: 'string', nullable: true),
-                            new OA\Property(property: 'external_url', type: 'string', nullable: true),
                         ]
                     )
                 )

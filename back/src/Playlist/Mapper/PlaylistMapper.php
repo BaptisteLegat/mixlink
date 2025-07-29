@@ -33,7 +33,7 @@ class PlaylistMapper
             ->setCreatedAt($playlist->getCreatedAt()?->format('c'))
             ->setUpdatedAt($playlist->getUpdatedAt()?->format('c'))
             ->setSongsCount($playlist->getSongs()->count())
-            ->setSongs($songModels)
+            ->setSongs(array_values($songModels))
         ;
     }
 

@@ -54,4 +54,9 @@ class PlaylistRepository extends ServiceEntityRepository
             ->execute()
         ;
     }
+
+    public function findOneBySessionCode(string $sessionCode): ?Playlist
+    {
+        return $this->findOneBy(['sessionCode' => $sessionCode]);
+    }
 }

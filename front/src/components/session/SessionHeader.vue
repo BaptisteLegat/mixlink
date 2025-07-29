@@ -13,6 +13,10 @@
             type: Boolean,
             default: false,
         },
+        hasJoined: {
+            type: Boolean,
+            default: false,
+        },
     });
 
     const emit = defineEmits({
@@ -43,7 +47,7 @@
             <el-button v-if="props.isHost" type="danger" @click="emit('end-session')" :icon="StopIcon">
                 {{ t('session.end.button') }}
             </el-button>
-            <el-button v-else type="warning" @click="emit('leave-session')" :icon="ExitIcon">
+            <el-button v-else-if="props.hasJoined" type="warning" @click="emit('leave-session')" :icon="ExitIcon">
                 {{ t('session.leave.button') }}
             </el-button>
         </div>

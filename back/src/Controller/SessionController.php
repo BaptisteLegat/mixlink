@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Plan;
 use App\Entity\Session;
 use App\Entity\User;
 use App\Provider\ProviderManager;
@@ -90,6 +91,22 @@ class SessionController extends AbstractController
             $accessToken = $request->cookies->get('AUTH_TOKEN');
             /** @var User $user */
             $user = $this->providerManager->findByAccessToken($accessToken);
+
+            $plan = $user->getSubscription()?->getPlan();
+            if (null === $plan) {
+                return new JsonResponse([
+                    'error' => 'session.create.no_subscription',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            if (Plan::FREE === $plan->getName()) {
+                $playlistsCount = count($user->getPlaylists());
+                if ($playlistsCount >= $plan->getMaxPlaylists()) {
+                    return new JsonResponse([
+                        'error' => 'session.create.error_max_playlists_reached',
+                    ], Response::HTTP_FORBIDDEN);
+                }
+            }
 
             $createSessionRequest = $this->serializer->deserialize(
                 $request->getContent(),

@@ -2,26 +2,22 @@
 
 namespace App\Song;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class SongModel
 {
-    private string $id = '';
+    #[Assert\NotBlank(message: 'Spotify ID is required')]
     private ?string $spotifyId = null;
+
+    #[Assert\NotBlank(message: 'Title is required')]
     private ?string $title = null;
+
+    #[Assert\NotBlank(message: 'Artists is required')]
     private ?string $artists = null;
+
     private ?string $image = null;
-    private ?string $externalUrl = null;
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
+    private ?string $createdAt = null;
 
     public function getSpotifyId(): ?string
     {
@@ -71,14 +67,14 @@ class SongModel
         return $this;
     }
 
-    public function getExternalUrl(): ?string
+    public function getCreatedAt(): ?string
     {
-        return $this->externalUrl;
+        return $this->createdAt;
     }
 
-    public function setExternalUrl(?string $externalUrl): self
+    public function setCreatedAt(?string $createdAt): self
     {
-        $this->externalUrl = $externalUrl;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -89,12 +85,11 @@ class SongModel
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
             'spotifyId' => $this->spotifyId,
             'title' => $this->title,
             'artists' => $this->artists,
             'image' => $this->image,
-            'externalUrl' => $this->externalUrl,
+            'createdAt' => $this->createdAt,
         ];
     }
 }

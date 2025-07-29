@@ -1,53 +1,89 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useMusicSearchStore } from '@/stores/musicSearchStore';
-import { ElMessage } from 'element-plus';
+    import { ref, computed, watch } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { useMusicSearchStore } from '@/stores/musicSearchStore';
+    import { useSessionStore } from '@/stores/sessionStore';
+    import { ElMessage } from 'element-plus';
 
-const { t } = useI18n();
-const searchStore = useMusicSearchStore();
-const searchInput = ref('');
-const showAll = ref(false);
-const debounceTimeout = ref(null);
+    const { t } = useI18n();
+    const searchStore = useMusicSearchStore();
+    const sessionStore = useSessionStore();
+    const searchInput = ref('');
+    const showAll = ref(false);
+    const debounceTimeout = ref(null);
 
-const MIN_QUERY_LENGTH = 3;
-const PAGE_SIZE = 6;
+    const MIN_QUERY_LENGTH = 3;
+    const PAGE_SIZE = 6;
 
-const paginatedResults = computed(() => {
-    if (showAll.value) return searchStore.results;
-    return searchStore.results.slice(0, PAGE_SIZE);
-});
+    const paginatedResults = computed(() => {
+        if (showAll.value) return searchStore.results;
+        return searchStore.results.slice(0, PAGE_SIZE);
+    });
 
-function handleSearch() {
-    if (searchInput.value.trim().length < MIN_QUERY_LENGTH) {
-        ElMessage.warning(t('music_search.input_required'));
-        return;
+    function handleSearch() {
+        if (searchInput.value.trim().length < MIN_QUERY_LENGTH) {
+            ElMessage.warning(t('music_search.input_required'));
+            return;
+        }
+        searchStore.searchMusic(searchInput.value.trim());
+        showAll.value = false;
     }
-    searchStore.searchMusic(searchInput.value.trim());
-    showAll.value = false;
-}
 
-function handleAdd(track) {
-    // À implémenter : callback pour ajouter le morceau à la playlist
-    ElMessage.success(t('music_search.added', { title: track.name }));
-}
-
-function handleShowMore() {
-    showAll.value = true;
-}
-
-// Recherche dynamique avec debounce
-watch(searchInput, (val) => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-    if (val.trim().length >= MIN_QUERY_LENGTH) {
-        debounceTimeout.value = setTimeout(() => {
-            searchStore.searchMusic(val.trim());
-            showAll.value = false;
-        }, 400);
-    } else {
-        searchStore.clearResults();
+    function handleAdd(track) {
+        // On suppose que la playlist courante est dans sessionStore.currentSession.playlist
+        const playlist = sessionStore.currentSession?.playlist;
+        if (!playlist || !playlist.id) {
+            ElMessage.error(t('playlist.add_song.no_playlist'));
+            return;
+        }
+        const songData = {
+            spotifyId: track.spotifyId || track.id,
+            title: track.name,
+            artists: Array.isArray(track.artists) ? track.artists.join(', ') : track.artists,
+            image: track.image,
+        };
+        sessionStore
+            .addSongToPlaylist(playlist.id, songData)
+            .then(() => {
+                ElMessage.success(t('playlist.add_song.success'));
+            })
+            .catch((err) => {
+                if (err.errors && Array.isArray(err.errors)) {
+                    const msg = err.errors.map((e) => t(e.message)).join('\n');
+                    ElMessage.error(msg);
+                    return;
+                }
+                let translated = t(err.message);
+                ElMessage.error(
+                    translated !== err.message && translated !== 'session.' + err.message
+                        ? translated
+                        : t('playlist.add_song.error')
+                );
+            });
     }
-});
+
+    function handleShowMore() {
+        showAll.value = true;
+    }
+
+    function isSongInPlaylist(track) {
+        const playlist = sessionStore.currentSession?.playlist;
+        if (!playlist || !playlist.songs) return false;
+        return playlist.songs.some((song) => song.spotifyId === (track.spotifyId || track.id));
+    }
+
+    // Recherche dynamique avec debounce
+    watch(searchInput, (val) => {
+        if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
+        if (val.trim().length >= MIN_QUERY_LENGTH) {
+            debounceTimeout.value = setTimeout(() => {
+                searchStore.searchMusic(val.trim());
+                showAll.value = false;
+            }, 400);
+        } else {
+            searchStore.clearResults();
+        }
+    });
 </script>
 <template>
     <div class="music-search-bar">
@@ -89,7 +125,13 @@ watch(searchInput, (val) => {
             </el-table-column>
             <el-table-column width="120">
                 <template #default="{ row }">
-                    <el-button type="success" size="small" @click="handleAdd(row)">
+                    <el-button
+                        type="success"
+                        size="small"
+                        @click="handleAdd(row)"
+                        :disabled="isSongInPlaylist(row)"
+                        :title="isSongInPlaylist(row) ? t('music_search.already_in_playlist') : ''"
+                    >
                         {{ t('music_search.add_button') }}
                     </el-button>
                 </template>
@@ -101,30 +143,30 @@ watch(searchInput, (val) => {
     </div>
 </template>
 <style scoped>
-.music-search-bar {
-    margin: 24px 0;
-    width: 100%;
-}
-.search-input {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 10px;
-}
-.error-message {
-    margin: 16px 0;
-}
-.search-results-table {
-    margin-top: 20px;
-    width: 100%;
-}
-.show-more-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 16px;
-}
-@media (max-width: 768px) {
-    .search-input {
-        max-width: 100%;
+    .music-search-bar {
+        margin: 24px 0;
+        width: 100%;
     }
-}
+    .search-input {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+    .error-message {
+        margin: 16px 0;
+    }
+    .search-results-table {
+        margin-top: 20px;
+        width: 100%;
+    }
+    .show-more-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+    }
+    @media (max-width: 768px) {
+        .search-input {
+            max-width: 100%;
+        }
+    }
 </style>

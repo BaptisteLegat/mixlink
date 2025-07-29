@@ -19,9 +19,24 @@ use OpenApi\Attributes as OA;
 class CreateSessionRequest
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $playlistName,
-        public readonly int $maxParticipants = 50,
+        public string $name,
+        public string $playlistName,
+        public int $maxParticipants = 50,
     ) {
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getPlaylistName(): string
+    {
+        return $this->playlistName;
+    }
+
+    public function getMaxParticipants(): int
+    {
+        return $this->maxParticipants;
     }
 }

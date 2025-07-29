@@ -42,7 +42,7 @@ class SessionManager
             throw new InvalidArgumentException('Session code is null');
         }
 
-        $this->playlistManager->createSessionPlaylist($host, $code, (string) $session->getName());
+        $this->playlistManager->createSessionPlaylist($host, $code, $request->getPlaylistName());
 
         $this->sessionParticipantManager->joinSession($session, (string) $host->getFirstName());
 

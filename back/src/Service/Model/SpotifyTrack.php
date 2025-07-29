@@ -16,7 +16,6 @@ class SpotifyTrack
         private array $artists,
         private ?string $image = null,
         private ?string $previewUrl = null,
-        private ?string $externalUrl = null,
     ) {
     }
 
@@ -48,11 +47,6 @@ class SpotifyTrack
         return $this->previewUrl;
     }
 
-    public function getExternalUrl(): ?string
-    {
-        return $this->externalUrl;
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -64,7 +58,6 @@ class SpotifyTrack
             'artists' => $this->artists,
             'image' => $this->image,
             'preview_url' => $this->previewUrl,
-            'external_url' => $this->externalUrl,
         ];
     }
 }

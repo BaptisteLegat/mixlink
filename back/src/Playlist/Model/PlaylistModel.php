@@ -17,18 +17,6 @@ class PlaylistModel
      */
     private array $songs = [];
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -97,6 +85,18 @@ class PlaylistModel
     public function setSongsCount(int $songsCount): self
     {
         $this->songsCount = $songsCount;
+
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
 
         return $this;
     }

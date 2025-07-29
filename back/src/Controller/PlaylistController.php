@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Playlist;
 use App\Playlist\Mapper\PlaylistMapper;
 use App\Playlist\PlaylistManager;
+use App\Session\Publisher\SessionMercurePublisher;
 use App\Song\SongMapper;
+use App\Song\SongModel;
 use App\Voter\AuthenticationVoter;
 use Exception;
 use InvalidArgumentException;
@@ -16,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/playlist', name: 'api_playlist_')]
 class PlaylistController extends AbstractController
@@ -25,11 +30,13 @@ class PlaylistController extends AbstractController
         private PlaylistMapper $playlistMapper,
         private SongMapper $songMapper,
         private LoggerInterface $logger,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private SessionMercurePublisher $sessionMercurePublisher,
     ) {
     }
 
     #[Route('/{id}/add-song', name: 'add_song', methods: ['POST'])]
-    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/playlist/{id}/add-song',
         summary: 'Add a song to a playlist',
@@ -47,20 +54,31 @@ class PlaylistController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['spotifyId', 'title', 'artists', 'image', 'externalUrl'],
+                required: ['spotifyId', 'title', 'artists', 'image'],
                 properties: [
                     new OA\Property(property: 'spotifyId', type: 'string', description: 'Spotify ID', example: '6rqhFgbbKwnb9MLmUQDhG6'),
                     new OA\Property(property: 'title', type: 'string', description: 'Song title', example: 'One More Time'),
                     new OA\Property(property: 'artists', type: 'string', description: 'Artists (comma separated)', example: 'Daft Punk'),
                     new OA\Property(property: 'image', type: 'string', description: 'Image URL', example: 'https://i.scdn.co/image/ab67616d0000b273...'),
-                    new OA\Property(property: 'externalUrl', type: 'string', description: 'Spotify URL', example: 'https://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6'),
                 ]
             )
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Song added successfully'
+                description: 'Song added successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean'),
+                        new OA\Property(property: 'song', type: 'object', properties: [
+                            new OA\Property(property: 'spotifyId', type: 'string'),
+                            new OA\Property(property: 'title', type: 'string'),
+                            new OA\Property(property: 'artists', type: 'string'),
+                            new OA\Property(property: 'image', type: 'string'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                        ]),
+                    ]
+                )
             ),
             new OA\Response(
                 response: 400,
@@ -73,34 +91,55 @@ class PlaylistController extends AbstractController
             ),
         ]
     )]
-    public function addSong(string $id, Request $request): JsonResponse
+    public function addSong(Playlist $playlist, Request $request): JsonResponse
     {
         try {
-            /** @var array<string, string|null> $data */
-            $data = json_decode($request->getContent(), true);
-            if (!is_array($data)) {
-                return new JsonResponse(['error' => 'playlist.add_song.invalid_data'], Response::HTTP_BAD_REQUEST);
+            /** @var SongModel $songModel */
+            $songModel = $this->serializer->deserialize(
+                $request->getContent(),
+                SongModel::class,
+                'json'
+            );
+
+            $errors = $this->validator->validate($songModel);
+            if (count($errors) > 0) {
+                $errorsArray = [];
+                foreach ($errors as $error) {
+                    $errorsArray[] = [
+                        'propertyPath' => $error->getPropertyPath(),
+                        'message' => $error->getMessage(),
+                    ];
+                }
+
+                return new JsonResponse([
+                    'errors' => $errorsArray,
+                ], Response::HTTP_BAD_REQUEST);
             }
-            $playlist = $this->playlistManager->findPlaylistById($id);
-            if (!$playlist) {
-                return new JsonResponse(['error' => 'playlist.add_song.not_found'], Response::HTTP_NOT_FOUND);
-            }
+
             $user = $playlist->getUser();
-            $plan = $user?->getSubscription()?->getPlan()?->getName() ?? 'free';
-            $maxSongs = 'free' === $plan ? 30 : null;
-            if (null !== $maxSongs && $playlist->getSongs()->count() >= $maxSongs) {
+            $plan = $user?->getSubscription()?->getPlan();
+            if (null === $plan) {
+                return new JsonResponse(['error' => 'playlist.add_song.no_subscription'], Response::HTTP_BAD_REQUEST);
+            }
+
+            if (null !== $plan->getMaxSongs() && $playlist->getSongs()->count() >= $plan->getMaxSongs()) {
                 return new JsonResponse(['error' => 'playlist.add_song.limit_reached'], Response::HTTP_BAD_REQUEST);
             }
 
-            $song = $this->playlistManager->addSongToPlaylist($playlist, $data);
+            $song = $this->playlistManager->addSongToPlaylist($playlist, $songModel);
             $songModel = $this->songMapper->mapModel($song);
+
+            $this->sessionMercurePublisher->publishPlaylistUpdate(
+                (string) $playlist->getSessionCode(),
+                $this->playlistMapper->mapModel($playlist)->toArray()
+            );
 
             return new JsonResponse(['success' => true, 'song' => $songModel->toArray()]);
         } catch (InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             $this->logger->error('Error adding song to playlist', [
-                'playlistId' => $id,
+                'playlistId' => (string) $playlist->getId(),
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -132,7 +171,13 @@ class PlaylistController extends AbstractController
                     properties: [
                         new OA\Property(property: 'id', type: 'string'),
                         new OA\Property(property: 'name', type: 'string'),
-                        new OA\Property(property: 'songs', type: 'array', items: new OA\Items(type: 'object')),
+                        new OA\Property(property: 'songs', type: 'array', items: new OA\Items(type: 'object', properties: [
+                            new OA\Property(property: 'spotifyId', type: 'string'),
+                            new OA\Property(property: 'title', type: 'string'),
+                            new OA\Property(property: 'artists', type: 'string'),
+                            new OA\Property(property: 'image', type: 'string'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                        ])),
                     ]
                 )
             ),
@@ -142,14 +187,50 @@ class PlaylistController extends AbstractController
             ),
         ]
     )]
-    public function getPlaylist(string $id): JsonResponse
+    public function getPlaylist(Playlist $playlist): JsonResponse
     {
-        $playlist = $this->playlistManager->findPlaylistById($id);
-        if (!$playlist) {
-            return new JsonResponse(['error' => 'playlist.get.not_found'], Response::HTTP_NOT_FOUND);
-        }
         $playlistModel = $this->playlistMapper->mapModel($playlist);
 
         return new JsonResponse($playlistModel->toArray());
+    }
+
+    #[Route('/{id}/remove-song/{spotifyId}', name: 'remove_song', methods: ['DELETE'])]
+    #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
+    #[OA\Delete(
+        path: '/api/playlist/{id}/remove-song/{spotifyId}',
+        summary: 'Remove a song from a playlist',
+        description: 'Removes a song from the playlist (host only)',
+        tags: ['Playlist'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Playlist ID', schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'spotifyId', in: 'path', required: true, description: 'Spotify ID of the song', schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Song removed, playlist updated'),
+            new OA\Response(response: 404, description: 'Playlist or song not found'),
+            new OA\Response(response: 400, description: 'Error removing song from playlist'),
+        ]
+    )]
+    public function removeSong(Playlist $playlist, string $spotifyId): JsonResponse
+    {
+        try {
+            $this->playlistManager->removeSongFromPlaylist($playlist, $spotifyId);
+
+            $this->sessionMercurePublisher->publishPlaylistUpdate(
+                (string) $playlist->getSessionCode(),
+                $this->playlistMapper->mapModel($playlist)->toArray()
+            );
+
+            return new JsonResponse(['success' => true]);
+        } catch (Exception $e) {
+            $this->logger->error('Error removing song from playlist', [
+                'playlistId' => (string) $playlist->getId(),
+                'spotifyId' => $spotifyId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return new JsonResponse(['error' => 'playlist.remove_song.error'], Response::HTTP_BAD_REQUEST);
+        }
     }
 }

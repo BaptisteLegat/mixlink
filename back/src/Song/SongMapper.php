@@ -6,29 +6,24 @@ use App\Entity\Song;
 
 class SongMapper
 {
-    /**
-     * @param array<string, string|null> $data
-     */
-    public function mapEntity(array $data): Song
+    public function mapEntity(SongModel $model): Song
     {
         return (new Song())
-            ->setSpotifyId($data['spotifyId'] ?? null)
-            ->setTitle($data['title'] ?? null)
-            ->setArtists($data['artists'] ?? null)
-            ->setImage($data['image'] ?? null)
-            ->setExternalUrl($data['externalUrl'] ?? null)
+            ->setSpotifyId($model->getSpotifyId())
+            ->setTitle($model->getTitle())
+            ->setArtists($model->getArtists())
+            ->setImage($model->getImage())
         ;
     }
 
     public function mapModel(Song $song): SongModel
     {
         return (new SongModel())
-            ->setId($song->getId()?->toRfc4122() ?? '')
             ->setSpotifyId($song->getSpotifyId())
             ->setTitle($song->getTitle())
             ->setArtists($song->getArtists())
             ->setImage($song->getImage())
-            ->setExternalUrl($song->getExternalUrl())
+            ->setCreatedAt($song->getCreatedAt()?->format('c'))
         ;
     }
 

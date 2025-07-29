@@ -41,9 +41,6 @@ class Song implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 1024, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\Column(type: 'string', length: 1024, nullable: true)]
-    private ?string $externalUrl = null;
-
     /**
      * @var Collection<int, Playlist>
      */
@@ -104,18 +101,6 @@ class Song implements BlameableInterface, TimestampableInterface
     public function setImage(?string $image): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getExternalUrl(): ?string
-    {
-        return $this->externalUrl;
-    }
-
-    public function setExternalUrl(?string $externalUrl): self
-    {
-        $this->externalUrl = $externalUrl;
 
         return $this;
     }

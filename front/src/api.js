@@ -100,3 +100,41 @@ export async function searchMusicApi(query) {
     }
     return data;
 }
+
+export async function apiAddSongToPlaylist(playlistId, songData) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/playlist/${playlistId}/add-song`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(songData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        const error = new Error(data.error || 'playlist.add_song.error');
+        if (data.errors) {
+            error.errors = data.errors;
+        }
+        throw error;
+    }
+    return data;
+}
+
+export async function apiRemoveSongFromPlaylist(playlistId, spotifyId) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/playlist/${playlistId}/remove-song/${spotifyId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'playlist.remove_song.error');
+    }
+
+    return data;
+}

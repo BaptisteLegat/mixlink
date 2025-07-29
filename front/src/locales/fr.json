@@ -186,6 +186,7 @@
         "cancel": "Annuler",
         "loading": "Chargement...",
         "close": "Fermer",
+        "confirm": "Confirmer",
         "unauthorized": "Vous n'êtes pas autorisé",
         "error": "Une erreur est survenue, veuillez réessayer ultérieurement",
         "form": {
@@ -369,7 +370,9 @@
             "success": "Session créée avec succès !",
             "error": "Erreur lors de la création de la session",
             "error_session_not_found": "Session introuvable",
-            "error_not_host": "Vous n'êtes pas l'hôte de cette session"
+            "error_not_host": "Vous n'êtes pas l'hôte de cette session",
+            "error_max_playlists_reached": "Vous avez atteint le nombre maximum de playlists pour votre plan.",
+            "no_subscription": "Vous devez être abonné pour créer une session."
         },
         "form": {
             "name": "Nom",
@@ -412,11 +415,6 @@
             "guest": "Invité",
             "waiting": "En attente de participants...",
             "error_session_not_found": "Session introuvable"
-        },
-        "playlist": {
-            "title": "Playlist collaborative",
-            "empty": "Aucune musique ajoutée",
-            "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !"
         },
         "join": {
             "title": "Rejoindre la session",
@@ -537,6 +535,30 @@
         "title": "Titre",
         "artists": "Artistes",
         "add_button": "Ajouter",
-        "added": "'{{title}}' ajouté !"
+        "added": "'{{title}}' ajouté !",
+        "show_more": "Afficher plus",
+        "already_in_playlist": "Ce morceau est déjà dans la playlist."
+    },
+    "playlist": {
+        "title": "Playlist collaborative",
+        "empty": "Aucune musique ajoutée",
+        "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !",
+        "songs_count": "{count} morceaux",
+        "add_song": {
+            "success": "Morceau ajouté à la playlist !",
+            "error": "Erreur lors de l'ajout du morceau à la playlist.",
+            "no_playlist": "Aucune playlist sélectionnée.",
+            "invalid_data": "Données du morceau invalides.",
+            "limit_reached": "Nombre maximum de morceaux atteint pour cette playlist.",
+            "not_found": "Playlist introuvable.",
+            "unauthorized": "Vous n'êtes pas autorisé à ajouter un morceau.",
+            "already_in_playlist": "Ce morceau est déjà dans la playlist."
+        },
+        "remove_song": {
+            "confirm_title": "Supprimer le morceau ?",
+            "confirm": "Voulez-vous vraiment supprimer le morceau : {title} ?",
+            "success": "Morceau supprimé de la playlist.",
+            "error": "Erreur lors de la suppression du morceau."
+        }
     }
 }

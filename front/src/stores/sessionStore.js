@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { fetchWithAuth } from '@/api.js';
+import { apiAddSongToPlaylist, apiRemoveSongFromPlaylist } from '@/api';
 
 export const useSessionStore = defineStore('session', () => {
     const currentSession = ref(null);
@@ -29,6 +30,7 @@ export const useSessionStore = defineStore('session', () => {
             const session = await response.json();
             mySessions.value.push(session);
             currentSession.value = session;
+
             return session;
         } finally {
             isLoading.value = false;
@@ -48,6 +50,7 @@ export const useSessionStore = defineStore('session', () => {
 
             const session = await response.json();
             currentSession.value = session;
+
             return session;
         } finally {
             isLoading.value = false;
@@ -181,6 +184,24 @@ export const useSessionStore = defineStore('session', () => {
         }
     }
 
+    async function addSongToPlaylist(playlistId, songData) {
+        const result = await apiAddSongToPlaylist(playlistId, songData);
+        if (currentSession.value && currentSession.value.playlist && currentSession.value.playlist.id === playlistId) {
+            await getSessionByCode(currentSession.value.code);
+        }
+
+        return result;
+    }
+
+    async function removeSongFromPlaylist(playlistId, spotifyId) {
+        const result = await apiRemoveSongFromPlaylist(playlistId, spotifyId);
+        if (currentSession.value && currentSession.value.playlist && currentSession.value.playlist.id === playlistId) {
+            await getSessionByCode(currentSession.value.code);
+        }
+
+        return result;
+    }
+
     function leaveCurrentSession() {
         currentSession.value = null;
     }
@@ -205,5 +226,7 @@ export const useSessionStore = defineStore('session', () => {
         initCurrentSessionFromProfile,
         getParticipants,
         checkGuestSession,
+        addSongToPlaylist,
+        removeSongFromPlaylist,
     };
 });

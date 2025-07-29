@@ -102,7 +102,6 @@ class SpotifyService
             $this->extractArtists($track),
             $this->extractAlbumImage($track),
             $this->extractStringValue($track, 'preview_url'),
-            $this->extractExternalUrl($track)
         );
     }
 
@@ -150,23 +149,6 @@ class SpotifyService
         $firstImage = $images[0];
 
         return isset($firstImage['url']) && is_string($firstImage['url']) ? $firstImage['url'] : null;
-    }
-
-    /**
-     * @param array<string, mixed> $track
-     */
-    private function extractExternalUrl(array $track): ?string
-    {
-        if (!isset($track['external_urls']) || !is_array($track['external_urls'])) {
-            return null;
-        }
-
-        $externalUrls = $track['external_urls'];
-
-        return isset($externalUrls['spotify']) && is_string($externalUrls['spotify'])
-            ? $externalUrls['spotify']
-            : null
-        ;
     }
 
     /**

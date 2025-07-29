@@ -189,6 +189,7 @@
         "loading": "Loading...",
         "close": "Close",
         "unauthorized": "You are not authorized",
+        "confirm": "Confirm",
         "error_fetch_profile": "Error fetching profile.",
         "error_logout": "Error during logout.",
         "error_delete_account": "Error deleting account.",
@@ -366,7 +367,9 @@
             "success": "Session created successfully!",
             "error": "Error creating session",
             "error_session_not_found": "Session not found",
-            "error_not_host": "You are not the host of this session"
+            "error_not_host": "You are not the host of this session",
+            "error_max_playlists_reached": "You have reached the maximum number of playlists for your plan.",
+            "no_subscription": "You need to be subscribed to create a session."
         },
         "form": {
             "name": "Name",
@@ -407,11 +410,6 @@
             "guest": "Guest",
             "waiting": "Waiting for participants...",
             "error_session_not_found": "Session not found"
-        },
-        "playlist": {
-            "title": "Collaborative Playlist",
-            "empty": "No music added",
-            "empty_description": "Start adding tracks to the collaborative playlist!"
         },
         "join": {
             "title": "Join session",
@@ -533,6 +531,29 @@
         "artists": "Artists",
         "add_button": "Add",
         "added": "'{{title}}' added!",
-        "show_more": "Show more"
+        "show_more": "Show more",
+        "already_in_playlist": "This song is already in the playlist."
+    },
+    "playlist": {
+        "title": "Collaborative Playlist",
+        "empty": "No music added",
+        "empty_description": "Start adding tracks to the collaborative playlist!",
+        "songs_count": "{count} songs",
+        "add_song": {
+            "success": "Song added to playlist!",
+            "error": "Error adding song to playlist.",
+            "no_playlist": "No playlist selected.",
+            "invalid_data": "Invalid song data.",
+            "limit_reached": "Maximum number of songs reached for this playlist.",
+            "not_found": "Playlist not found.",
+            "unauthorized": "You are not authorized to add a song.",
+            "already_in_playlist": "This song is already in the playlist."
+        },
+        "remove_song": {
+            "confirm_title": "Remove song?",
+            "confirm": "Do you really want to remove the song: {title}?",
+            "success": "Song removed from playlist.",
+            "error": "Error while removing the song."
+        }
     }
 }
