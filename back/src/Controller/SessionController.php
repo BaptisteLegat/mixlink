@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/session', name: 'api_session_')]
 class SessionController extends AbstractController
@@ -33,6 +34,7 @@ class SessionController extends AbstractController
         private SerializerInterface $serializer,
         private LoggerInterface $logger,
         private ProviderManager $providerManager,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -108,11 +110,27 @@ class SessionController extends AbstractController
                 }
             }
 
+            /** @var CreateSessionRequest $createSessionRequest */
             $createSessionRequest = $this->serializer->deserialize(
                 $request->getContent(),
                 CreateSessionRequest::class,
                 'json'
             );
+
+            $errors = $this->validator->validate($createSessionRequest);
+            if (count($errors) > 0) {
+                $errorsArray = [];
+                foreach ($errors as $error) {
+                    $errorsArray[] = [
+                        'propertyPath' => $error->getPropertyPath(),
+                        'message' => $error->getMessage(),
+                    ];
+                }
+
+                return new JsonResponse([
+                    'errors' => $errorsArray,
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
             $session = $this->sessionManager->createSession($user, $createSessionRequest);
             $sessionModel = $this->sessionMapper->mapModel($session);
@@ -124,7 +142,7 @@ class SessionController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return new JsonResponse(['error' => 'Unable to create session'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'session.create.error'], Response::HTTP_BAD_REQUEST);
         }
     }
 

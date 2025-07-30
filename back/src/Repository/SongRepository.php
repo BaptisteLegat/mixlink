@@ -42,4 +42,27 @@ class SongRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function hardDeleteOrphanedSongs(): void
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->delete()
+            ->where('SIZE(s.playlists) = 0')
+            ->andWhere('s.deletedAt IS NULL')
+            ->getQuery()
+            ->execute()
+        ;
+    }
+
+    public function hardDeleteBySpotifyId(string $spotifyId): void
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->delete()
+            ->where('s.spotifyId = :spotifyId')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('spotifyId', $spotifyId)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

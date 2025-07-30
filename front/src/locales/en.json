@@ -369,7 +369,12 @@
             "error_session_not_found": "Session not found",
             "error_not_host": "You are not the host of this session",
             "error_max_playlists_reached": "You have reached the maximum number of playlists for your plan.",
-            "no_subscription": "You need to be subscribed to create a session."
+            "no_subscription": "You need to be subscribed to create a session.",
+            "errors": {
+                "name_required": "Session name is required",
+                "playlist_name_required": "Playlist name is required",
+                "max_participants_invalid": "Maximum participants must be between 1 and 10"
+            }
         },
         "form": {
             "name": "Name",

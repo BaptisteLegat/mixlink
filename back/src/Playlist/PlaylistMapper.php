@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Playlist\Mapper;
+namespace App\Playlist;
 
 use App\Entity\Playlist;
-use App\Playlist\Model\PlaylistModel;
 use App\Song\SongMapper;
 
 class PlaylistMapper

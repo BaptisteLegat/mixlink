@@ -48,15 +48,9 @@ class PlaylistRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p');
         $qb->delete()
             ->where('p.sessionCode = :sessionCode')
-            ->andWhere($qb->expr()->eq('SIZE(p.songs)', 0))
             ->setParameter('sessionCode', $sessionCode)
             ->getQuery()
             ->execute()
         ;
-    }
-
-    public function findOneBySessionCode(string $sessionCode): ?Playlist
-    {
-        return $this->findOneBy(['sessionCode' => $sessionCode]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Session\Model\Request;
 
 use OpenApi\Attributes as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
     schema: 'CreateSessionRequest',
@@ -18,12 +19,14 @@ use OpenApi\Attributes as OA;
 )]
 class CreateSessionRequest
 {
-    public function __construct(
-        public string $name,
-        public string $playlistName,
-        public int $maxParticipants = 50,
-    ) {
-    }
+    #[Assert\NotBlank(message: 'session.create.errors.name_required')]
+    public string $name = '';
+
+    #[Assert\NotBlank(message: 'session.create.errors.playlist_name_required')]
+    public string $playlistName = '';
+
+    #[Assert\Range(min: 1, max: 10, notInRangeMessage: 'session.create.errors.max_participants_invalid')]
+    public int $maxParticipants = 3;
 
     public function getName(): string
     {

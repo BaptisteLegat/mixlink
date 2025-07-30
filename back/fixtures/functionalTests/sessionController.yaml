@@ -1,8 +1,33 @@
 include:
+  - '../templates/plan.yaml'
+  - '../templates/playlist.yaml'
   - '../templates/provider.yaml'
   - '../templates/session.yaml'
   - '../templates/session_participant.yaml'
+  - '../templates/song.yaml'
+  - '../templates/subscription.yaml'
   - '../templates/user.yaml'
+
+App\Entity\Plan:
+  free (extends plan_free):
+    subscriptions: ['@subscription-free']
+
+App\Entity\Playlist:
+  playlist-1 (extends playlist):
+    name: 'Playlist 1'
+    sessionCode: 'PLAYLIST1'
+    user: '@session-host-max-playlists'
+    songs: ['@song-1']
+  playlist-2 (extends playlist):
+    name: 'Playlist 2'
+    sessionCode: 'PLAYLIST2'
+    user: '@session-host-max-playlists'
+    songs: ['@song-2']
+  playlist-3 (extends playlist):
+    name: 'Playlist 3'
+    sessionCode: 'PLAYLIST3'
+    user: '@session-host-max-playlists'
+    songs: ['@song-3']
 
 App\Entity\Provider:
   session-host-provider (extends google):
@@ -14,6 +39,12 @@ App\Entity\Provider:
   session-guest2-provider (extends deezer):
     user: '@session-guest2'
     accessToken: 'session_guest2_token'
+  session-host-no-subscription-provider (extends google):
+    user: '@session-host-no-subscription'
+    accessToken: 'session_host_no_subscription_token'
+  session-host-max-playlists-provider (extends google):
+    user: '@session-host-max-playlists'
+    accessToken: 'session_host_max_playlists_token'
 
 App\Entity\Session:
   session-active (extends session):
@@ -40,10 +71,40 @@ App\Entity\SessionParticipant:
     pseudo: 'Guest3'
     leftAt: <(new DateTimeImmutable('-1 hour'))>
 
+App\Entity\Song:
+  song-1 (extends song):
+    spotifyId: 'spotify_song_1'
+    title: 'Song 1'
+    artists: 'Artist 1'
+  song-2 (extends song):
+    spotifyId: 'spotify_song_2'
+    title: 'Song 2'
+    artists: 'Artist 2'
+  song-3 (extends song):
+    spotifyId: 'spotify_song_3'
+    title: 'Song 3'
+    artists: 'Artist 3'
+
+App\Entity\Subscription:
+  subscription-free (extends subscription):
+    plan: '@free'
+    user: '@session-host'
+
+  subscription-free-max-playlists (extends subscription):
+    plan: '@free'
+    user: '@session-host-max-playlists'
+
 App\Entity\User:
   session-host (extends john-doe):
     email: 'session-host@test.fr'
     sessions: ['@session-active', '@session-ended']
+    subscription: '@subscription-free'
+  session-host-no-subscription (extends bob):
+    email: 'session-host-no-subscription@test.fr'
+  session-host-max-playlists (extends alice-johnson):
+    email: 'session-host-max-playlists@test.fr'
+    playlists: ['@playlist-1', '@playlist-2', '@playlist-3']
+    subscription: '@subscription-free-max-playlists'
   session-guest (extends jane-smith):
     email: 'session-guest@test.fr'
   session-guest2 (extends alice-johnson):

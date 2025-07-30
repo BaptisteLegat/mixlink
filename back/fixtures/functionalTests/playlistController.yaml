@@ -1,0 +1,258 @@
+include:
+  - '../templates/plan.yaml'
+  - '../templates/playlist.yaml'
+  - '../templates/provider.yaml'
+  - '../templates/session.yaml'
+  - '../templates/session_participant.yaml'
+  - '../templates/song.yaml'
+  - '../templates/subscription.yaml'
+  - '../templates/user.yaml'
+
+App\Entity\Plan:
+  free (extends plan_free):
+    subscriptions: ['@subscription-free']
+
+  premium (extends plan_premium):
+    subscriptions: ['@subscription-premium']
+
+App\Entity\Playlist:
+  playlist-test-1 (extends playlist):
+    name: 'Test Playlist 1'
+    sessionCode: 'TEST123'
+    user: '@playlist-user'
+    songs: ['@song-test-1', '@song-test-2']
+  playlist-test-2 (extends playlist):
+    name: 'Test Playlist 2'
+    sessionCode: 'TEST456'
+    user: '@playlist-user'
+    songs: ['@song-test-3']
+  playlist-test-3 (extends playlist):
+    name: 'Test Playlist 3'
+    sessionCode: 'TEST789'
+    user: '@playlist-user'
+    songs: []
+  playlist-test-full-premium (extends playlist):
+    name: 'Full Playlist Premium'
+    sessionCode: 'FULL123'
+    user: '@playlist-user-full-premium'
+    songs: ['@song-full-1', '@song-full-2', '@song-full-3', '@song-full-4', '@song-full-5', '@song-full-6', '@song-full-7', '@song-full-8', '@song-full-9', '@song-full-10', '@song-full-11', '@song-full-12', '@song-full-13', '@song-full-14', '@song-full-15', '@song-full-16', '@song-full-17', '@song-full-18', '@song-full-19', '@song-full-20', '@song-full-21', '@song-full-22', '@song-full-23', '@song-full-24', '@song-full-25', '@song-full-26', '@song-full-27', '@song-full-28', '@song-full-29', '@song-full-30']
+
+  playlist-test-full-free (extends playlist):
+    name: 'Full Playlist Free'
+    sessionCode: 'FULL123'
+    user: '@playlist-user-full-free'
+    songs: ['@song-full-1', '@song-full-2', '@song-full-3', '@song-full-4', '@song-full-5', '@song-full-6', '@song-full-7', '@song-full-8', '@song-full-9', '@song-full-10', '@song-full-11', '@song-full-12', '@song-full-13', '@song-full-14', '@song-full-15', '@song-full-16', '@song-full-17', '@song-full-18', '@song-full-19', '@song-full-20', '@song-full-21', '@song-full-22', '@song-full-23', '@song-full-24', '@song-full-25', '@song-full-26', '@song-full-27', '@song-full-28', '@song-full-29', '@song-full-30']
+
+App\Entity\Provider:
+  playlist-user-provider (extends google):
+    user: '@playlist-user'
+    accessToken: 'playlist_user_token'
+  playlist-user-full-premium-provider (extends spotify):
+    user: '@playlist-user-full-premium'
+    accessToken: 'playlist_user_full_token'
+
+App\Entity\Session:
+  session-test (extends session):
+    host: '@playlist-user'
+    code: 'TEST123'
+    name: 'Test Session'
+    maxParticipants: 5
+
+App\Entity\Song:
+  song-test-1 (extends song):
+    spotifyId: 'spotify_song_test_1'
+    title: 'Test Song 1'
+    artists: 'Test Artist 1'
+    image: 'https://example.com/image1.jpg'
+  song-test-2 (extends song):
+    spotifyId: 'spotify_song_test_2'
+    title: 'Test Song 2'
+    artists: 'Test Artist 2'
+    image: 'https://example.com/image2.jpg'
+  song-test-3 (extends song):
+    spotifyId: 'spotify_song_test_3'
+    title: 'Test Song 3'
+    artists: 'Test Artist 3'
+    image: 'https://example.com/image3.jpg'
+  song-test-4 (extends song):
+    spotifyId: 'spotify_song_test_4'
+    title: 'Test Song 4'
+    artists: 'Test Artist 4'
+    image: 'https://example.com/image4.jpg'
+  song-full-1 (extends song):
+    spotifyId: 'spotify_song_full_1'
+    title: 'Full Song 1'
+    artists: 'Full Artist 1'
+    image: 'https://example.com/full1.jpg'
+  song-full-2 (extends song):
+    spotifyId: 'spotify_song_full_2'
+    title: 'Full Song 2'
+    artists: 'Full Artist 2'
+    image: 'https://example.com/full2.jpg'
+  song-full-3 (extends song):
+    spotifyId: 'spotify_song_full_3'
+    title: 'Full Song 3'
+    artists: 'Full Artist 3'
+    image: 'https://example.com/full3.jpg'
+  song-full-4 (extends song):
+    spotifyId: 'spotify_song_full_4'
+    title: 'Full Song 4'
+    artists: 'Full Artist 4'
+    image: 'https://example.com/full4.jpg'
+  song-full-5 (extends song):
+    spotifyId: 'spotify_song_full_5'
+    title: 'Full Song 5'
+    artists: 'Full Artist 5'
+    image: 'https://example.com/full5.jpg'
+  song-full-6 (extends song):
+    spotifyId: 'spotify_song_full_6'
+    title: 'Full Song 6'
+    artists: 'Full Artist 6'
+    image: 'https://example.com/full6.jpg'
+  song-full-7 (extends song):
+    spotifyId: 'spotify_song_full_7'
+    title: 'Full Song 7'
+    artists: 'Full Artist 7'
+    image: 'https://example.com/full7.jpg'
+  song-full-8 (extends song):
+    spotifyId: 'spotify_song_full_8'
+    title: 'Full Song 8'
+    artists: 'Full Artist 8'
+    image: 'https://example.com/full8.jpg'
+  song-full-9 (extends song):
+    spotifyId: 'spotify_song_full_9'
+    title: 'Full Song 9'
+    artists: 'Full Artist 9'
+    image: 'https://example.com/full9.jpg'
+  song-full-10 (extends song):
+    spotifyId: 'spotify_song_full_10'
+    title: 'Full Song 10'
+    artists: 'Full Artist 10'
+    image: 'https://example.com/full10.jpg'
+  song-full-11 (extends song):
+    spotifyId: 'spotify_song_full_11'
+    title: 'Full Song 11'
+    artists: 'Full Artist 11'
+    image: 'https://example.com/full11.jpg'
+  song-full-12 (extends song):
+    spotifyId: 'spotify_song_full_12'
+    title: 'Full Song 12'
+    artists: 'Full Artist 12'
+    image: 'https://example.com/full12.jpg'
+  song-full-13 (extends song):
+    spotifyId: 'spotify_song_full_13'
+    title: 'Full Song 13'
+    artists: 'Full Artist 13'
+    image: 'https://example.com/full13.jpg'
+  song-full-14 (extends song):
+    spotifyId: 'spotify_song_full_14'
+    title: 'Full Song 14'
+    artists: 'Full Artist 14'
+    image: 'https://example.com/full14.jpg'
+  song-full-15 (extends song):
+    spotifyId: 'spotify_song_full_15'
+    title: 'Full Song 15'
+    artists: 'Full Artist 15'
+    image: 'https://example.com/full15.jpg'
+  song-full-16 (extends song):
+    spotifyId: 'spotify_song_full_16'
+    title: 'Full Song 16'
+    artists: 'Full Artist 16'
+    image: 'https://example.com/full16.jpg'
+  song-full-17 (extends song):
+    spotifyId: 'spotify_song_full_17'
+    title: 'Full Song 17'
+    artists: 'Full Artist 17'
+    image: 'https://example.com/full17.jpg'
+  song-full-18 (extends song):
+    spotifyId: 'spotify_song_full_18'
+    title: 'Full Song 18'
+    artists: 'Full Artist 18'
+    image: 'https://example.com/full18.jpg'
+  song-full-19 (extends song):
+    spotifyId: 'spotify_song_full_19'
+    title: 'Full Song 19'
+    artists: 'Full Artist 19'
+    image: 'https://example.com/full19.jpg'
+  song-full-20 (extends song):
+    spotifyId: 'spotify_song_full_20'
+    title: 'Full Song 20'
+    artists: 'Full Artist 20'
+    image: 'https://example.com/full20.jpg'
+  song-full-21 (extends song):
+    spotifyId: 'spotify_song_full_21'
+    title: 'Full Song 21'
+    artists: 'Full Artist 21'
+    image: 'https://example.com/full21.jpg'
+  song-full-22 (extends song):
+    spotifyId: 'spotify_song_full_22'
+    title: 'Full Song 22'
+    artists: 'Full Artist 22'
+    image: 'https://example.com/full22.jpg'
+  song-full-23 (extends song):
+    spotifyId: 'spotify_song_full_23'
+    title: 'Full Song 23'
+    artists: 'Full Artist 23'
+    image: 'https://example.com/full23.jpg'
+  song-full-24 (extends song):
+    spotifyId: 'spotify_song_full_24'
+    title: 'Full Song 24'
+    artists: 'Full Artist 24'
+    image: 'https://example.com/full24.jpg'
+  song-full-25 (extends song):
+    spotifyId: 'spotify_song_full_25'
+    title: 'Full Song 25'
+    artists: 'Full Artist 25'
+    image: 'https://example.com/full25.jpg'
+  song-full-26 (extends song):
+    spotifyId: 'spotify_song_full_26'
+    title: 'Full Song 26'
+    artists: 'Full Artist 26'
+    image: 'https://example.com/full26.jpg'
+  song-full-27 (extends song):
+    spotifyId: 'spotify_song_full_27'
+    title: 'Full Song 27'
+    artists: 'Full Artist 27'
+    image: 'https://example.com/full27.jpg'
+  song-full-28 (extends song):
+    spotifyId: 'spotify_song_full_28'
+    title: 'Full Song 28'
+    artists: 'Full Artist 28'
+    image: 'https://example.com/full28.jpg'
+  song-full-29 (extends song):
+    spotifyId: 'spotify_song_full_29'
+    title: 'Full Song 29'
+    artists: 'Full Artist 29'
+    image: 'https://example.com/full29.jpg'
+  song-full-30 (extends song):
+    spotifyId: 'spotify_song_full_30'
+    title: 'Full Song 30'
+    artists: 'Full Artist 30'
+    image: 'https://example.com/full30.jpg'
+
+App\Entity\Subscription:
+  subscription-free (extends subscription):
+    plan: '@free'
+    user: '@playlist-user'
+
+  subscription-free-max-songs (extends subscription):
+    plan: '@free'
+    user: '@playlist-user-full-free'
+
+  subscription-premium (extends subscription):
+    plan: '@premium'
+    user: '@playlist-user-full-premium'
+
+App\Entity\User:
+  playlist-user (extends john-doe):
+    email: 'playlist-user@test.fr'
+    playlists: ['@playlist-test-1', '@playlist-test-2', '@playlist-test-3']
+    subscription: '@subscription-free'
+  playlist-user-full-premium (extends jane-smith):
+    email: 'playlist-user-full@test.fr'
+    playlists: ['@playlist-test-full-premium']
+    subscription: '@subscription-premium'
+  playlist-user-full-free (extends jane-smith):
+    email: 'playlist-user-full-free@test.fr'
+    playlists: ['@playlist-test-full-free']
+    subscription: '@subscription-free-max-songs'

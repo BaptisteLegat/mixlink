@@ -24,7 +24,12 @@ export const useSessionStore = defineStore('session', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create session');
+                const errorData = await response.json();
+                const error = new Error('Failed to create session');
+                if (errorData.errors) {
+                    error.validationErrors = errorData.errors;
+                }
+                throw error;
             }
 
             const session = await response.json();

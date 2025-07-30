@@ -30,17 +30,14 @@ class SessionManager
     public function createSession(User $host, CreateSessionRequest $request): Session
     {
         $session = $this->sessionMapper->mapEntity($request, $host);
-        $session->setCode($this->sessionRepository->generateUniqueCode());
+
+        $code = $this->sessionRepository->generateUniqueCode();
+        $session->setCode($code);
 
         $this->setTimestampable($session, false);
         $this->setBlameable($session, $host->getEmail() ?? '', false);
 
         $this->sessionRepository->save($session, true);
-
-        $code = $session->getCode();
-        if (null === $code) {
-            throw new InvalidArgumentException('Session code is null');
-        }
 
         $this->playlistManager->createSessionPlaylist($host, $code, $request->getPlaylistName());
 

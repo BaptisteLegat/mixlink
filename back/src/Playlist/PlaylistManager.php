@@ -5,9 +5,8 @@ namespace App\Playlist;
 use App\Entity\Playlist;
 use App\Entity\Song;
 use App\Entity\User;
-use App\Playlist\Mapper\PlaylistMapper;
-use App\Playlist\Model\PlaylistModel;
 use App\Repository\PlaylistRepository;
+use App\Repository\SongRepository;
 use App\Song\SongManager;
 use App\Song\SongModel;
 use App\Trait\TraceableTrait;
@@ -21,14 +20,16 @@ class PlaylistManager
         private PlaylistRepository $playlistRepository,
         private PlaylistMapper $playlistMapper,
         private SongManager $songManager,
+        private SongRepository $songRepository,
     ) {
     }
 
     public function createSessionPlaylist(User $user, string $sessionCode, string $sessionName): Playlist
     {
-        $playlistModel = new PlaylistModel();
-        $playlistModel->setName($sessionName);
-        $playlistModel->setSessionCode($sessionCode);
+        $playlistModel = (new PlaylistModel())
+            ->setName($sessionName)
+            ->setSessionCode($sessionCode)
+        ;
 
         $playlist = $this->playlistMapper->mapEntity($playlistModel);
         $playlist->setUser($user);
@@ -45,6 +46,7 @@ class PlaylistManager
     public function deletePlaylistBySessionCode(string $sessionCode): void
     {
         $this->playlistRepository->hardDeleteBySessionCode($sessionCode);
+        $this->songRepository->hardDeleteOrphanedSongs();
     }
 
     public function addSongToPlaylist(Playlist $playlist, SongModel $songModel): Song
@@ -68,19 +70,30 @@ class PlaylistManager
 
     public function removeSongFromPlaylist(Playlist $playlist, string $spotifyId): void
     {
+        $songToDelete = null;
+
         foreach ($playlist->getSongs() as $song) {
             if ($song->getSpotifyId() === $spotifyId) {
                 $playlist->removeSong($song);
-                $this->playlistRepository->save($playlist, true);
+                $songToDelete = $song;
 
-                return;
+                break;
             }
         }
-        throw new InvalidArgumentException('Song not found in playlist');
+
+        if (null === $songToDelete) {
+            throw new InvalidArgumentException('Song not found in playlist');
+        }
+
+        $this->playlistRepository->save($playlist, true);
+
+        if ($songToDelete->getPlaylists()->isEmpty()) {
+            $this->songRepository->hardDeleteBySpotifyId($spotifyId);
+        }
     }
 
     public function getPlaylistBySessionCode(string $sessionCode): ?Playlist
     {
-        return $this->playlistRepository->findOneBySessionCode($sessionCode);
+        return $this->playlistRepository->findOneBy(['sessionCode' => $sessionCode]);
     }
 }

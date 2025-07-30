@@ -4,8 +4,8 @@ namespace App\Session\Mapper;
 
 use App\Entity\Session;
 use App\Entity\User;
-use App\Playlist\Mapper\PlaylistMapper;
 use App\Playlist\PlaylistManager;
+use App\Playlist\PlaylistMapper;
 use App\Session\Model\Request\CreateSessionRequest;
 use App\Session\Model\SessionModel;
 use RuntimeException;

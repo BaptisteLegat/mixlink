@@ -2,7 +2,7 @@
 
 namespace App\Session\Model;
 
-use App\Playlist\Model\PlaylistModel;
+use App\Playlist\PlaylistModel;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(

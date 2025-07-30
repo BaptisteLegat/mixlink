@@ -372,7 +372,12 @@
             "error_session_not_found": "Session introuvable",
             "error_not_host": "Vous n'êtes pas l'hôte de cette session",
             "error_max_playlists_reached": "Vous avez atteint le nombre maximum de playlists pour votre plan.",
-            "no_subscription": "Vous devez être abonné pour créer une session."
+            "no_subscription": "Vous devez être abonné pour créer une session.",
+            "errors": {
+                "name_required": "Le nom de la session est requis",
+                "playlist_name_required": "Le nom de la playlist est requis",
+                "max_participants_invalid": "Le nombre maximum de participants doit être entre 1 et 10"
+            }
         },
         "form": {
             "name": "Nom",

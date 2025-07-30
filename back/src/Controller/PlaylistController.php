@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Playlist;
-use App\Playlist\Mapper\PlaylistMapper;
 use App\Playlist\PlaylistManager;
+use App\Playlist\PlaylistMapper;
 use App\Session\Publisher\SessionMercurePublisher;
 use App\Song\SongMapper;
 use App\Song\SongModel;

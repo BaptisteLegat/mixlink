@@ -1,15 +1,21 @@
 <?php
 
-namespace App\Playlist\Model;
+namespace App\Playlist;
 
 class PlaylistModel
 {
     private string $id = '';
+
     private ?string $name = null;
+
     private ?string $sessionCode = null;
+
     private ?string $userId = null;
+
     private ?string $createdAt = null;
+
     private ?string $updatedAt = null;
+
     private int $songsCount = 0;
 
     /**
