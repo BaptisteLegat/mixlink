@@ -22,15 +22,11 @@
 
     async function confirmRemoveSong(song) {
         try {
-            await ElMessageBox.confirm(
-                t('playlist.remove_song.confirm', { title: song.title }),
-                t('playlist.remove_song.confirm_title'),
-                {
-                    confirmButtonText: t('common.confirm'),
-                    cancelButtonText: t('common.cancel'),
-                    type: 'warning',
-                }
-            );
+            await ElMessageBox.confirm(t('playlist.remove_song.confirm', { title: song.title }), t('playlist.remove_song.confirm_title'), {
+                confirmButtonText: t('common.confirm'),
+                cancelButtonText: t('common.cancel'),
+                type: 'warning',
+            });
             await sessionStore.removeSongFromPlaylist(props.playlist.id, song.spotifyId);
             ElMessage.success(t('playlist.remove_song.success'));
         } catch (err) {

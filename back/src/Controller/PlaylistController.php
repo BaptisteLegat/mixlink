@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/playlist', name: 'api_playlist_')]
+#[OA\Tag(name: 'Playlist', description: 'Playlist endpoints')]
 class PlaylistController extends AbstractController
 {
     public function __construct(

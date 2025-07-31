@@ -16,9 +16,14 @@ knpu_oauth2_client:
                 provider: spotify
         soundcloud:
             type: generic
-            provider_class: Martin1982\OAuth2\Client\Provider\SoundCloud
+            provider_class: League\OAuth2\Client\Provider\GenericProvider
             client_id: '%env(SOUNDCLOUD_CLIENT_ID)%'
             client_secret: '%env(SOUNDCLOUD_CLIENT_SECRET)%'
             redirect_route: app_auth_callback
             redirect_params:
                 provider: soundcloud
+            provider_options:
+                urlAuthorize: 'https://soundcloud.com/connect'
+                urlAccessToken: 'https://api.soundcloud.com/oauth2/token'
+                urlResourceOwnerDetails: 'https://api.soundcloud.com/me'
+                verify: true

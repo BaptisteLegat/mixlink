@@ -30,7 +30,6 @@
     }
 
     function handleAdd(track) {
-        // On suppose que la playlist courante est dans sessionStore.currentSession.playlist
         const playlist = sessionStore.currentSession?.playlist;
         if (!playlist || !playlist.id) {
             ElMessage.error(t('playlist.add_song.no_playlist'));
@@ -54,11 +53,7 @@
                     return;
                 }
                 let translated = t(err.message);
-                ElMessage.error(
-                    translated !== err.message && translated !== 'session.' + err.message
-                        ? translated
-                        : t('playlist.add_song.error')
-                );
+                ElMessage.error(translated !== err.message && translated !== 'session.' + err.message ? translated : t('playlist.add_song.error'));
             });
     }
 
@@ -72,7 +67,6 @@
         return playlist.songs.some((song) => song.spotifyId === (track.spotifyId || track.id));
     }
 
-    // Recherche dynamique avec debounce
     watch(searchInput, (val) => {
         if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
         if (val.trim().length >= MIN_QUERY_LENGTH) {

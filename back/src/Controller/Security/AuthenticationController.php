@@ -119,6 +119,7 @@ class AuthenticationController extends AbstractController
             return $response;
         } catch (Exception $e) {
             $this->logger->error('Error during OAuth callback', [
+                'provider' => $provider,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

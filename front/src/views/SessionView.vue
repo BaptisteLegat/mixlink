@@ -11,6 +11,7 @@
     import ParticipantsCard from '@/components/session/ParticipantsCard.vue';
     import PlaylistCard from '@/components/session/PlaylistCard.vue';
     import MusicSearchBar from '@/components/session/MusicSearchBar.vue';
+    import PlaylistExportButton from '@/components/playlist/PlaylistExportButton.vue';
 
     const { t } = useI18n();
     const route = useRoute();
@@ -34,6 +35,14 @@
         if (!session.value) return participants.value;
 
         return participants.value.filter((p) => p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email);
+    });
+
+    const currentAuthProvider = computed(() => {
+        if (!authStore.user) {
+            return null;
+        }
+
+        return authStore.providers.find((p) => p.isMain === true);
     });
 
     function checkGuestJoined() {
@@ -250,6 +259,11 @@
         }
     }
 
+    function handleExportCompleted(result) {
+        console.log('Export completed:', result);
+        // Vous pouvez ajouter ici une logique supplémentaire si nécessaire
+    }
+
     onMounted(async () => {
         checkGuestJoined();
         await loadSession();
@@ -294,7 +308,18 @@
                 @kick-participant="kickParticipant"
             />
             <MusicSearchBar v-if="hasJoined" />
-            <PlaylistCard v-if="hasJoined" :playlist="sessionStore.currentSession?.playlist" />
+            <div v-if="hasJoined" class="playlist-section">
+                <PlaylistCard :playlist="sessionStore.currentSession?.playlist" />
+                <div class="export-section">
+                    <PlaylistExportButton
+                        v-if="sessionStore.currentSession?.playlist?.id"
+                        :playlistId="sessionStore.currentSession.playlist.id"
+                        :songsCount="sessionStore.currentSession.playlist?.songs?.length || 0"
+                        :platform="currentAuthProvider?.name"
+                        @export-completed="handleExportCompleted"
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -415,17 +440,25 @@
             }
         }
 
-        .playlist-card {
-            .playlist-header {
-                display: flex;
-                align-items: center;
-                font-weight: 600;
+        .playlist-section {
+            .playlist-card {
+                .playlist-header {
+                    display: flex;
+                    align-items: center;
+                    font-weight: 600;
+                }
+
+                .playlist-content {
+                    min-height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
             }
 
-            .playlist-content {
-                min-height: 300px;
+            .export-section {
+                margin-top: 20px;
                 display: flex;
-                align-items: center;
                 justify-content: center;
             }
         }
@@ -494,13 +527,15 @@
                 }
             }
 
-            .playlist-card {
-                .playlist-header {
-                    font-size: 16px;
-                }
+            .playlist-section {
+                .playlist-card {
+                    .playlist-header {
+                        font-size: 16px;
+                    }
 
-                .playlist-content {
-                    min-height: 200px;
+                    .playlist-content {
+                        min-height: 200px;
+                    }
                 }
             }
         }

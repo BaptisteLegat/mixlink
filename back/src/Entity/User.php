@@ -12,12 +12,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
 #[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: false)]
-class User implements BlameableInterface, TimestampableInterface
+class User implements BlameableInterface, TimestampableInterface, UserInterface
 {
     use BlameableEntity;
     use TimestampableEntity;
@@ -267,5 +268,11 @@ class User implements BlameableInterface, TimestampableInterface
     public function getUserIdentifier(): string
     {
         return $this->id->toRfc4122();
+    }
+
+    public function eraseCredentials(): void
+    {
+        // This method is required by UserInterface but is not necessary
+        // because we don't use local passwords
     }
 }

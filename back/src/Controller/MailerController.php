@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 
+#[Route('/api')]
+#[OA\Tag(name: 'Mailer', description: 'Mailer endpoints')]
 class MailerController extends AbstractController
 {
     private const string NO_REPLY_EMAIL = 'noreply@mix-link.fr';
@@ -28,7 +30,7 @@ class MailerController extends AbstractController
     {
     }
 
-    #[Route('/api/contact', name: 'api_contact', methods: ['POST'])]
+    #[Route('/contact', name: 'api_contact', methods: ['POST'])]
     #[OA\Post(
         path: '/api/contact',
         summary: 'Send an email from the contact form',

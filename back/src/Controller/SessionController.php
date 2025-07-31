@@ -25,6 +25,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/session', name: 'api_session_')]
+#[OA\Tag(name: 'Session', description: 'Session endpoints')]
 class SessionController extends AbstractController
 {
     public function __construct(

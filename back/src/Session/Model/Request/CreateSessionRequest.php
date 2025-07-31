@@ -28,14 +28,35 @@ class CreateSessionRequest
     #[Assert\Range(min: 1, max: 10, notInRangeMessage: 'session.create.errors.max_participants_invalid')]
     public int $maxParticipants = 3;
 
+    public function __construct(string $name, string $playlistName, int $maxParticipants)
+    {
+        $this->name = $name;
+        $this->playlistName = $playlistName;
+        $this->maxParticipants = $maxParticipants;
+    }
+
     public function getName(): string
     {
         return $this->name;
     }
 
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function getPlaylistName(): string
     {
         return $this->playlistName;
+    }
+
+    public function setPlaylistName(string $playlistName): self
+    {
+        $this->playlistName = $playlistName;
+
+        return $this;
     }
 
     public function getMaxParticipants(): int

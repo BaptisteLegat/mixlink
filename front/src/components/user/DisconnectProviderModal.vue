@@ -16,21 +16,27 @@
     const currentProvider = ref(null);
 
     const providerIcon = computed(() => {
-        if (!currentProvider.value) return null;
+        if (!currentProvider.value) {
+            return null;
+        }
 
         return getProviderIcon(currentProvider.value.name);
     });
 
     const providerName = computed(() => {
-        if (!currentProvider.value) return '';
+        if (!currentProvider.value) {
+            return '';
+        }
 
         return getProviderDisplayName(currentProvider.value.name);
     });
 
     const isCurrentAuthProvider = computed(() => {
-        if (!currentProvider.value) return false;
+        if (!currentProvider.value) {
+            return false;
+        }
 
-        return currentProvider.value.isMain === true;
+        return currentProvider.value.name === authStore.user.providers.find((p) => p.isMain === true).name;
     });
 
     function showDialog(provider) {

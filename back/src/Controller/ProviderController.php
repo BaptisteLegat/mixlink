@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/api')]
 #[OA\Tag(name: 'Provider', description: 'OAuth provider management endpoints')]
 class ProviderController extends AbstractController
 {
@@ -24,7 +25,7 @@ class ProviderController extends AbstractController
     ) {
     }
 
-    #[Route('/api/provider/{id}/disconnect', name: 'api_provider_disconnect', methods: ['POST'])]
+    #[Route('/provider/{id}/disconnect', name: 'api_provider_disconnect', methods: ['POST'])]
     #[IsGranted(AuthenticationVoter::IS_AUTHENTICATED, message: 'common.unauthorized')]
     #[OA\Post(
         path: '/api/provider/{id}/disconnect',

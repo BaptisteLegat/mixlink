@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api')]
+#[OA\Tag(name: 'Webhook', description: 'Webhook endpoints')]
 class WebhookController extends AbstractController
 {
     public function __construct(
@@ -21,7 +23,7 @@ class WebhookController extends AbstractController
     ) {
     }
 
-    #[Route('/api/webhook/stripe', name: 'stripe_webhook', methods: ['POST'])]
+    #[Route('/webhook/stripe', name: 'stripe_webhook', methods: ['POST'])]
     #[OA\Post(
         path: '/api/webhook/stripe',
         summary: 'Handle Stripe webhook events',

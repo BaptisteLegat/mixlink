@@ -12,13 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api')]
+#[OA\Tag(name: 'Search', description: 'Search endpoints')]
 class SearchController extends AbstractController
 {
     public function __construct(private SpotifyService $spotifyService, private LoggerInterface $logger)
     {
     }
 
-    #[Route('/api/search/music', name: 'api_search_music', methods: ['GET'])]
+    #[Route('/search/music', name: 'api_search_music', methods: ['GET'])]
     #[OA\Get(
         path: '/api/search/music',
         summary: 'Search for music on Spotify',

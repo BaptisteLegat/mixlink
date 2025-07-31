@@ -216,7 +216,7 @@
         "section3": {
             "title": "Authentication and user accounts",
             "content": "When registering, you must provide accurate information and keep it up to date. You are responsible for maintaining the confidentiality of your credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account or any other security breach.",
-            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Apple Music, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Soundcloud, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
         },
         "section4": {
             "title": "Copyright and intellectual property",
@@ -237,7 +237,7 @@
         "section1": {
             "title": "Information collection",
             "content": "We collect information when you register on our site, log in to your account, create playlists, or share content. The information collected includes your name, email address, and potentially your music preferences and application usage history.",
-            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Apple Music, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Soundcloud, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
         },
         "section2": {
             "title": "Use of information",
@@ -314,13 +314,13 @@
             },
             "platforms": {
                 "question": "Which streaming platforms are supported?",
-                "answer": "Currently, mixlink supports Spotify, Apple Music, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
+                "answer": "Currently, mixlink supports Spotify, Soundcloud, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
             }
         },
         "account": {
             "create": {
                 "question": "How do I create an account?",
-                "answer": "mixlink uses OAuth authentication, which means you don't need to create a separate account. You can simply sign in with your existing Spotify, Google, or Apple Music account. Click on 'Login' in the menu and choose your preferred platform to get started."
+                "answer": "mixlink uses OAuth authentication, which means you don't need to create a separate account. You can simply sign in with your existing Spotify, Google, or Soundcloud account. Click on 'Login' in the menu and choose your preferred platform to get started."
             },
             "delete": {
                 "question": "How can I delete my account?",
@@ -559,6 +559,45 @@
             "confirm": "Do you really want to remove the song: {title}?",
             "success": "Song removed from playlist.",
             "error": "Error while removing the song."
+        },
+        "export": {
+            "button": "Export playlist",
+            "disabled": {
+                "no_songs": "The playlist contains no songs to export",
+                "no_platforms": "No streaming platform connected",
+                "not_allowed": "You are not allowed to export this playlist"
+            },
+            "error": {
+                "load_platforms": "Error loading available platforms",
+                "network_error": "Network error during export",
+                "user_not_connected": "You are not connected to this platform",
+                "playlist_not_found": "Playlist not found",
+                "export_failed": "Playlist export failed",
+                "no_songs": "The playlist contains no songs",
+                "no_platform_available": "No platform available for export",
+                "token_expired": "Session expired, please reconnect",
+                "token_refresh_failed": "Unable to refresh session",
+                "no_refresh_token": "Session expired. Please reconnect to get a new token.",
+                "youtube_permissions": "Insufficient YouTube permissions. Please reconnect and accept all permissions."
+            },
+            "success": "Playlist exported successfully!",
+            "modal": {
+                "title": "Export playlist",
+                "description": "Exporting to your connected platform...",
+                "select_platform": "Select a platform",
+                "progress": "Exporting... {current}/{total} tracks processed",
+                "success_title": "Export successful!",
+                "exported_tracks": "{count} tracks exported successfully",
+                "failed_tracks": "{count} tracks could not be exported",
+                "open_playlist": "Open playlist",
+                "error_title": "Export error",
+                "export_button": "Export"
+            }
         }
+    },
+    "platforms": {
+        "spotify": "Spotify",
+        "youtube": "YouTube Music",
+        "soundcloud": "SoundCloud"
     }
 }

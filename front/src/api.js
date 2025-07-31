@@ -138,3 +138,10 @@ export async function apiRemoveSongFromPlaylist(playlistId, spotifyId) {
 
     return data;
 }
+
+export async function apiExportPlaylist(playlistId, platform) {
+    const response = await fetchWithAuth(`/api/playlist/${playlistId}/export/${platform}`, {
+        method: 'POST',
+    });
+    return response.json();
+}

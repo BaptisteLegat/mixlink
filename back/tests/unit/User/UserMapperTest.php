@@ -9,6 +9,7 @@ use App\Entity\Subscription;
 use App\Entity\User;
 use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
+use App\Security\Provider\SoundCloudUserData;
 use App\Session\Mapper\SessionMapper;
 use App\Session\Model\SessionModel;
 use App\Subscription\SubscriptionMapper;
@@ -135,7 +136,7 @@ class UserMapperTest extends TestCase
             'last_name' => 'SCLast',
             'avatar_url' => 'http://soundcloud.com/avatar.jpg',
         ];
-        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+        $soundcloudUser = new SoundCloudUserData($soundcloudData);
 
         $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, null);
 
@@ -156,7 +157,7 @@ class UserMapperTest extends TestCase
             'last_name' => 'NewLast',
             'avatar_url' => 'http://soundcloud.com/newavatar.jpg',
         ];
-        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+        $soundcloudUser = new SoundCloudUserData($soundcloudData);
 
         $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, $existingUser);
 

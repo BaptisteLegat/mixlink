@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/mercure', name: 'api_mercure_')]
+#[OA\Tag(name: 'Mercure', description: 'Mercure endpoints')]
 class MercureController extends AbstractController
 {
     public function __construct(

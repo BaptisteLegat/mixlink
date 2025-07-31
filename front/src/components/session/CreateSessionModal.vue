@@ -272,11 +272,11 @@
         <div v-else class="create-session-form">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
                 <el-form-item :label="t('session.form.name')" prop="name">
-                    <el-input 
-                        v-model="form.name" 
-                        :placeholder="t('session.form.name_placeholder')" 
-                        maxlength="50" 
-                        show-word-limit 
+                    <el-input
+                        v-model="form.name"
+                        :placeholder="t('session.form.name_placeholder')"
+                        maxlength="50"
+                        show-word-limit
                         :class="{ 'is-error': validationErrors.name }"
                         @input="clearValidationError('name')"
                     />
@@ -285,11 +285,11 @@
                     </div>
                 </el-form-item>
                 <el-form-item :label="t('session.form.playlist_name')" prop="playlistName">
-                    <el-input 
-                        v-model="form.playlistName" 
-                        :placeholder="t('session.form.playlist_name_placeholder')" 
-                        maxlength="50" 
-                        show-word-limit 
+                    <el-input
+                        v-model="form.playlistName"
+                        :placeholder="t('session.form.playlist_name_placeholder')"
+                        maxlength="50"
+                        show-word-limit
                         :class="{ 'is-error': validationErrors.playlistName }"
                         @input="clearValidationError('playlistName')"
                     />
@@ -348,15 +348,15 @@
             .el-form-item__content {
                 width: 100%;
             }
-                .el-form-item__error {
-        margin-top: 2px;
-        font-size: 13px;
-        color: var(--el-color-danger);
-    }
+            .el-form-item__error {
+                margin-top: 2px;
+                font-size: 13px;
+                color: var(--el-color-danger);
+            }
 
-    .el-input.is-error .el-input__wrapper {
-        box-shadow: 0 0 0 1px var(--el-color-danger) inset;
-    }
+            .el-input.is-error .el-input__wrapper {
+                box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+            }
         }
     }
 
