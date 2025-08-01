@@ -72,6 +72,18 @@
             "disconnect_main_title": "Attention : Service d'authentification principal",
             "disconnect_main_warning": "Ce service est utilisé pour se connecter à mixlink. Si vous le déconnectez, vous serez automatiquement déconnecté de votre compte mixlink.",
             "disconnect_main_success": "Service déconnecté. Vous avez été déconnecté de votre compte."
+        },
+        "playlist_history": {
+            "title": "Historique des playlists",
+            "description": "Retrouvez toutes vos playlists exportées depuis mixlink.",
+            "default_name": "Playlist sans nom",
+            "created_on": "Créée le",
+            "updated_on": "Modifiée le",
+            "open_playlist": "Ouvrir",
+            "songs_count": "{count} chanson | {count} chansons",
+            "view_songs": "Voir les chansons",
+            "and_more": "et {count} autre | et {count} autres",
+            "no_playlists": "Aucune playlist exportée pour le moment"
         }
     },
     "footer": {
@@ -510,6 +522,7 @@
     },
     "subscription": {
         "start": {
+            "success": "Abonnement démarré avec succès.",
             "error_plan_not_found": "Le plan demandé est introuvable.",
             "error_stripe_price_id_not_configured": "Le plan n'est pas configuré correctement pour Stripe.",
             "error_unable_to_create_checkout_session": "Impossible de créer la session de paiement Stripe."
@@ -520,6 +533,7 @@
             "success": "Abonnement annulé avec succès."
         },
         "change": {
+            "success": "Abonnement changé avec succès.",
             "error_no_active_subscription": "Aucun abonnement actif trouvé.",
             "error_plan_not_found": "Le plan demandé est introuvable.",
             "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
@@ -571,7 +585,8 @@
             "disabled": {
                 "no_songs": "La playlist ne contient aucun morceau à exporter",
                 "no_platforms": "Aucune plateforme de streaming connectée",
-                "not_allowed": "Vous n'êtes pas autorisé à exporter cette playlist"
+                "not_allowed": "Vous n'êtes pas autorisé à exporter cette playlist",
+                "already_exported": "Cette playlist a déjà été exportée (limitation plan gratuit)"
             },
             "error": {
                 "load_platforms": "Erreur lors du chargement des plateformes disponibles",
@@ -584,12 +599,21 @@
                 "token_expired": "Session expirée, veuillez vous reconnecter",
                 "token_refresh_failed": "Impossible de renouveler la session",
                 "no_refresh_token": "Session expirée. Veuillez vous reconnecter pour obtenir un nouveau token.",
-                "youtube_permissions": "Permissions YouTube insuffisantes. Veuillez vous reconnecter et accepter toutes les permissions."
+                "youtube_permissions": "Permissions YouTube insuffisantes. Veuillez vous reconnecter et accepter toutes les permissions.",
+                "free_user_limit_reached": "Vous avez déjà exporté cette playlist. Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist."
             },
             "success": "Playlist exportée avec succès !",
+            "confirmation": {
+                "title": "Confirmer l'export",
+                "message": "Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist. Voulez-vous continuer ?",
+                "confirm": "Exporter"
+            },
             "modal": {
                 "title": "Exporter la playlist",
                 "description": "Export en cours vers votre plateforme connectée...",
+                "description_waiting": "Prêt à exporter vers votre plateforme connectée.",
+                "description_completed": "Export terminé avec succès !",
+                "description_error": "Une erreur s'est produite lors de l'export.",
                 "select_platform": "Sélectionner une plateforme",
                 "progress": "Export en cours... {current}/{total} morceaux traités",
                 "success_title": "Export réussi !",

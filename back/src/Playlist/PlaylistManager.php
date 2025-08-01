@@ -43,9 +43,9 @@ class PlaylistManager
         return $playlist;
     }
 
-    public function deletePlaylistBySessionCode(string $sessionCode): void
+    public function deletePlaylistBySessionCodeIfNotExported(string $sessionCode): void
     {
-        $this->playlistRepository->hardDeleteBySessionCode($sessionCode);
+        $this->playlistRepository->hardDeleteBySessionCodeIfNotExported($sessionCode);
         $this->songRepository->hardDeleteOrphanedSongs();
     }
 

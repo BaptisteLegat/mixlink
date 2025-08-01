@@ -30,9 +30,11 @@
             await sessionStore.removeSongFromPlaylist(props.playlist.id, song.spotifyId);
             ElMessage.success(t('playlist.remove_song.success'));
         } catch (err) {
-            if (err !== 'cancel') {
-                ElMessage.error(t('playlist.remove_song.error'));
+            if (err === 'cancel') {
+                return;
             }
+
+            ElMessage.error(t('playlist.remove_song.error'));
         }
     }
 </script>
@@ -63,7 +65,7 @@
                             v-if="isAuthenticated"
                             class="delete-btn"
                             type="danger"
-                            size="medium"
+                            size="default"
                             :icon="TrashIcon"
                             @click="() => confirmRemoveSong(song)"
                             circle

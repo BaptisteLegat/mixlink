@@ -4,7 +4,9 @@ namespace App\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\User;
+use App\Playlist\PlaylistMapper;
 use App\Provider\ProviderMapper;
+use App\Repository\PlaylistRepository;
 use App\Security\Provider\SoundCloudUserData;
 use App\Session\Mapper\SessionMapper;
 use App\Subscription\SubscriptionMapper;
@@ -19,6 +21,8 @@ class UserMapper
         private ProviderMapper $providerMapper,
         private SubscriptionMapper $subscriptionMapper,
         private SessionMapper $sessionMapper,
+        private PlaylistMapper $playlistMapper,
+        private PlaylistRepository $playlistRepository,
     ) {
     }
 
@@ -104,6 +108,10 @@ class UserMapper
 
         $session = $user->getCurrentSession();
         $userModel->setCurrentSession(null !== $session ? $this->sessionMapper->mapModel($session) : null);
+
+        $exportedPlaylists = $this->playlistRepository->findExportedPlaylistsByUser($user);
+        $playlistModels = array_map(fn ($playlist) => $this->playlistMapper->mapModel($playlist), $exportedPlaylists);
+        $userModel->setExportedPlaylists($playlistModels);
 
         return $userModel;
     }

@@ -72,6 +72,18 @@
             "disconnect_main_title": "Warning: Main Authentication Service",
             "disconnect_main_warning": "This service is used to log in to mixlink. If you disconnect it, you will be automatically logged out of your mixlink account.",
             "disconnect_main_success": "Service disconnected. You have been logged out of your account."
+        },
+        "playlist_history": {
+            "title": "Playlist History",
+            "description": "Find all your playlists exported from mixlink.",
+            "default_name": "Unnamed Playlist",
+            "created_on": "Created on",
+            "updated_on": "Updated on",
+            "open_playlist": "Open",
+            "songs_count": "{count} song | {count} songs",
+            "view_songs": "View songs",
+            "and_more": "and {count} other | and {count} others",
+            "no_playlists": "No exported playlists yet"
         }
     },
     "footer": {
@@ -504,6 +516,7 @@
     },
     "subscription": {
         "start": {
+            "success": "Subscription started successfully.",
             "error_plan_not_found": "Requested plan not found.",
             "error_stripe_price_id_not_configured": "The plan is not properly configured for Stripe.",
             "error_unable_to_create_checkout_session": "Unable to create Stripe checkout session."
@@ -514,6 +527,7 @@
             "success": "Subscription cancelled successfully."
         },
         "change": {
+            "success": "Subscription changed successfully.",
             "error_no_active_subscription": "No active subscription found.",
             "error_plan_not_found": "Requested plan not found.",
             "error_already_subscribed_to_this_plan": "You are already subscribed to this plan.",
@@ -565,7 +579,8 @@
             "disabled": {
                 "no_songs": "The playlist contains no songs to export",
                 "no_platforms": "No streaming platform connected",
-                "not_allowed": "You are not allowed to export this playlist"
+                "not_allowed": "You are not allowed to export this playlist",
+                "already_exported": "This playlist has already been exported (free plan limitation)"
             },
             "error": {
                 "load_platforms": "Error loading available platforms",
@@ -578,12 +593,21 @@
                 "token_expired": "Session expired, please reconnect",
                 "token_refresh_failed": "Unable to refresh session",
                 "no_refresh_token": "Session expired. Please reconnect to get a new token.",
-                "youtube_permissions": "Insufficient YouTube permissions. Please reconnect and accept all permissions."
+                "youtube_permissions": "Insufficient YouTube permissions. Please reconnect and accept all permissions.",
+                "free_user_limit_reached": "You have already exported this playlist. With the free plan, you can only export once per playlist."
             },
             "success": "Playlist exported successfully!",
+            "confirmation": {
+                "title": "Confirm export",
+                "message": "With the free plan, you can only export once per playlist. Do you want to continue?",
+                "confirm": "Export"
+            },
             "modal": {
                 "title": "Export playlist",
                 "description": "Exporting to your connected platform...",
+                "description_waiting": "Ready to export to your connected platform.",
+                "description_completed": "Export completed successfully!",
+                "description_error": "An error occurred during export.",
                 "select_platform": "Select a platform",
                 "progress": "Exporting... {current}/{total} tracks processed",
                 "success_title": "Export successful!",

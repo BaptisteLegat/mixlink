@@ -80,12 +80,12 @@ class PlaylistManagerTest extends TestCase
         $this->assertEquals('test@example.com', $playlist->getCreatedBy());
     }
 
-    public function testDeletePlaylistBySessionCode(): void
+    public function testDeletePlaylistBySessionCodeIfNotExported(): void
     {
         $sessionCode = 'CODE123';
 
         $this->playlistRepositoryMock->expects($this->once())
-            ->method('hardDeleteBySessionCode')
+            ->method('hardDeleteBySessionCodeIfNotExported')
             ->with($sessionCode)
         ;
 
@@ -93,7 +93,7 @@ class PlaylistManagerTest extends TestCase
             ->method('hardDeleteOrphanedSongs')
         ;
 
-        $this->playlistManager->deletePlaylistBySessionCode($sessionCode);
+        $this->playlistManager->deletePlaylistBySessionCodeIfNotExported($sessionCode);
     }
 
     public function testAddSongToPlaylistSuccess(): void

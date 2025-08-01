@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Playlist;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,14 +44,32 @@ class PlaylistRepository extends ServiceEntityRepository
         }
     }
 
-    public function hardDeleteBySessionCode(string $sessionCode): void
+    public function hardDeleteBySessionCodeIfNotExported(string $sessionCode): void
     {
         $qb = $this->createQueryBuilder('p');
         $qb->delete()
             ->where('p.sessionCode = :sessionCode')
+            ->andWhere('p.exportedPlaylistId IS NULL')
+            ->andWhere('p.exportedPlaylistUrl IS NULL')
             ->setParameter('sessionCode', $sessionCode)
             ->getQuery()
             ->execute()
+        ;
+    }
+
+    /**
+     * @return Playlist[]
+     */
+    public function findExportedPlaylistsByUser(User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.user = :user')
+            ->andWhere('p.exportedPlaylistId IS NOT NULL')
+            ->andWhere('p.exportedPlaylistUrl IS NOT NULL')
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setParameter('user', (string) $user->getId()->toBinary())
+            ->getQuery()
+            ->getResult()
         ;
     }
 }

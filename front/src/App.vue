@@ -1,7 +1,6 @@
 <script setup>
-    import { computed, onMounted } from 'vue';
+    import { computed } from 'vue';
     import { useI18n } from 'vue-i18n';
-    import { useAuthStore } from '@/stores/authStore';
 
     import enLocale from 'element-plus/es/locale/lang/en';
     import frLocale from 'element-plus/es/locale/lang/fr';
@@ -9,10 +8,6 @@
     import Footer from './components/layout/FooterItem.vue';
 
     const { locale } = useI18n();
-    const authStore = useAuthStore();
-    onMounted(() => {
-        authStore.fetchUser();
-    });
 
     const elementLocale = computed(() => (locale.value === 'fr' ? frLocale : enLocale));
 </script>

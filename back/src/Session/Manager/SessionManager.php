@@ -59,7 +59,7 @@ class SessionManager
         $this->sessionRepository->remove($session, true);
 
         if (null !== $sessionCode) {
-            $this->playlistManager->deletePlaylistBySessionCode($sessionCode);
+            $this->playlistManager->deletePlaylistBySessionCodeIfNotExported($sessionCode);
         }
     }
 

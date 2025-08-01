@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Plan;
 use App\Entity\Playlist;
 use App\Entity\User;
 use App\Provider\ProviderManager;
+use App\Repository\PlaylistRepository;
 use App\Service\PlaylistExportService;
 use App\Voter\AuthenticationVoter;
 use Exception;
@@ -26,6 +28,7 @@ class PlaylistExportController extends AbstractController
     public function __construct(
         private PlaylistExportService $playlistExportService,
         private ProviderManager $providerManager,
+        private PlaylistRepository $playlistRepository,
         private LoggerInterface $logger,
     ) {
     }
@@ -88,7 +91,7 @@ class PlaylistExportController extends AbstractController
             ),
             new OA\Response(
                 response: 403,
-                description: 'User not connected to platform or cannot export',
+                description: 'User not connected to platform, cannot export, or free plan limit reached',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: 'User is not connected to spotify'),
@@ -126,15 +129,27 @@ class PlaylistExportController extends AbstractController
             return new JsonResponse(['error' => 'playlist.export.not_owner'], Response::HTTP_FORBIDDEN);
         }
 
+        $subscription = $user->getSubscription();
+        if (null === $subscription || !$subscription->isActive()) {
+            return new JsonResponse(['error' => 'playlist.export.subscription_required'], Response::HTTP_FORBIDDEN);
+        }
+
+        $isFreePlan = Plan::FREE === $subscription->getPlan()?->getName();
+        if ($isFreePlan && $playlist->hasBeenExported()) {
+            return new JsonResponse(['error' => 'playlist.export.free_user_limit_reached'], Response::HTTP_FORBIDDEN);
+        }
+
         try {
             $exportResult = $this->playlistExportService->exportPlaylist($playlist, $user, $platform);
 
-            $this->logger->info('Playlist exported successfully', [
-                'playlistId' => $playlist->getId(),
-                'platform' => $platform,
-                'exportedTracks' => $exportResult['exported_tracks'],
-                'failedTracks' => $exportResult['failed_tracks'],
-            ]);
+            $playlist->setExportedPlaylistId($exportResult['playlist_id']);
+            $playlist->setExportedPlaylistUrl($exportResult['playlist_url']);
+
+            if ($isFreePlan) {
+                $playlist->setHasBeenExported(true);
+            }
+
+            $this->playlistRepository->save($playlist, true);
 
             return new JsonResponse([
                 'success' => true,

@@ -1,6 +1,6 @@
 <script setup>
     import { ref, computed, watch } from 'vue';
-    import { ElMessage } from 'element-plus';
+    import { ElMessage, ElMessageBox } from 'element-plus';
     import { Download } from '@element-plus/icons-vue';
     import { useI18n } from 'vue-i18n';
     import { usePlaylistExportStore } from '@/stores/playlistExportStore';
@@ -20,13 +20,24 @@
             type: String,
             required: true,
         },
+        hasBeenExported: {
+            type: Boolean,
+            default: false,
+        },
+        isFreePlan: {
+            type: Boolean,
+            default: false,
+        },
+        exportedPlaylistUrl: {
+            type: String,
+            default: null,
+        },
     });
-
-    const emit = defineEmits(['export-completed']);
 
     const exportStore = usePlaylistExportStore();
 
     const showExportModal = ref(false);
+    const localHasBeenExported = ref(props.hasBeenExported);
 
     const exportStatus = computed(() => {
         if (exportStore.exportError?.value) {
@@ -39,15 +50,30 @@
     });
 
     const isButtonDisabled = computed(() => {
-        return props.songsCount === 0;
+        return props.songsCount === 0 || (props.isFreePlan && localHasBeenExported.value);
     });
 
     const buttonTitle = computed(() => {
         if (props.songsCount === 0) {
             return t('playlist.export.disabled.no_songs');
         }
-
+        if (props.isFreePlan && localHasBeenExported.value) {
+            return t('playlist.export.disabled.already_exported');
+        }
         return t('playlist.export.button');
+    });
+
+    const exportDescription = computed(() => {
+        if (exportStore.exportResult?.value) {
+            return t('playlist.export.modal.description_completed');
+        }
+        if (exportStore.exportError?.value) {
+            return t('playlist.export.modal.description_error');
+        }
+        if (exportStore.isExporting.value) {
+            return t('playlist.export.modal.description');
+        }
+        return t('playlist.export.modal.description_waiting');
     });
 
     const exportPlaylist = async () => {
@@ -55,23 +81,62 @@
             return;
         }
 
+        if (props.isFreePlan && !localHasBeenExported.value) {
+            try {
+                await ElMessageBox.confirm(t('playlist.export.confirmation.message'), t('playlist.export.confirmation.title'), {
+                    confirmButtonText: t('playlist.export.confirmation.confirm'),
+                    cancelButtonText: t('common.cancel'),
+                    type: 'warning',
+                });
+            } catch (err) {
+                if (err === 'cancel') {
+                    return;
+                }
+
+                ElMessage.error(t('playlist.export.confirmation.error'));
+            }
+        }
+
+        if (props.isFreePlan && !localHasBeenExported.value) {
+            showExportModal.value = true;
+        }
+
+        exportStore.resetExportState();
+
         try {
             const result = await exportStore.exportPlaylist(props.playlistId, props.platform);
 
-            ElMessage.success(t('playlist.export.success'));
-            emit('export-completed', result);
+            if (props.isFreePlan) {
+                localHasBeenExported.value = true;
+            }
+
+            if (showExportModal.value) {
+                setTimeout(() => {
+                    showExportModal.value = false;
+                }, 2000);
+            }
+
+            let successMessage = t('playlist.export.modal.exported_tracks', { count: result.exported_tracks });
+            if (result.failed_tracks > 0) {
+                successMessage += ` (${t('playlist.export.modal.failed_tracks', { count: result.failed_tracks })})`;
+            }
+
+            ElMessage.success(successMessage);
         } catch (error) {
             console.error('Export failed:', error);
-            const errorMessage = t(`playlist.export.errors.${error.message}`, error.message);
-            ElMessage.error(errorMessage);
         }
     };
 
     const openPlaylistUrl = () => {
-        if (exportStore.exportResult?.value?.playlist_url) {
-            window.open(exportStore.exportResult.value.playlist_url, '_blank');
+        const url = exportStore.exportResult?.value?.playlist_url || props.exportedPlaylistUrl;
+        if (url) {
+            window.open(url, '_blank');
         }
     };
+
+    const hasPlaylistUrl = computed(() => {
+        return !!(exportStore.exportResult?.value?.playlist_url || props.exportedPlaylistUrl);
+    });
 
     const closeModal = () => {
         showExportModal.value = false;
@@ -84,35 +149,88 @@
             exportStore.updateSongsCount(newCount);
         }
     );
+
+    watch(
+        () => props.hasBeenExported,
+        (newValue) => {
+            localHasBeenExported.value = newValue;
+        }
+    );
 </script>
 <template>
     <div class="playlist-export">
-        <el-button
-            type="primary"
-            :loading="exportStore.isExporting.value"
-            :disabled="isButtonDisabled"
-            :title="buttonTitle"
-            @click="exportPlaylist"
-            class="export-button"
-        >
-            <el-icon><Download /></el-icon>
-            {{ $t('playlist.export.button') }}
-        </el-button>
+        <div class="export-buttons">
+            <div class="export-button-container">
+                <el-button
+                    type="primary"
+                    :loading="exportStore.isExporting.value"
+                    :disabled="isButtonDisabled"
+                    :title="buttonTitle"
+                    @click="exportPlaylist"
+                    class="export-button"
+                >
+                    <el-icon><Download /></el-icon>
+                    {{ $t('playlist.export.button') }}
+                </el-button>
+
+                <div v-if="exportStore.isExporting.value && !props.isFreePlan" class="button-progress">
+                    <el-progress
+                        :percentage="Math.round(exportStore.exportProgress.value)"
+                        :status="exportStatus"
+                        :stroke-width="4"
+                        :show-text="false"
+                    />
+                    <p class="progress-text-button">
+                        {{
+                            $t('playlist.export.modal.progress', {
+                                current: Math.floor((exportStore.exportProgress.value / 100) * props.songsCount),
+                                total: props.songsCount,
+                            })
+                        }}
+                    </p>
+                </div>
+            </div>
+
+            <el-button v-if="hasPlaylistUrl" type="success" @click="openPlaylistUrl" class="open-playlist-external-btn">
+                <el-icon><Download /></el-icon>
+                {{ $t('playlist.export.modal.open_playlist') }}
+            </el-button>
+        </div>
+
+        <div v-if="exportStore.exportResult?.value" class="export-results-section">
+            <el-alert :title="$t('playlist.export.modal.success_title')" type="success" :closable="false" show-icon>
+                <template #default>
+                    <div class="export-stats">
+                        <p>{{ $t('playlist.export.modal.exported_tracks', { count: exportStore.exportResult.value.exported_tracks }) }}</p>
+                        <p v-if="exportStore.exportResult.value.failed_tracks > 0" class="failed-tracks">
+                            {{ $t('playlist.export.modal.failed_tracks', { count: exportStore.exportResult.value.failed_tracks }) }}
+                        </p>
+                    </div>
+                </template>
+            </el-alert>
+        </div>
+
+        <div v-if="exportStore.exportError?.value" class="export-error-section">
+            <el-alert :title="$t('playlist.export.modal.error_title')" type="error" :closable="false" show-icon>
+                <template #default>
+                    <p>{{ $t(exportStore.exportError.value) }}</p>
+                </template>
+            </el-alert>
+        </div>
 
         <el-dialog v-model="showExportModal" :title="$t('playlist.export.modal.title')" width="500px" :close-on-click-modal="false">
             <div class="export-content">
                 <p class="export-description">
-                    {{ $t('playlist.export.modal.description') }}
+                    {{ exportDescription }}
                 </p>
 
                 <div v-if="exportStore.isExporting.value" class="export-progress">
-                    <el-progress :percentage="exportStore.exportProgress.value" :status="exportStatus" :stroke-width="8" />
+                    <el-progress :percentage="Math.round(exportStore.exportProgress.value)" :status="exportStatus" :stroke-width="8" />
                     <p class="progress-text">
                         {{
                             $t('playlist.export.modal.progress', {
-                                current: exportStore.exportResult?.value?.exported_tracks || 0,
-                                total:
-                                    (exportStore.exportResult?.value?.exported_tracks || 0) + (exportStore.exportResult?.value?.failed_tracks || 0),
+                                current: Math.floor((exportStore.exportProgress.value / 100) * props.songsCount),
+                                total: props.songsCount,
                             })
                         }}
                     </p>
@@ -126,9 +244,6 @@
                                 <p v-if="exportStore.exportResult.value.failed_tracks > 0" class="failed-tracks">
                                     {{ $t('playlist.export.modal.failed_tracks', { count: exportStore.exportResult.value.failed_tracks }) }}
                                 </p>
-                                <el-button type="primary" size="small" @click="openPlaylistUrl" class="open-playlist-btn">
-                                    {{ $t('playlist.export.modal.open_playlist') }}
-                                </el-button>
                             </div>
                         </template>
                     </el-alert>
@@ -159,10 +274,53 @@
         display: inline-block;
     }
 
-    .export-button {
+    .export-buttons {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .export-button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 200px;
+    }
+
+    .button-progress {
+        margin-top: 8px;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .progress-text-button {
+        margin-top: 4px;
+        text-align: center;
+        color: var(--el-text-color-secondary);
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .export-button,
+    .open-playlist-external-btn {
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+
+    .export-results-section,
+    .export-error-section {
+        margin-top: 16px;
+        max-width: 400px;
+    }
+
+    .export-results-section .export-stats {
+        margin-top: 8px;
+    }
+
+    .export-results-section .export-stats p {
+        margin: 4px 0;
     }
 
     .export-content {
@@ -200,10 +358,6 @@
 
     .failed-tracks {
         color: var(--el-color-warning);
-    }
-
-    .open-playlist-btn {
-        margin-top: 12px;
     }
 
     .export-error {

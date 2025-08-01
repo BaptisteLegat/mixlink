@@ -2,6 +2,8 @@
 
 namespace App\Playlist;
 
+use App\Song\SongModel;
+
 class PlaylistModel
 {
     private string $id = '';
@@ -18,8 +20,14 @@ class PlaylistModel
 
     private int $songsCount = 0;
 
+    private bool $hasBeenExported = false;
+
+    private ?string $exportedPlaylistId = null;
+
+    private ?string $exportedPlaylistUrl = null;
+
     /**
-     * @var array<int, \App\Song\SongModel>
+     * @var array<int, SongModel>
      */
     private array $songs = [];
 
@@ -108,7 +116,7 @@ class PlaylistModel
     }
 
     /**
-     * @return array<int, \App\Song\SongModel>
+     * @return array<int, SongModel>
      */
     public function getSongs(): array
     {
@@ -116,11 +124,47 @@ class PlaylistModel
     }
 
     /**
-     * @param array<int, \App\Song\SongModel> $songs
+     * @param array<int, SongModel> $songs
      */
     public function setSongs(array $songs): self
     {
         $this->songs = $songs;
+
+        return $this;
+    }
+
+    public function hasBeenExported(): bool
+    {
+        return $this->hasBeenExported;
+    }
+
+    public function setHasBeenExported(bool $hasBeenExported): self
+    {
+        $this->hasBeenExported = $hasBeenExported;
+
+        return $this;
+    }
+
+    public function getExportedPlaylistId(): ?string
+    {
+        return $this->exportedPlaylistId;
+    }
+
+    public function setExportedPlaylistId(?string $exportedPlaylistId): self
+    {
+        $this->exportedPlaylistId = $exportedPlaylistId;
+
+        return $this;
+    }
+
+    public function getExportedPlaylistUrl(): ?string
+    {
+        return $this->exportedPlaylistUrl;
+    }
+
+    public function setExportedPlaylistUrl(?string $exportedPlaylistUrl): self
+    {
+        $this->exportedPlaylistUrl = $exportedPlaylistUrl;
 
         return $this;
     }
@@ -138,6 +182,9 @@ class PlaylistModel
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
             'songsCount' => $this->songsCount,
+            'hasBeenExported' => $this->hasBeenExported,
+            'exportedPlaylistId' => $this->exportedPlaylistId,
+            'exportedPlaylistUrl' => $this->exportedPlaylistUrl,
             'songs' => array_map(fn ($song) => $song->toArray(), $this->songs),
         ];
     }

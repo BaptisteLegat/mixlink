@@ -19,12 +19,14 @@ export function usePlaylistExportStore() {
         exportResult.value = null;
 
         try {
-            // Simulation de progression (dans un vrai cas, vous recevriez des mises à jour en temps réel)
             const progressInterval = setInterval(() => {
-                if (exportProgress.value < 90) {
-                    exportProgress.value += 10;
+                if (exportProgress.value < 80) {
+                    exportProgress.value += Math.random() * 15 + 5;
+                    if (exportProgress.value > 80) {
+                        exportProgress.value = 80;
+                    }
                 }
-            }, 200);
+            }, 300);
 
             const result = await apiExportPlaylist(playlistId, platform);
 
@@ -32,13 +34,16 @@ export function usePlaylistExportStore() {
             exportProgress.value = 100;
             exportResult.value = result;
 
+            setTimeout(() => {
+                isExporting.value = false;
+            }, 1000);
+
             return result;
         } catch (error) {
             console.error('Export failed:', error);
             exportError.value = error.message || 'playlist.export.error.export_failed';
-            throw error;
-        } finally {
             isExporting.value = false;
+            throw error;
         }
     }
 

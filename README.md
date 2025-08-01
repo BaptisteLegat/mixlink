@@ -12,6 +12,7 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 - **Création de sessions** : Créez des sessions collaboratives où les participants et l'hôte peuvent ajouter des morceaux à une playlist.
 - **Gestion des morceaux** : Ajoutez, retirez ou triez les morceaux de la playlist.
 - **Export de playlists** : Exportez la playlist finale sur le service de streaming de l'utilisateur connecté (hôte).
+- **Historique des playlists** : Consultez l'historique de toutes vos playlists exportées depuis votre page profil.
 - **Formulaire de contact** : Page de contact intégrée pour envoyer des messages.
 - **Interface utilisateur moderne** : Expérience fluide, responsive et intuitive grâce à Vue.js et Element Plus.
 - **Support multilingue** : Disponible en français et en anglais.

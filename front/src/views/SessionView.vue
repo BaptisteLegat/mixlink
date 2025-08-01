@@ -258,12 +258,6 @@
             loadParticipants();
         }
     }
-
-    function handleExportCompleted(result) {
-        console.log('Export completed:', result);
-        // Vous pouvez ajouter ici une logique supplémentaire si nécessaire
-    }
-
     onMounted(async () => {
         checkGuestJoined();
         await loadSession();
@@ -312,11 +306,13 @@
                 <PlaylistCard :playlist="sessionStore.currentSession?.playlist" />
                 <div class="export-section">
                     <PlaylistExportButton
-                        v-if="sessionStore.currentSession?.playlist?.id"
+                        v-if="sessionStore.currentSession?.playlist?.id && isHost"
                         :playlistId="sessionStore.currentSession.playlist.id"
                         :songsCount="sessionStore.currentSession.playlist?.songs?.length || 0"
                         :platform="currentAuthProvider?.name"
-                        @export-completed="handleExportCompleted"
+                        :hasBeenExported="sessionStore.currentSession.playlist?.hasBeenExported"
+                        :isFreePlan="!authStore.subscription || !authStore.subscription.isActive || 'free' === authStore.subscription.plan?.name"
+                        :exportedPlaylistUrl="sessionStore.currentSession.playlist?.exportedPlaylistUrl"
                     />
                 </div>
             </div>

@@ -39,6 +39,15 @@ class Playlist implements BlameableInterface, TimestampableInterface
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $sessionCode = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $hasBeenExported = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $exportedPlaylistId = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $exportedPlaylistUrl = null;
+
     /**
      * @var Collection<int, Song>
      */
@@ -115,6 +124,42 @@ class Playlist implements BlameableInterface, TimestampableInterface
         if ($this->songs->removeElement($song)) {
             $song->removePlaylist($this);
         }
+
+        return $this;
+    }
+
+    public function hasBeenExported(): bool
+    {
+        return $this->hasBeenExported;
+    }
+
+    public function setHasBeenExported(bool $hasBeenExported): self
+    {
+        $this->hasBeenExported = $hasBeenExported;
+
+        return $this;
+    }
+
+    public function getExportedPlaylistId(): ?string
+    {
+        return $this->exportedPlaylistId;
+    }
+
+    public function setExportedPlaylistId(?string $exportedPlaylistId): self
+    {
+        $this->exportedPlaylistId = $exportedPlaylistId;
+
+        return $this;
+    }
+
+    public function getExportedPlaylistUrl(): ?string
+    {
+        return $this->exportedPlaylistUrl;
+    }
+
+    public function setExportedPlaylistUrl(?string $exportedPlaylistUrl): self
+    {
+        $this->exportedPlaylistUrl = $exportedPlaylistUrl;
 
         return $this;
     }

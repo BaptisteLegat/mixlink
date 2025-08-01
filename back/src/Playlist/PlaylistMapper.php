@@ -32,6 +32,9 @@ class PlaylistMapper
             ->setCreatedAt($playlist->getCreatedAt()?->format('c'))
             ->setUpdatedAt($playlist->getUpdatedAt()?->format('c'))
             ->setSongsCount($playlist->getSongs()->count())
+            ->setHasBeenExported($playlist->hasBeenExported())
+            ->setExportedPlaylistId($playlist->getExportedPlaylistId())
+            ->setExportedPlaylistUrl($playlist->getExportedPlaylistUrl())
             ->setSongs(array_values($songModels))
         ;
     }
