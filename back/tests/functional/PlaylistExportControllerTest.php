@@ -5,6 +5,7 @@ namespace App\Tests\Functional;
 use App\Provider\ProviderManager;
 use App\Repository\PlaylistRepository;
 use App\Repository\UserRepository;
+use App\Service\Export\Model\ExportResult;
 use App\Service\PlaylistExportService;
 use Exception;
 use InvalidArgumentException;
@@ -38,11 +39,9 @@ class PlaylistExportControllerTest extends WebTestCase
         $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->playlistRepository = static::getContainer()->get(PlaylistRepository::class);
 
-        // Mock the dependencies
         $this->providerManagerMock = $this->createMock(ProviderManager::class);
         $this->playlistExportServiceMock = $this->createMock(PlaylistExportService::class);
 
-        // Replace the services in the container
         static::getContainer()->set(ProviderManager::class, $this->providerManagerMock);
         static::getContainer()->set(PlaylistExportService::class, $this->playlistExportServiceMock);
     }
@@ -63,17 +62,19 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willReturn([
-                'playlist_id' => 'spotify_playlist_123',
-                'playlist_url' => 'https://open.spotify.com/playlist/123',
-                'exported_tracks' => 2,
-                'failed_tracks' => 0,
-                'platform' => 'spotify',
-            ]);
+            ->willReturn(new ExportResult(
+                playlistId: 'spotify_playlist_123',
+                playlistUrl: 'https://open.spotify.com/playlist/123',
+                exportedTracks: 2,
+                failedTracks: 0,
+                platform: 'spotify'
+            ))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -96,17 +97,19 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willReturn([
-                'playlist_id' => 'google_playlist_456',
-                'playlist_url' => 'https://music.youtube.com/playlist?list=456',
-                'exported_tracks' => 2,
-                'failed_tracks' => 0,
-                'platform' => 'google',
-            ]);
+            ->willReturn(new ExportResult(
+                playlistId: 'google_playlist_456',
+                playlistUrl: 'https://music.youtube.com/playlist?list=456',
+                exportedTracks: 2,
+                failedTracks: 0,
+                platform: 'google'
+            ))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'google_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/google');
@@ -129,17 +132,19 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willReturn([
-                'playlist_id' => 'soundcloud_playlist_789',
-                'playlist_url' => 'https://soundcloud.com/user/sets/playlist',
-                'exported_tracks' => 1,
-                'failed_tracks' => 1,
-                'platform' => 'soundcloud',
-            ]);
+            ->willReturn(new ExportResult(
+                playlistId: 'soundcloud_playlist_789',
+                playlistUrl: 'https://soundcloud.com/user/sets/playlist',
+                exportedTracks: 1,
+                failedTracks: 1,
+                platform: 'soundcloud'
+            ))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'soundcloud_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/soundcloud');
@@ -162,7 +167,8 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'not_owner_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -179,7 +185,8 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'no_sub_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -196,7 +203,8 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'inactive_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -213,7 +221,8 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'free_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -230,17 +239,19 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willReturn([
-                'playlist_id' => 'free_playlist_123',
-                'playlist_url' => 'https://open.spotify.com/playlist/free123',
-                'exported_tracks' => 2,
-                'failed_tracks' => 0,
-                'platform' => 'spotify',
-            ]);
+            ->willReturn(new ExportResult(
+                playlistId: 'free_playlist_123',
+                playlistUrl: 'https://open.spotify.com/playlist/free123',
+                exportedTracks: 2,
+                failedTracks: 0,
+                platform: 'spotify'
+            ))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'free_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -261,11 +272,13 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willThrowException(new InvalidArgumentException('User is not connected to spotify'));
+            ->willThrowException(new InvalidArgumentException('User is not connected to spotify'))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -282,11 +295,13 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willThrowException(new RuntimeException('API connection failed'));
+            ->willThrowException(new RuntimeException('API connection failed'))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -303,11 +318,13 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->playlistExportServiceMock
             ->method('exportPlaylist')
-            ->willThrowException(new Exception('Unexpected error'));
+            ->willThrowException(new Exception('Unexpected error'))
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_export_token'));
         $this->client->request('POST', '/api/playlist/'.$playlist->getId().'/export/spotify');
@@ -323,7 +340,8 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->providerManagerMock
             ->method('findByAccessToken')
-            ->willReturn($user);
+            ->willReturn($user)
+        ;
 
         $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', 'spotify_export_token'));
         $this->client->request('POST', '/api/playlist/00000000-0000-0000-0000-000000000000/export/spotify');

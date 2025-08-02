@@ -89,10 +89,11 @@ class SpotifyExportServiceTest extends TestCase
 
         $result = $this->spotifyExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals($playlistId, $result['playlist_id']);
-        $this->assertEquals($playlistUrl, $result['playlist_url']);
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals($playlistId, $result->playlistId);
+        $this->assertEquals($playlistUrl, $result->playlistUrl);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('spotify', $result->platform);
     }
 
     public function testExportPlaylistWithUserNotConnected(): void
@@ -194,8 +195,9 @@ class SpotifyExportServiceTest extends TestCase
 
         $result = $this->spotifyExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('spotify', $result->platform);
     }
 
     public function testExportPlaylistWithSongWithoutSpotifyId(): void
@@ -242,8 +244,9 @@ class SpotifyExportServiceTest extends TestCase
 
         $result = $this->spotifyExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('spotify', $result->platform);
     }
 
     public function testExportPlaylistWithApiError(): void
@@ -336,8 +339,9 @@ class SpotifyExportServiceTest extends TestCase
 
         $result = $this->spotifyExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(150, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(150, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('spotify', $result->platform);
     }
 
     public function testMakeAuthenticatedRequestWith401ErrorAndSuccessfulRefresh(): void
@@ -394,8 +398,8 @@ class SpotifyExportServiceTest extends TestCase
 
         $result = $this->spotifyExportService->exportPlaylist($playlist, $user);
 
-        $this->assertIsArray($result);
-        $this->assertEquals('playlist123', $result['playlist_id']);
+        $this->assertInstanceOf(\App\Service\Export\Model\ExportResult::class, $result);
+        $this->assertEquals('playlist123', $result->playlistId);
     }
 
     public function testMakeAuthenticatedRequestWith401ErrorAndFailedRefresh(): void

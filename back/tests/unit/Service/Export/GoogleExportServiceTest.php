@@ -98,10 +98,11 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals($playlistId, $result['playlist_id']);
-        $this->assertEquals($playlistUrl, $result['playlist_url']);
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals($playlistId, $result->playlistId);
+        $this->assertEquals($playlistUrl, $result->playlistUrl);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithUserNotConnected(): void
@@ -237,8 +238,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithSongWithoutTitleOrArtists(): void
@@ -279,8 +281,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithVideoNotFound(): void
@@ -330,8 +333,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithAddVideoToPlaylistError(): void
@@ -401,8 +405,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithSearchVideoError(): void
@@ -455,8 +460,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithTokenRefreshSuccess(): void
@@ -546,10 +552,11 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals($playlistId, $result['playlist_id']);
-        $this->assertEquals('https://www.youtube.com/playlist?list='.$playlistId, $result['playlist_url']);
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals($playlistId, $result->playlistId);
+        $this->assertEquals('https://www.youtube.com/playlist?list='.$playlistId, $result->playlistUrl);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithTokenRefreshFailure(): void
@@ -633,8 +640,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithNoRefreshToken(): void
@@ -711,8 +719,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithMultipleSongsAndMixedResults(): void
@@ -813,8 +822,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(2, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(2, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithAddVideoHttpForbiddenError(): void
@@ -884,8 +894,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithSearchVideoErrorResponse(): void
@@ -937,8 +948,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithSearchVideoMissingItems(): void
@@ -988,8 +1000,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithSearchVideoMissingVideoId(): void
@@ -1044,8 +1057,9 @@ class GoogleExportServiceTest extends TestCase
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('google', $result->platform);
     }
 
     public function testExportPlaylistWithErrorDetailsInErrorsArray(): void

@@ -6,6 +6,7 @@ use App\Entity\Playlist;
 use App\Entity\Provider;
 use App\Entity\Song;
 use App\Entity\User;
+use App\Service\Export\Model\ExportResult;
 use App\Service\OAuthTokenManager;
 use Doctrine\Common\Collections\Collection;
 use InvalidArgumentException;
@@ -31,7 +32,7 @@ class SoundCloudExportService implements ExportServiceInterface
     }
 
     #[Override]
-    public function exportPlaylist(Playlist $playlist, User $user): array
+    public function exportPlaylist(Playlist $playlist, User $user): ExportResult
     {
         $provider = $user->getProviderByName('soundcloud');
         if (null === $provider) {
@@ -45,12 +46,13 @@ class SoundCloudExportService implements ExportServiceInterface
 
         $exportResult = $this->addTracksToPlaylist($provider, $playlistId, $playlist->getSongs());
 
-        return [
-            'playlist_id' => (string) $playlistId,
-            'playlist_url' => $playlistUrl,
-            'exported_tracks' => $exportResult['exported_tracks'],
-            'failed_tracks' => $exportResult['failed_tracks'],
-        ];
+        return new ExportResult(
+            playlistId: (string) $playlistId,
+            playlistUrl: $playlistUrl,
+            exportedTracks: $exportResult['exported_tracks'],
+            failedTracks: $exportResult['failed_tracks'],
+            platform: $this->getPlatformName(),
+        );
     }
 
     #[Override]
@@ -139,7 +141,6 @@ class SoundCloudExportService implements ExportServiceInterface
         $cleanTitle = $this->cleanSearchTerm($title);
         $cleanArtists = $this->cleanSearchTerm($artists);
 
-        // Essayer plusieurs combinaisons de recherche
         $searchQueries = [
             $cleanTitle.' '.$cleanArtists,
             $cleanTitle,
@@ -171,7 +172,6 @@ class SoundCloudExportService implements ExportServiceInterface
                     }
                 }
             } catch (RuntimeException $e) {
-                // Continue avec la prochaine requête
                 continue;
             }
         }
@@ -303,7 +303,7 @@ class SoundCloudExportService implements ExportServiceInterface
     private function addTrackToPlaylist(Provider $provider, int $playlistId, int $trackId): void
     {
         $maxRetries = 3;
-        $retryDelay = 1; // 1 seconde entre chaque retry
+        $retryDelay = 1; // 1 second between each retry
 
         for ($attempt = 1; $attempt <= $maxRetries; ++$attempt) {
             try {
@@ -346,21 +346,20 @@ class SoundCloudExportService implements ExportServiceInterface
                     ]
                 );
 
-                // Si on arrive ici, l'ajout a réussi
                 return;
             } catch (RuntimeException $e) {
                 $this->logger->error("SoundCloud API Error (attempt $attempt/$maxRetries): ".$e->getMessage());
 
-                // Si c'est la dernière tentative, on relance l'exception
+                // If it's the last attempt, rethrow the exception
                 if ($attempt === $maxRetries) {
                     throw $e;
                 }
 
-                // Sinon, on attend avant de retenter
+                // Otherwise, wait before retrying
                 $this->logger->info("Retrying in {$retryDelay} second(s)...");
                 sleep($retryDelay);
 
-                // Augmenter le délai pour le prochain retry (backoff exponentiel)
+                // Increase the delay for the next retry (exponential backoff)
                 $retryDelay *= 2;
             }
         }

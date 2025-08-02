@@ -136,10 +136,10 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
-        $this->assertEquals((string) $playlistId, $result['playlist_id']);
-        $this->assertEquals($playlistUrl, $result['playlist_url']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals((string) $playlistId, $result->playlistId);
+        $this->assertEquals($playlistUrl, $result->playlistUrl);
     }
 
     public function testExportPlaylistCreatePlaylistError(): void
@@ -214,8 +214,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithValidData(): void
@@ -293,10 +294,11 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals((string) $playlistId, $result['playlist_id']);
-        $this->assertEquals($playlistUrl, $result['playlist_url']);
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals((string) $playlistId, $result->playlistId);
+        $this->assertEquals($playlistUrl, $result->playlistUrl);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithSearchTrackNotFound(): void
@@ -352,8 +354,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithSearchTrackError(): void
@@ -417,8 +420,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithAddTrackToPlaylistError(): void
@@ -489,8 +493,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithTokenRefreshSuccess(): void
@@ -584,10 +589,11 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals((string) $playlistId, $result['playlist_id']);
-        $this->assertEquals($playlistUrl, $result['playlist_url']);
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals((string) $playlistId, $result->playlistId);
+        $this->assertEquals($playlistUrl, $result->playlistUrl);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithTokenRefreshFailure(): void
@@ -665,8 +671,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithMakeAuthenticatedRequestErrorMessage(): void
@@ -765,8 +772,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithRemixTrack(): void
@@ -841,8 +849,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithInvalidTrackId(): void
@@ -908,8 +917,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result['exported_tracks']);
-        $this->assertEquals(1, $result['failed_tracks']);
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithExistingTracksInPlaylist(): void
@@ -986,8 +996,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithMissingPlaylistData(): void
@@ -1059,8 +1070,9 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $this->soundCloudExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(1, $result['exported_tracks']);
-        $this->assertEquals(0, $result['failed_tracks']);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
+        $this->assertEquals('soundcloud', $result->platform);
     }
 
     public function testExportPlaylistWithMakeAuthenticatedRequestErrorsArray(): void

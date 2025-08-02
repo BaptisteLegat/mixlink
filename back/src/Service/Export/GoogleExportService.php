@@ -6,6 +6,7 @@ use App\Entity\Playlist;
 use App\Entity\Provider;
 use App\Entity\Song;
 use App\Entity\User;
+use App\Service\Export\Model\ExportResult;
 use App\Service\OAuthTokenManager;
 use Doctrine\Common\Collections\Collection;
 use InvalidArgumentException;
@@ -29,7 +30,7 @@ class GoogleExportService implements ExportServiceInterface
     }
 
     #[Override]
-    public function exportPlaylist(Playlist $playlist, User $user): array
+    public function exportPlaylist(Playlist $playlist, User $user): ExportResult
     {
         $provider = $user->getProviderByName('google');
         if (null === $provider) {
@@ -45,12 +46,13 @@ class GoogleExportService implements ExportServiceInterface
 
         $exportResult = $this->addTracksToPlaylist($provider, $playlistId, $playlist->getSongs());
 
-        return [
-            'playlist_id' => $playlistId,
-            'playlist_url' => $playlistUrl,
-            'exported_tracks' => $exportResult['exported_tracks'],
-            'failed_tracks' => $exportResult['failed_tracks'],
-        ];
+        return new ExportResult(
+            playlistId: $playlistId,
+            playlistUrl: $playlistUrl,
+            exportedTracks: $exportResult['exported_tracks'],
+            failedTracks: $exportResult['failed_tracks'],
+            platform: $this->getPlatformName(),
+        );
     }
 
     #[Override]

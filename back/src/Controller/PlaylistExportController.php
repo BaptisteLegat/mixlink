@@ -142,8 +142,8 @@ class PlaylistExportController extends AbstractController
         try {
             $exportResult = $this->playlistExportService->exportPlaylist($playlist, $user, $platform);
 
-            $playlist->setExportedPlaylistId($exportResult['playlist_id']);
-            $playlist->setExportedPlaylistUrl($exportResult['playlist_url']);
+            $playlist->setExportedPlaylistId($exportResult->playlistId);
+            $playlist->setExportedPlaylistUrl($exportResult->playlistUrl);
 
             if ($isFreePlan) {
                 $playlist->setHasBeenExported(true);
@@ -153,17 +153,14 @@ class PlaylistExportController extends AbstractController
 
             return new JsonResponse([
                 'success' => true,
-                'playlist_id' => $exportResult['playlist_id'],
-                'playlist_url' => $exportResult['playlist_url'],
-                'exported_tracks' => $exportResult['exported_tracks'],
-                'failed_tracks' => $exportResult['failed_tracks'],
-                'platform' => $exportResult['platform'],
+                ...$exportResult->toArray(),
             ]);
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('Playlist export failed - invalid argument', [
                 'playlistId' => $playlist->getId(),
                 'platform' => $platform,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

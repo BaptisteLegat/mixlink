@@ -4,19 +4,22 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Playlist;
 use App\Entity\User;
-use App\Provider\ProviderManager;
 use App\Service\Export\ExportServiceFactory;
 use App\Service\Export\ExportServiceInterface;
+use App\Service\Export\Model\ExportResult;
 use App\Service\PlaylistExportService;
+use Doctrine\Common\Collections\Collection;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Uid\Uuid;
 
 class PlaylistExportServiceTest extends TestCase
 {
     private PlaylistExportService $playlistExportService;
     private ExportServiceFactory|MockObject $exportServiceFactoryMock;
-    private ProviderManager|MockObject $providerManagerMock;
+    private LoggerInterface|MockObject $loggerMock;
     private ExportServiceInterface|MockObject $exportServiceMock;
     private User|MockObject $userMock;
     private Playlist|MockObject $playlistMock;
@@ -24,26 +27,28 @@ class PlaylistExportServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->exportServiceFactoryMock = $this->createMock(ExportServiceFactory::class);
-        $this->providerManagerMock = $this->createMock(ProviderManager::class);
+        $this->loggerMock = $this->createMock(LoggerInterface::class);
         $this->exportServiceMock = $this->createMock(ExportServiceInterface::class);
         $this->userMock = $this->createMock(User::class);
         $this->playlistMock = $this->createMock(Playlist::class);
 
         $this->playlistExportService = new PlaylistExportService(
             $this->exportServiceFactoryMock,
-            $this->providerManagerMock,
+            $this->loggerMock,
         );
     }
 
     public function testExportPlaylistWithValidPlatform(): void
     {
         $platform = 'spotify';
-        $expectedResult = [
-            'playlist_id' => 'playlist123',
-            'playlist_url' => 'https://spotify.com/playlist/123',
-            'exported_tracks' => 5,
-            'failed_tracks' => 1,
-        ];
+        $expectedResult = new ExportResult(
+            playlistId: 'playlist123',
+            playlistUrl: 'https://spotify.com/playlist/123',
+            exportedTracks: 5,
+            failedTracks: 1,
+            platform: 'spotify',
+        );
+
 
         $this->exportServiceFactoryMock
             ->expects($this->once())
@@ -73,10 +78,19 @@ class PlaylistExportServiceTest extends TestCase
             ->willReturn($expectedResult)
         ;
 
+        $this->loggerMock
+            ->expects($this->once())
+            ->method('warning')
+        ;
+
         $result = $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
 
-        $expectedResultWithPlatform = array_merge($expectedResult, ['platform' => $platform]);
-        $this->assertEquals($expectedResultWithPlatform, $result);
+        $this->assertInstanceOf(ExportResult::class, $result);
+        $this->assertEquals('playlist123', $result->playlistId);
+        $this->assertEquals('https://spotify.com/playlist/123', $result->playlistUrl);
+        $this->assertEquals(5, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals('spotify', $result->platform);
     }
 
     public function testExportPlaylistWithUnsupportedPlatform(): void
@@ -91,7 +105,7 @@ class PlaylistExportServiceTest extends TestCase
         ;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Platform '$platform' is not supported");
+        $this->expectExceptionMessage("Platform 'unsupported' is not supported");
 
         $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
     }
@@ -122,7 +136,58 @@ class PlaylistExportServiceTest extends TestCase
         ;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("User is not connected to $platform");
+        $this->expectExceptionMessage('User is not connected to spotify');
+
+        $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
+    }
+
+    public function testExportPlaylistWithException(): void
+    {
+        $platform = 'spotify';
+
+        $this->exportServiceFactoryMock
+            ->expects($this->once())
+            ->method('isSupported')
+            ->with($platform)
+            ->willReturn(true)
+        ;
+
+        $this->exportServiceFactoryMock
+            ->expects($this->once())
+            ->method('create')
+            ->with($platform)
+            ->willReturn($this->exportServiceMock)
+        ;
+
+        $this->exportServiceMock
+            ->expects($this->once())
+            ->method('isUserConnected')
+            ->with($this->userMock)
+            ->willReturn(true)
+        ;
+
+        $exceptionMessage = 'An error occurred during export';
+        $this->exportServiceMock
+            ->expects($this->once())
+            ->method('exportPlaylist')
+            ->with($this->playlistMock, $this->userMock)
+            ->willThrowException(new InvalidArgumentException($exceptionMessage))
+        ;
+
+        $this->loggerMock
+            ->expects($this->once())
+            ->method('error')
+            ->with(
+                'Failed to export playlist',
+                [
+                    'exception' => $exceptionMessage,
+                    'platform' => $platform,
+                ]
+            )
+        ;
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Failed to export playlist: '.$exceptionMessage);
 
         $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
     }
