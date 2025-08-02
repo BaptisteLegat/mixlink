@@ -52,8 +52,8 @@
                     ElMessage.error(msg);
                     return;
                 }
-                let translated = t(err.message);
-                ElMessage.error(translated !== err.message && translated !== 'session.' + err.message ? translated : t('playlist.add_song.error'));
+                const errorMessage = err.translationKey ? t(err.translationKey) : t('playlist.add_song.error');
+                ElMessage.error(errorMessage);
             });
     }
 

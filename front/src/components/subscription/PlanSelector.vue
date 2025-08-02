@@ -8,6 +8,7 @@
     import router from '@/router';
     import { ref, computed } from 'vue';
     import { ElMessage } from 'element-plus';
+    import PlanChangeConfirmationModal from './PlanChangeConfirmationModal.vue';
 
     const { t } = useI18n();
     const authStore = useAuthStore();
@@ -22,6 +23,7 @@
     });
 
     const loading = ref(false);
+    const planChangeModal = ref(null);
     const plans = computed(() => subscriptionStore.plans);
     const currentPlan = computed(() => {
         if (!authStore.subscription || !authStore.subscription.isActive || authStore.subscription.isCanceled) {
@@ -78,6 +80,13 @@
             router.push({ path: '/login' });
             return;
         }
+
+        if (currentPlan.value && currentPlan.value !== plan.name) {
+            const currentPlanData = plans.value.find((p) => p.name === currentPlan.value);
+            planChangeModal.value.showDialog(plan, currentPlanData);
+            return;
+        }
+
         try {
             loading.value = plan.name;
             const result = await subscriptionStore.subscribe(plan.name);
@@ -86,11 +95,13 @@
                     ElMessage.success(t(result.message));
                 }
             } else {
-                ElMessage.error(t(result.error));
+                const errorKey = result.error || 'common.error';
+                ElMessage.error(t(errorKey));
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            ElMessage.error(t('common.error'));
+            const errorKey = error.translationKey || 'common.error';
+            ElMessage.error(t(errorKey));
         } finally {
             loading.value = false;
         }
@@ -187,6 +198,8 @@
         <el-row v-else :gutter="props.compact ? 16 : 32" justify="center" class="pricing-row">
             <el-col :span="24"></el-col>
         </el-row>
+
+        <PlanChangeConfirmationModal ref="planChangeModal" />
     </div>
 </template>
 
@@ -386,12 +399,14 @@
             .pricing-card-highlighted & {
                 background: #ffffff;
                 -webkit-background-clip: text;
+                background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
 
             .pricing-card-dark & {
                 background: #ffffff;
                 -webkit-background-clip: text;
+                background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
         }

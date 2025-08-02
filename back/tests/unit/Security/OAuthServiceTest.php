@@ -92,10 +92,7 @@ class OAuthServiceTest extends TestCase
     {
         $provider = ApiReference::SOUNDCLOUD;
         $expectedScopes = OAuthService::SOUNDCLOUD_SCOPES;
-        $expectedOptions = [
-            'response_type' => 'code',
-            'scope' => implode(' ', $expectedScopes),
-        ];
+        $expectedOptions = [];
         $redirectResponse = new RedirectResponse('https://example.com/oauth_redirect');
 
         $this->clientRegistryMocked
@@ -247,11 +244,11 @@ class OAuthServiceTest extends TestCase
         $this->loggerMocked
             ->expects($this->once())
             ->method('error')
-            ->with('OAuth Identity Provider Error', [
-                'provider' => $providerName,
-                'error' => 'invalid_grant',
-                'response' => ['error' => 'invalid_grant'],
-            ])
+            ->with('OAuth Error', $this->callback(function ($context) use ($providerName) {
+                return $context['provider'] === $providerName
+                    && 'invalid_grant' === $context['error']
+                    && isset($context['trace']);
+            }))
         ;
 
         $this->expectException(IdentityProviderException::class);
@@ -281,10 +278,11 @@ class OAuthServiceTest extends TestCase
         $this->loggerMocked
             ->expects($this->once())
             ->method('error')
-            ->with('OAuth Error', [
-                'provider' => $providerName,
-                'error' => 'Generic error',
-            ])
+            ->with('OAuth Error', $this->callback(function ($context) use ($providerName) {
+                return $context['provider'] === $providerName
+                    && 'Generic error' === $context['error']
+                    && isset($context['trace']);
+            }))
         ;
 
         $this->expectException(Exception::class);

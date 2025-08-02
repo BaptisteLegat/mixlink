@@ -10,6 +10,7 @@
         openCreateSessionModal: {
             type: Function,
             required: true,
+            default: () => {},
         },
     });
 

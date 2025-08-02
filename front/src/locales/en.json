@@ -83,7 +83,16 @@
             "songs_count": "{count} song | {count} songs",
             "view_songs": "View songs",
             "and_more": "and {count} other | and {count} others",
-            "no_playlists": "No exported playlists yet"
+            "no_playlists": "No exported playlists yet",
+            "remaining_playlists": "{remaining}/{total} playlists remaining",
+            "plan_limit_title": "Playlists limited by your plan",
+            "plan_limit_description": "You see {visible} playlists out of {total} total. Upgrade to premium plan to see all your playlists."
+        },
+        "current_plan_features": {
+            "title": "Included Features",
+            "max_participants": "Up to {count} participants per session",
+            "upgrade_title": "Upgrade to premium for more features",
+            "upgrade_description": "Unlock advanced features and increase the number of participants in your sessions."
         }
     },
     "footer": {
@@ -200,6 +209,7 @@
         "cancel": "Cancel",
         "loading": "Loading...",
         "close": "Close",
+        "month": "month",
         "unauthorized": "You are not authorized",
         "confirm": "Confirm",
         "error_fetch_profile": "Error fetching profile.",
@@ -419,7 +429,9 @@
         "info": {
             "name": "Name",
             "code": "Code",
-            "description": "Description"
+            "description": "Description",
+            "max_participants": "Maximum participants",
+            "participants": "participants"
         },
         "participants": {
             "title": "Participants",
@@ -505,6 +517,9 @@
         },
         "get_by_code": {
             "error_session_not_found": "Session not found"
+        },
+        "mercure": {
+            "connection_error": "Real-time connection error"
         }
     },
     "provider": {
@@ -531,7 +546,38 @@
             "error_no_active_subscription": "No active subscription found.",
             "error_plan_not_found": "Requested plan not found.",
             "error_already_subscribed_to_this_plan": "You are already subscribed to this plan.",
-            "error_failed_to_change_subscription": "Failed to change subscription."
+            "error_failed_to_change_subscription": "Failed to change subscription.",
+            "error": "Error changing subscription.",
+            "warning": {
+                "downgrade": "You are about to downgrade your subscription. Some features will be disabled.",
+                "participants_limit": "With the free plan, you can only invite up to 3 participants maximum.",
+                "active_sessions": "Your active sessions with more than 3 participants will be affected.",
+                "playlist_limit": "With the free plan, you can only keep 3 playlists maximum. The oldest ones will be kept.",
+                "free_limitations": "The free plan has limitations. Check the details above."
+            },
+            "blocking": {
+                "title": "Subscription change not possible",
+                "active_session": "You must end your active session before switching to the free plan. Active sessions are not compatible with free plan limitations."
+            },
+            "confirmation": {
+                "title": "Confirm subscription change",
+                "summary": "Change summary",
+                "current": "Current plan",
+                "new": "New plan",
+                "features": "Feature comparison",
+                "features_gained": "Features added",
+                "features_lost": "Features lost",
+                "billing_title": "Billing information",
+                "warnings": "Important warnings",
+                "understand": "I understand the consequences of this subscription change",
+                "confirm": "Confirm change",
+                "billing": {
+                    "cancel_info": "Your subscription will be cancelled. You will continue to enjoy premium features until the end of the paid period.",
+                    "immediate_charge": "The amount for your new plan will be charged immediately, in addition to your current plan.",
+                    "first_subscription": "You will be charged immediately for your first premium subscription.",
+                    "proration": "A prorated credit will be applied for the unused period of your old plan."
+                }
+            }
         }
     },
     "soundcloud": {

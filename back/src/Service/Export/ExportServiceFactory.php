@@ -18,9 +18,6 @@ class ExportServiceFactory
     ) {
     }
 
-    /**
-     * Get the appropriate export service for the given platform.
-     */
     public function create(string $platform): ExportServiceInterface
     {
         return match ($platform) {

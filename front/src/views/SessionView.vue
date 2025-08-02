@@ -77,7 +77,8 @@
             error.value = null;
         } catch (err) {
             console.error('Error loading session:', err);
-            error.value = t('session.error.not_found');
+            const errorMessage = err.translationKey ? t(err.translationKey) : t('session.error.not_found');
+            error.value = errorMessage;
         } finally {
             isLoading.value = false;
         }
@@ -113,6 +114,8 @@
             onMessage: handleMercureMessage,
             onError: (e) => {
                 console.error('Mercure connection error:', e);
+                const errorKey = e.translationKey ? e.translationKey : 'session.mercure.connection_error';
+                ElMessage.error(t(errorKey));
             },
         });
     }
@@ -127,7 +130,8 @@
             await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             await loadParticipants();
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.kick.error');
+            ElMessage.error(errorMessage);
         }
     }
 
@@ -148,7 +152,8 @@
             sessionStore.leaveCurrentSession();
             router.push('/');
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.leave.error');
+            ElMessage.error(errorMessage);
         }
     }
 
@@ -166,7 +171,8 @@
             router.push('/');
         } catch (error) {
             if (error.message) {
-                ElMessage.error(t('session.end.error'));
+                const errorMessage = error.translationKey ? t(error.translationKey) : t('session.end.error');
+                ElMessage.error(errorMessage);
             }
         }
     }
@@ -198,7 +204,8 @@
 
             await loadParticipants();
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.join.error');
+            ElMessage.error(errorMessage);
         }
     }
 

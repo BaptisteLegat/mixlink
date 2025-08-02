@@ -165,8 +165,6 @@ class SpotifyExportService implements ExportServiceInterface
     }
 
     /**
-     * Make an authenticated request with automatic token refresh on 401 errors.
-     *
      * @param array<string, mixed> $options
      *
      * @return array<string, mixed>

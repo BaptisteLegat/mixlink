@@ -17,8 +17,6 @@ class PlaylistExportService
     }
 
     /**
-     * Export a playlist to the specified platform.
-     *
      * @return array{playlist_id: string, playlist_url: string, exported_tracks: int, failed_tracks: int, platform: string}
      */
     public function exportPlaylist(Playlist $playlist, User $user, string $platform): array

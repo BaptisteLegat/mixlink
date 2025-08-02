@@ -41,7 +41,7 @@ export function usePlaylistExportStore() {
             return result;
         } catch (error) {
             console.error('Export failed:', error);
-            exportError.value = error.message || 'playlist.export.error.export_failed';
+            exportError.value = error.translationKey || error.message || 'playlist.export.error.export_failed';
             isExporting.value = false;
             throw error;
         }

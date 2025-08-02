@@ -2,9 +2,6 @@
 
 namespace App\Service\Model;
 
-/**
- * Represents a Spotify track result.
- */
 class SpotifyTrack
 {
     /**

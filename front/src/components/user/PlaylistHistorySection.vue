@@ -10,8 +10,32 @@
     const authStore = useAuthStore();
     const { getProviderIcon, getProviderDisplayName } = useProviderIcons();
 
-    const exportedPlaylists = computed(() => {
+    const allExportedPlaylists = computed(() => {
         return authStore.exportedPlaylists || [];
+    });
+
+    const isFreePlan = computed(() => {
+        return (
+            !authStore.subscription ||
+            !authStore.subscription.isActive ||
+            authStore.subscription.isCanceled ||
+            authStore.subscription.plan.name === 'free'
+        );
+    });
+
+    const exportedPlaylists = computed(() => {
+        const playlists = allExportedPlaylists.value;
+        if (isFreePlan.value) {
+            return playlists.slice(0, 3);
+        }
+        return playlists;
+    });
+
+    const playlistsRemaining = computed(() => {
+        if (!isFreePlan.value) return null;
+        const maxPlaylists = 3;
+        const usedPlaylists = allExportedPlaylists.value.length;
+        return Math.max(0, maxPlaylists - usedPlaylists);
     });
 
     const openPlaylistUrl = (url) => {
@@ -46,7 +70,20 @@
 <template>
     <div class="playlist-history-section">
         <el-divider />
-        <el-text tag="p" class="info-label">{{ t('profile.playlist_history.title') }}</el-text>
+        <div class="section-header">
+            <el-text tag="p" class="info-label">{{ t('profile.playlist_history.title') }}</el-text>
+            <div v-if="isFreePlan" class="plan-info">
+                <el-tag :type="playlistsRemaining > 0 ? 'success' : 'warning'" size="small" class="remaining-playlists">
+                    {{
+                        t('profile.playlist_history.remaining_playlists', {
+                            remaining: playlistsRemaining,
+                            total: 3,
+                            used: exportedPlaylists.length,
+                        })
+                    }}
+                </el-tag>
+            </div>
+        </div>
 
         <div v-if="exportedPlaylists.length > 0" class="playlists-container">
             <div v-for="playlist in exportedPlaylists" :key="playlist.id" class="playlist-item">
@@ -95,6 +132,22 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Message informatif si l'utilisateur a plus de playlists mais est limité par son plan -->
+            <div v-if="isFreePlan && allExportedPlaylists.length > 3" class="plan-limitation-info">
+                <el-alert
+                    :title="t('profile.playlist_history.plan_limit_title')"
+                    type="info"
+                    :description="
+                        t('profile.playlist_history.plan_limit_description', {
+                            visible: 3,
+                            total: allExportedPlaylists.length,
+                        })
+                    "
+                    show-icon
+                    :closable="false"
+                />
+            </div>
         </div>
 
         <div v-else class="no-playlists">
@@ -112,9 +165,27 @@
     .info-label {
         font-size: 1.2rem;
         font-weight: 600;
-        margin-bottom: 16px;
+        margin-bottom: 0;
         display: block;
         color: #6023c0;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .plan-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .remaining-playlists {
+        font-weight: 500;
     }
 
     .playlists-container {
@@ -204,6 +275,11 @@
         display: flex;
         align-items: center;
         gap: 4px;
+    }
+
+    .plan-limitation-info {
+        margin-top: 16px;
+        padding: 0 4px;
     }
 
     .songs-grid {

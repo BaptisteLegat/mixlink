@@ -62,7 +62,8 @@
             }
         } catch (error) {
             console.error('Error disconnecting provider:', error);
-            ElMessage.error(t('profile.providers.disconnect_error'));
+            const errorMessage = error.translationKey ? t(error.translationKey) : t('profile.providers.disconnect_error');
+            ElMessage.error(errorMessage);
         } finally {
             loading.value = false;
             currentProvider.value = null;

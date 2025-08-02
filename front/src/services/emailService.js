@@ -8,7 +8,11 @@ export async function sendContactEmail(formData) {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'contact.form.error_message');
+        const error = new Error('Failed to send contact email');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return await response.json();

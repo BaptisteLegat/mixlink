@@ -221,21 +221,24 @@ class SoundCloudExportService implements ExportServiceInterface
 
     private function isRemixOrCover(string $trackTitle): bool
     {
-        $remixKeywords = [
-            'remix', 'mashup', 'cover', 'vs', 'bootleg', 'edit', 'mix', 'version', 'rework', 'flip', 'dub',
-            'instrumental', 'karaoke', 'acoustic', 'live', 'vip', 'extended', 'radio edit', 'club mix',
+        // Check for remix keywords that are NOT in parentheses/brackets
+        $generalRemixKeywords = [
+            'mashup', 'cover', 'vs', 'version', 'rework', 'flip', 'dub',
+            'instrumental', 'karaoke', 'acoustic', 'live', 'extended', 'radio edit', 'club mix',
         ];
 
-        foreach ($remixKeywords as $keyword) {
+        foreach ($generalRemixKeywords as $keyword) {
             if (str_contains($trackTitle, $keyword)) {
                 return true;
             }
         }
 
+        // Check for specific remix keywords ONLY in parentheses
         if (preg_match('/\([^)]*(remix|edit|mix|vip|bootleg)[^)]*\)/i', $trackTitle)) {
             return true;
         }
 
+        // Check for specific remix keywords ONLY in brackets
         if (preg_match('/\[[^\]]*(remix|edit|mix|vip|bootleg)[^\]]*\]/i', $trackTitle)) {
             return true;
         }

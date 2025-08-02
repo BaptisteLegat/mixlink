@@ -83,7 +83,16 @@
             "songs_count": "{count} chanson | {count} chansons",
             "view_songs": "Voir les chansons",
             "and_more": "et {count} autre | et {count} autres",
-            "no_playlists": "Aucune playlist exportée pour le moment"
+            "no_playlists": "Aucune playlist exportée pour le moment",
+            "remaining_playlists": "{remaining}/{total} playlists restantes",
+            "plan_limit_title": "Playlists limitées par votre plan",
+            "plan_limit_description": "Vous voyez {visible} playlists sur {total} au total. Passez au plan premium pour voir toutes vos playlists."
+        },
+        "current_plan_features": {
+            "title": "Fonctionnalités incluses",
+            "max_participants": "Jusqu'à {count} participants par session",
+            "upgrade_title": "Passez au premium pour plus de fonctionnalités",
+            "upgrade_description": "Débloquez des fonctionnalités avancées et augmentez le nombre de participants à vos sessions."
         }
     },
     "footer": {
@@ -201,6 +210,7 @@
         "loading": "Chargement...",
         "close": "Fermer",
         "confirm": "Confirmer",
+        "month": "mois",
         "unauthorized": "Vous n'êtes pas autorisé",
         "error": "Une erreur est survenue, veuillez réessayer ultérieurement",
         "form": {
@@ -511,6 +521,9 @@
         },
         "get_by_code": {
             "error_session_not_found": "Session introuvable"
+        },
+        "mercure": {
+            "connection_error": "Erreur de connexion temps réel"
         }
     },
     "provider": {
@@ -537,7 +550,38 @@
             "error_no_active_subscription": "Aucun abonnement actif trouvé.",
             "error_plan_not_found": "Le plan demandé est introuvable.",
             "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
-            "error_failed_to_change_subscription": "Échec du changement d'abonnement."
+            "error_failed_to_change_subscription": "Échec du changement d'abonnement.",
+            "error": "Erreur lors du changement d'abonnement.",
+            "warning": {
+                "downgrade": "Vous allez rétrograder votre abonnement. Certaines fonctionnalités seront désactivées.",
+                "participants_limit": "Avec le plan gratuit, vous ne pourrez plus inviter que 3 participants maximum.",
+                "active_sessions": "Vos sessions actives avec plus de 3 participants seront affectées.",
+                "playlist_limit": "Avec le plan gratuit, vous ne pourrez conserver que 3 playlists maximum. Les plus anciennes seront conservées.",
+                "free_limitations": "Le plan gratuit a des limitations. Consultez les détails ci-dessus."
+            },
+            "blocking": {
+                "title": "Changement d'abonnement impossible",
+                "active_session": "Vous devez terminer votre session active avant de pouvoir passer au plan gratuit. Les sessions actives ne sont pas compatibles avec les limitations du plan gratuit."
+            },
+            "confirmation": {
+                "title": "Confirmer le changement d'abonnement",
+                "summary": "Résumé du changement",
+                "current": "Plan actuel",
+                "new": "Nouveau plan",
+                "features": "Comparaison des fonctionnalités",
+                "features_gained": "Fonctionnalités ajoutées",
+                "features_lost": "Fonctionnalités perdues",
+                "billing_title": "Informations de facturation",
+                "warnings": "Avertissements importants",
+                "understand": "Je comprends les conséquences de ce changement d'abonnement",
+                "confirm": "Confirmer le changement",
+                "billing": {
+                    "cancel_info": "Votre abonnement sera annulé. Vous continuerez à bénéficier des fonctionnalités premium jusqu'à la fin de la période payée.",
+                    "immediate_charge": "Le montant de votre nouveau plan sera facturé immédiatement, en plus de votre plan actuel.",
+                    "first_subscription": "Vous serez facturé immédiatement pour votre premier abonnement premium.",
+                    "proration": "Un crédit au prorata sera appliqué pour la période non utilisée de votre ancien plan."
+                }
+            }
         }
     },
     "soundcloud": {

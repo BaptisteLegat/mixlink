@@ -34,7 +34,8 @@
                 return;
             }
 
-            ElMessage.error(t('playlist.remove_song.error'));
+            const errorMessage = err.translationKey ? t(err.translationKey) : t('playlist.remove_song.error');
+            ElMessage.error(errorMessage);
         }
     }
 </script>

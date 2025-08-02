@@ -76,7 +76,7 @@
         <el-row align="middle">
             <el-col :span="8">
                 <el-row>
-                    <el-link underline="never" href="/">
+                    <el-link underline="never" @click="$router.push('/')" style="cursor: pointer">
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
                         <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" style="width: 40px; height: 40px" fit="contain" />
                         <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>

@@ -114,7 +114,8 @@
                             validationErrors.value[field] = t(messageKey);
                         });
                     } else {
-                        ElMessage.error(t('session.create.error'));
+                        const errorMessage = error.translationKey ? t(error.translationKey) : t('session.create.error');
+                        ElMessage.error(errorMessage);
                     }
                 } finally {
                     loading.value = false;

@@ -57,7 +57,8 @@
                 router.push(`/session/${form.code}`);
                 handleClose();
             } catch (err) {
-                ElMessage.error(t(err.message) || t('session.join.error'));
+                const errorMessage = err.translationKey ? t(err.translationKey) : t('session.join.error');
+                ElMessage.error(errorMessage);
                 return;
             }
         } catch (error) {

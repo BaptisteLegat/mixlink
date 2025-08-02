@@ -7,7 +7,11 @@ export async function subscribeToPlan(planName) {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'subscription.start.error_unable_to_create_checkout_session');
+        const error = new Error('Failed to subscribe to plan');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return await response.json();
@@ -20,7 +24,11 @@ export async function cancelSubscription() {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'subscription.cancel.error_failed_to_cancel_subscription');
+        const error = new Error('Failed to cancel subscription');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return await response.json();
@@ -33,7 +41,11 @@ export async function changeSubscription(planName) {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'subscription.change.error_failed_to_change_subscription');
+        const error = new Error('Failed to change subscription');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return await response.json();
@@ -46,7 +58,11 @@ export async function getSubscriptionDetails() {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'subscription.error_failed_to_get_details');
+        const error = new Error('Failed to get subscription details');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return await response.json();

@@ -19,7 +19,12 @@ export const useMercureStore = defineStore('mercure', () => {
                 method: 'GET',
             });
             if (!tokenResponse.ok) {
-                error.value = await tokenResponse.text();
+                const errorData = await tokenResponse.json();
+                const mercureError = new Error('Mercure connection failed');
+                if (errorData.error) {
+                    mercureError.translationKey = errorData.error;
+                }
+                error.value = mercureError;
                 isConnected.value = false;
 
                 return;

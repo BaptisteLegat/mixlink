@@ -38,7 +38,8 @@
             }
         } catch (error) {
             console.error('Unsubscribe error:', error);
-            ElMessage.error(t('profile.unsubscribe.error'));
+            const errorMessage = error.translationKey ? t(error.translationKey) : t('profile.unsubscribe.error');
+            ElMessage.error(errorMessage);
         } finally {
             loading.value = false;
         }

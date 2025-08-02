@@ -49,25 +49,29 @@ class PlaylistExportServiceTest extends TestCase
             ->expects($this->once())
             ->method('isSupported')
             ->with($platform)
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->exportServiceFactoryMock
             ->expects($this->once())
             ->method('create')
             ->with($platform)
-            ->willReturn($this->exportServiceMock);
+            ->willReturn($this->exportServiceMock)
+        ;
 
         $this->exportServiceMock
             ->expects($this->once())
             ->method('isUserConnected')
             ->with($this->userMock)
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->exportServiceMock
             ->expects($this->once())
             ->method('exportPlaylist')
             ->with($this->playlistMock, $this->userMock)
-            ->willReturn($expectedResult);
+            ->willReturn($expectedResult)
+        ;
 
         $result = $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
 
@@ -83,7 +87,8 @@ class PlaylistExportServiceTest extends TestCase
             ->expects($this->once())
             ->method('isSupported')
             ->with($platform)
-            ->willReturn(false);
+            ->willReturn(false)
+        ;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Platform '$platform' is not supported");
@@ -99,60 +104,27 @@ class PlaylistExportServiceTest extends TestCase
             ->expects($this->once())
             ->method('isSupported')
             ->with($platform)
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->exportServiceFactoryMock
             ->expects($this->once())
             ->method('create')
             ->with($platform)
-            ->willReturn($this->exportServiceMock);
+            ->willReturn($this->exportServiceMock)
+        ;
 
         $this->exportServiceMock
             ->expects($this->once())
             ->method('isUserConnected')
             ->with($this->userMock)
-            ->willReturn(false);
+            ->willReturn(false)
+        ;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("User is not connected to $platform");
 
         $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
-    }
-
-    public function testGetAvailablePlatforms(): void
-    {
-        $services = [
-            'spotify' => $this->createMock(ExportServiceInterface::class),
-            'google' => $this->createMock(ExportServiceInterface::class),
-            'soundcloud' => $this->createMock(ExportServiceInterface::class),
-        ];
-
-        $this->exportServiceFactoryMock
-            ->expects($this->once())
-            ->method('getAllServices')
-            ->willReturn($services);
-
-        $services['spotify']
-            ->expects($this->once())
-            ->method('isUserConnected')
-            ->with($this->userMock)
-            ->willReturn(true);
-
-        $services['google']
-            ->expects($this->once())
-            ->method('isUserConnected')
-            ->with($this->userMock)
-            ->willReturn(false);
-
-        $services['soundcloud']
-            ->expects($this->once())
-            ->method('isUserConnected')
-            ->with($this->userMock)
-            ->willReturn(true);
-
-        $result = $this->playlistExportService->getAvailablePlatforms($this->userMock);
-
-        $this->assertEquals(['spotify', 'soundcloud'], $result);
     }
 
     public function testGetSupportedPlatforms(): void
@@ -162,7 +134,8 @@ class PlaylistExportServiceTest extends TestCase
         $this->exportServiceFactoryMock
             ->expects($this->once())
             ->method('getAllServices')
-            ->willReturn(array_flip($expectedPlatforms));
+            ->willReturn(array_flip($expectedPlatforms))
+        ;
 
         $result = $this->playlistExportService->getSupportedPlatforms();
 

@@ -127,12 +127,11 @@ class GoogleExportService implements ExportServiceInterface
                     $this->addVideoToPlaylist($provider, $playlistId, $videoId);
                     ++$exportedTracks;
 
-                    // Délai entre les ajouts pour éviter le rate limiting
+                    // To avoid hitting YouTube API rate limits, we add a delay after each successful track addition
                     if ($exportedTracks < $songs->count()) {
-                        usleep(500000); // 0.5 seconde de délai
+                        usleep(500000); // 0.5 seconds delay
                     }
                 } catch (RuntimeException $e) {
-                    // Log the specific error for debugging
                     $this->logger->error("YouTube: Failed to add video $videoId for '$title' by '$artists': ".$e->getMessage());
                     ++$failedTracks;
                 }
@@ -179,7 +178,7 @@ class GoogleExportService implements ExportServiceInterface
     private function addVideoToPlaylist(Provider $provider, string $playlistId, string $videoId): void
     {
         $maxRetries = 3;
-        $retryDelay = 1; // 1 seconde entre chaque retry
+        $retryDelay = 1; // 1 second between retries
 
         for ($attempt = 1; $attempt <= $maxRetries; ++$attempt) {
             try {
@@ -203,13 +202,12 @@ class GoogleExportService implements ExportServiceInterface
                     ]
                 );
 
-                // Si on arrive ici, l'ajout a réussi
                 return;
             } catch (RuntimeException $e) {
                 // Log the original error message from YouTube API
                 $this->logger->error("YouTube API Error (attempt $attempt/$maxRetries): ".$e->getMessage());
 
-                // Si c'est la dernière tentative, on relance l'exception
+                // If this is the last attempt, rethrow the exception
                 if ($attempt === $maxRetries) {
                     // Handle specific YouTube API errors
                     if (str_contains($e->getMessage(), '409')) {
@@ -225,7 +223,7 @@ class GoogleExportService implements ExportServiceInterface
 
                 sleep($retryDelay);
 
-                // Augmenter le délai pour le prochain retry (backoff exponentiel)
+                // Increase the delay for the next retry (exponential backoff)
                 $retryDelay *= 2;
             }
         }
@@ -268,7 +266,6 @@ class GoogleExportService implements ExportServiceInterface
                 $errorMessage = is_string($encodedErrors) ? $encodedErrors : 'Unknown error';
             }
 
-            // Gestion spécifique des erreurs HTTP
             if (Response::HTTP_FORBIDDEN === $response->getStatusCode()) {
                 throw new RuntimeException('YouTube API access denied (403): '.$errorMessage);
             }
@@ -285,7 +282,7 @@ class GoogleExportService implements ExportServiceInterface
         } catch (RuntimeException $e) {
             // If it's a 401 error, try to refresh the token and retry once
             if (str_contains($e->getMessage(), '401')) {
-                // Vérifier si on a un refresh token disponible
+                // Check if we have a refresh token available
                 if (!$this->tokenManager->hasRefreshToken($provider)) {
                     throw new RuntimeException('Token expired and no refresh token available. Please reconnect to Google to get a new token.');
                 }
