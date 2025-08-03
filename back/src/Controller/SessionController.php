@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Plan;
 use App\Entity\Session;
 use App\Entity\User;
 use App\Provider\ProviderManager;
@@ -21,8 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/session', name: 'api_session_')]
+#[OA\Tag(name: 'Session', description: 'Session endpoints')]
 class SessionController extends AbstractController
 {
     public function __construct(
@@ -32,6 +35,7 @@ class SessionController extends AbstractController
         private SerializerInterface $serializer,
         private LoggerInterface $logger,
         private ProviderManager $providerManager,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -46,9 +50,10 @@ class SessionController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 type: 'object',
-                required: ['name'],
+                required: ['name', 'playlistName'],
                 properties: [
                     new OA\Property(property: 'name', type: 'string', description: 'Session name', example: 'Ma session collaborative'),
+                    new OA\Property(property: 'playlistName', type: 'string', description: 'Playlist name (required)', example: 'Ma playlist collaborative'),
                     new OA\Property(property: 'description', type: 'string', nullable: true, description: 'Session description', example: 'Une session pour créer une playlist ensemble'),
                     new OA\Property(property: 'maxParticipants', type: 'integer', description: 'Maximum participants', example: 10, minimum: 1, maximum: 10),
                 ]
@@ -90,11 +95,43 @@ class SessionController extends AbstractController
             /** @var User $user */
             $user = $this->providerManager->findByAccessToken($accessToken);
 
+            $plan = $user->getSubscription()?->getPlan();
+            if (null === $plan) {
+                return new JsonResponse([
+                    'error' => 'session.create.no_subscription',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            if (Plan::FREE === $plan->getName()) {
+                $playlistsCount = count($user->getPlaylists());
+                if ($playlistsCount >= $plan->getMaxPlaylists()) {
+                    return new JsonResponse([
+                        'error' => 'session.create.error_max_playlists_reached',
+                    ], Response::HTTP_FORBIDDEN);
+                }
+            }
+
+            /** @var CreateSessionRequest $createSessionRequest */
             $createSessionRequest = $this->serializer->deserialize(
                 $request->getContent(),
                 CreateSessionRequest::class,
                 'json'
             );
+
+            $errors = $this->validator->validate($createSessionRequest);
+            if (count($errors) > 0) {
+                $errorsArray = [];
+                foreach ($errors as $error) {
+                    $errorsArray[] = [
+                        'propertyPath' => $error->getPropertyPath(),
+                        'message' => $error->getMessage(),
+                    ];
+                }
+
+                return new JsonResponse([
+                    'errors' => $errorsArray,
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
             $session = $this->sessionManager->createSession($user, $createSessionRequest);
             $sessionModel = $this->sessionMapper->mapModel($session);
@@ -106,7 +143,7 @@ class SessionController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return new JsonResponse(['error' => 'Unable to create session'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'session.create.error'], Response::HTTP_BAD_REQUEST);
         }
     }
 

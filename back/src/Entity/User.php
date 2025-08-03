@@ -12,12 +12,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
 #[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: false)]
-class User implements BlameableInterface, TimestampableInterface
+class User implements BlameableInterface, TimestampableInterface, UserInterface
 {
     use BlameableEntity;
     use TimestampableEntity;
@@ -62,10 +63,17 @@ class User implements BlameableInterface, TimestampableInterface
     #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'host', cascade: ['persist', 'remove'])]
     private Collection $sessions;
 
+    /**
+     * @var Collection|Playlist[]
+     */
+    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Collection $playlists;
+
     public function __construct()
     {
         $this->providers = new ArrayCollection();
         $this->sessions = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -182,7 +190,6 @@ class User implements BlameableInterface, TimestampableInterface
 
     public function setSubscription(?Subscription $subscription): self
     {
-        // set the owning side of the relation if necessary
         if ($subscription && $subscription->getUser() !== $this) {
             $subscription->setUser($this);
         }
@@ -229,8 +236,43 @@ class User implements BlameableInterface, TimestampableInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Playlist>
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->removeElement($playlist)) {
+            if ($playlist->getUser() === $this) {
+                $playlist->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function getUserIdentifier(): string
     {
         return $this->id->toRfc4122();
+    }
+
+    public function eraseCredentials(): void
+    {
+        // This method is required by UserInterface but is not necessary
+        // because we don't use local passwords
     }
 }

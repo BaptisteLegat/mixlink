@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
 use App\Security\OAuthUserData;
+use App\Security\Provider\SoundCloudUserData;
 use App\Subscription\SubscriptionManager;
 use App\User\UserManager;
 use App\User\UserMapper;
@@ -20,7 +21,6 @@ use Exception;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -463,7 +463,7 @@ class UserManagerTest extends TestCase
         $provider->setUser($user);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+        $this->expectExceptionMessage('The user has not only a SoundCloud provider');
 
         $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
     }
@@ -479,14 +479,14 @@ class UserManagerTest extends TestCase
         $provider2->setUser($user);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('profile.email.not_soundcloud_only');
+        $this->expectExceptionMessage('The user has not only a SoundCloud provider');
 
         $this->userManager->updateEmailForSoundCloudUser($user, 'test@email.com');
     }
 
     public function testCreateSoundCloudUserProviderNotFound(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_123');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 
@@ -534,7 +534,7 @@ class UserManagerTest extends TestCase
 
     public function testCreateSoundCloudUserProviderFoundButUserNull(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_456');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 
@@ -585,7 +585,7 @@ class UserManagerTest extends TestCase
 
     public function testCreateSoundCloudUserProviderSoftDeletedEmailNullThrows(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_789');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 
@@ -614,7 +614,7 @@ class UserManagerTest extends TestCase
 
     public function testCreateSoundCloudUserProviderSoftDeletedEmailValid(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_999');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 
@@ -732,7 +732,7 @@ class UserManagerTest extends TestCase
 
     public function testCreateReactivatesSoftDeletedProvider(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_softdel');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 
@@ -794,7 +794,7 @@ class UserManagerTest extends TestCase
 
     public function testCreateSoundCloudUserProviderNotSoftDeleted(): void
     {
-        $soundcloud = $this->createMock(SoundCloudResourceOwner::class);
+        $soundcloud = $this->createMock(SoundCloudUserData::class);
         $soundcloud->method('getId')->willReturn('sc_321');
         $oAuthUserData = new OAuthUserData($soundcloud, 'access_token');
 

@@ -20,7 +20,7 @@ class AuthenticationControllerTest extends WebTestCase
 
     private const GOOGLE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     private const SPOTIFY_URL = 'https://accounts.spotify.com/authorize';
-    private const SOUNDCLOUD_URL = 'https://api.soundcloud.com/connect';
+    private const SOUNDCLOUD_URL = 'https://soundcloud.com/connect';
 
     public static function setUpBeforeClass(): void
     {

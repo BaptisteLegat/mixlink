@@ -76,7 +76,7 @@
         <el-row align="middle">
             <el-col :span="8">
                 <el-row>
-                    <el-link :underline="false" href="/">
+                    <el-link underline="never" @click="$router.push('/')" style="cursor: pointer">
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
                         <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" style="width: 40px; height: 40px" fit="contain" />
                         <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>
@@ -94,7 +94,7 @@
                                     <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'"> Français </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
-                            <el-link type="primary" :underline="false">
+                            <el-link underline="never" type="primary">
                                 <TranslateIcon style="width: 20px; height: 20px" />
                             </el-link>
                         </el-dropdown>

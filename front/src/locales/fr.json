@@ -6,21 +6,21 @@
         "dark_mode": "Mode sombre",
         "light_mode": "Mode clair",
         "create_session": "Créer une session",
-        "join_session": "Rejoindre la session",
-        "join_current_session": "Rejoindre la session en cours"
+        "join_session": "Rejoindre une session",
+        "join_current_session": "Rejoindre la session actuelle"
     },
     "profile": {
-        "title": "Mon Profil",
-        "unknown_user": "Utilisateur Inconnu",
+        "title": "Mon profil",
+        "unknown_user": "Utilisateur inconnu",
         "account_info": "Informations du compte",
         "id": "Identifiant",
         "email": "Email",
         "first_name": "Prénom",
         "last_name": "Nom",
-        "unknown": "Non renseigné",
+        "unknown": "Non spécifié",
         "role": "Rôle",
         "subscription": "Abonnement",
-        "plan": "Formule",
+        "plan": "Plan",
         "start_date": "Date de début",
         "end_date": "Date de fin",
         "status": "Statut",
@@ -38,7 +38,7 @@
         "choose_subscription": "Choisir un abonnement",
         "current_plan": "Plan actuel",
         "danger_zone": {
-            "title": "Zone de danger",
+            "title": "Zone dangereuse",
             "unsubscribe_title": "Se désabonner",
             "unsubscribe_description": "Vous perdrez l'accès à toutes les fonctionnalités premium."
         },
@@ -47,17 +47,17 @@
             "title": "Se désabonner",
             "warning_title": "Attention",
             "warning_message": "Vous êtes sur le point de vous désabonner. Cette action est irréversible et vous perdrez tous les avantages de votre plan actuel.",
-            "confirmation_message": "Pour confirmer que vous souhaitez vous désabonner du plan {plan}, veuillez saisir le nom du plan ci-dessous.",
+            "confirmation_message": "Pour confirmer que vous voulez vous désabonner du plan {plan}, veuillez saisir le nom du plan ci-dessous.",
             "type_to_confirm": "Tapez \"{plan}\" pour confirmer",
             "confirm": "Je me désabonne",
-            "success": "Vous avez été désabonné avec succès",
-            "error": "Une erreur s'est produite lors de la désabonnement",
+            "success": "Vous vous êtes désabonné avec succès",
+            "error": "Une erreur s'est produite lors du désabonnement",
             "text_mismatch": "Le texte saisi ne correspond pas au nom du plan"
         },
         "delete_account": {
             "button": "Supprimer mon compte",
             "title": "Supprimer mon compte",
-            "warning_message": "Vous êtes sur le point de supprimer votre compte. Cette action est DÉFINITIVE et irréversible. Toutes vos données seront supprimées de notre système.",
+            "warning_message": "Vous êtes sur le point de supprimer votre compte. Cette action est PERMANENTE et irréversible. Toutes vos données seront supprimées de notre système.",
             "confirm": "Je confirme la suppression",
             "success": "Votre compte a été supprimé avec succès",
             "error": "Une erreur s'est produite lors de la suppression du compte"
@@ -69,9 +69,30 @@
             "disconnect_success": "Le service a été déconnecté avec succès",
             "disconnect_error": "Une erreur s'est produite lors de la déconnexion du service",
             "no_providers": "Aucun service connecté",
-            "disconnect_main_title": "Attention: Service d'authentification principal",
-            "disconnect_main_warning": "Ce service est utilisé pour vous connecter à mixlink. Si vous le déconnectez, vous serez automatiquement déconnecté de votre compte mixlink.",
+            "disconnect_main_title": "Attention : Service d'authentification principal",
+            "disconnect_main_warning": "Ce service est utilisé pour se connecter à mixlink. Si vous le déconnectez, vous serez automatiquement déconnecté de votre compte mixlink.",
             "disconnect_main_success": "Service déconnecté. Vous avez été déconnecté de votre compte."
+        },
+        "playlist_history": {
+            "title": "Historique des playlists",
+            "description": "Retrouvez toutes vos playlists exportées depuis mixlink.",
+            "default_name": "Playlist sans nom",
+            "created_on": "Créée le",
+            "updated_on": "Modifiée le",
+            "open_playlist": "Ouvrir",
+            "songs_count": "{count} chanson | {count} chansons",
+            "view_songs": "Voir les chansons",
+            "and_more": "et {count} autre | et {count} autres",
+            "no_playlists": "Aucune playlist exportée pour le moment",
+            "remaining_playlists": "{remaining}/{total} playlists restantes",
+            "plan_limit_title": "Playlists limitées par votre plan",
+            "plan_limit_description": "Vous voyez {visible} playlists sur {total} au total. Passez au plan premium pour voir toutes vos playlists."
+        },
+        "current_plan_features": {
+            "title": "Fonctionnalités incluses",
+            "max_participants": "Jusqu'à {count} participants par session",
+            "upgrade_title": "Passez au premium pour plus de fonctionnalités",
+            "upgrade_description": "Débloquez des fonctionnalités avancées et augmentez le nombre de participants à vos sessions."
         }
     },
     "footer": {
@@ -82,80 +103,80 @@
         "faq": "FAQ"
     },
     "home": {
-        "title_1": "Unifiez Vos",
+        "title_1": "Unifiez vos",
         "title_2": "Playlists",
         "title_3": "Musicales",
-        "subtitle": "Créez des playlists collaboratives entre différentes plateformes de streaming en quelques clics. Plus besoin de changement d'application ou d'inscriptions.",
+        "subtitle": "Créez des playlists collaboratives entre différentes plateformes de streaming en quelques clics. Pas besoin de changer d'application ou de créer des comptes.",
         "start_free": "Commencer gratuitement",
         "view_demo": "Voir la démo",
-        "how_it_works": "Comment ça fonctionne",
+        "how_it_works": "Comment ça marche",
         "features": {
             "title": "Fonctionnalités",
             "subtitle": "Découvrez ce qui rend mixlink unique",
             "feature1": {
-                "title": "Création Multi-Plateformes",
+                "title": "Création multi-plateformes",
                 "description": "Créez des playlists qui intègrent des morceaux de différentes plateformes de streaming en un seul endroit."
             },
             "feature2": {
-                "title": "Partage Facile",
+                "title": "Partage facile",
                 "description": "Partagez un simple lien avec vos amis pour qu'ils puissent contribuer à votre playlist."
             },
             "feature3": {
-                "title": "Ajout via URL",
+                "title": "Ajout par URL",
                 "description": "Ajoutez des morceaux en collant simplement l'URL ou en recherchant par nom et artiste."
             },
             "feature4": {
-                "title": "Historique Complet",
-                "description": "Consultez l'historique complet de toutes vos playlists créées."
+                "title": "Historique complet",
+                "description": "Consultez l'historique complet de toutes les playlists créées."
             }
         },
         "plans": {
             "title": "Plans d'abonnement",
-            "subtitle": "Choisissez le plan qui correspond le mieux à vos besoins",
+            "subtitle": "Choisissez le plan qui vous convient le mieux",
             "per_month": "/mois",
             "popular": "Populaire",
             "current_plan": "Vous êtes actuellement sur le plan",
             "since": "depuis le ",
-            "change_plan": "Vous souhaitez changer de plan ? Cliquez sur le bouton ci-dessous.",
+            "change_plan": "Vous voulez changer de plan ? Cliquez sur le bouton ci-dessous.",
             "change_plan_cta": "Changer de plan",
             "free": {
                 "title": "Gratuit",
-                "feature1": "Créez jusqu'à 5 playlists",
-                "feature2": "Ajout jusqu'à 50 morceaux par playlist",
-                "feature3": "Maximum 3 participants par session",
-                "cta": "Commencer, gratuitement"
+                "feature1": "Créez jusqu'à 3 playlists",
+                "feature2": "Ajoutez jusqu'à 30 morceaux par playlist",
+                "feature3": "Maximum de 3 participants par session",
+                "cta": "Commencer gratuitement"
             },
             "premium": {
                 "title": "Premium",
                 "feature1": "Playlists illimitées",
                 "feature2": "Nombre illimité de morceaux",
                 "feature3": "Historique complet",
-                "feature4": "Maximum 10 participants par session",
-                "cta": "Obtenir premium"
+                "feature4": "Maximum de 10 participants par session",
+                "cta": "Obtenir Premium"
             },
             "enterprise": {
                 "title": "Entreprise",
                 "price": "Sur mesure",
-                "feature1": "Toutes les fonctionnalités premium",
-                "feature2": "Solutions personnalisables",
-                "cta": "Contactez-nous"
+                "feature1": "Tout ce qui est inclus dans Premium",
+                "feature2": "Personnalisation de la marque",
+                "cta": "Nous contacter"
             }
         },
         "tabs": {
             "one": {
-                "title": "Créez une playlist",
+                "title": "Créer une playlist",
                 "description": "Créez une nouvelle session mixlink et configurez les paramètres de votre playlist."
             },
             "two": {
-                "title": "Partagez le lien",
-                "description": "Envoyez le lien de votre session à vos amis ou collègues pour qu'ils puissent contribuer."
+                "title": "Partager le lien",
+                "description": "Envoyez le lien de votre session à des amis ou collègues pour qu'ils puissent contribuer."
             },
             "three": {
                 "title": "Ajoutez des morceaux",
                 "description": "Vous et vos invités ajoutez des morceaux via URL ou recherche, quelle que soit la plateforme."
             },
             "four": {
-                "title": "Profitez de votre playlist",
+                "title": "Profiter de votre playlist",
                 "description": "Validez les morceaux et exportez la playlist vers votre plateforme de streaming préférée."
             },
             "create": "Créer",
@@ -164,18 +185,20 @@
             "enjoy": "Profiter"
         },
         "cta": {
-            "title": "Prêt à révolutionner votre façon de créer des playlists ?",
-            "subtitle": "Rejoignez des milliers d'utilisateurs qui créent déjà des playlists collaboratives multi-plateformes.",
+            "title": "Prêt à révolutionner votre expérience musicale ?",
+            "subtitle": "Rejoignez-nous et commencez à créer des playlists collaboratives dès aujourd'hui.",
             "button": "Commencer maintenant"
         }
     },
     "button": {
         "submit": "Soumettre",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "loading": "Chargement...",
+        "close": "Fermer"
     },
     "login": {
         "title": "Se connecter",
-        "welcome_message": "Bienvenue sur mixlink ! Connectez-vous pour créer et partager des playlists entre différentes plateformes",
+        "welcome_message": "Bienvenue sur mixlink ! Connectez-vous pour créer et partager des playlists sur différentes plateformes",
         "connect_with_google": "Se connecter avec Google",
         "connect_with_spotify": "Se connecter avec Spotify",
         "connect_with_soundcloud": "Se connecter avec SoundCloud",
@@ -186,6 +209,8 @@
         "cancel": "Annuler",
         "loading": "Chargement...",
         "close": "Fermer",
+        "confirm": "Confirmer",
+        "month": "mois",
         "unauthorized": "Vous n'êtes pas autorisé",
         "error": "Une erreur est survenue, veuillez réessayer ultérieurement",
         "form": {
@@ -205,67 +230,67 @@
     },
     "terms": {
         "title": "Conditions d'utilisation",
-        "last_updated": "Dernière mise à jour: {date}",
+        "last_updated": "Dernière mise à jour : {date}",
         "section1": {
             "title": "Acceptation des conditions",
-            "content": "En utilisant le service mixlink, vous acceptez de respecter les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service. Nous nous réservons le droit de modifier ces conditions à tout moment, et il est de votre responsabilité de les consulter régulièrement pour rester informé des mises à jour."
+            "content": "En utilisant le service mixlink, vous acceptez de respecter ces conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service. Nous nous réservons le droit de modifier ces conditions à tout moment, et il est de votre responsabilité de les consulter régulièrement pour rester informé des mises à jour."
         },
         "section2": {
             "title": "Description du service",
-            "content": "mixlink est une plateforme qui permet aux utilisateurs de créer des playlists collaboratives entre différentes plateformes de streaming musical. Notre service vous permet de partager et de contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes sur d'autres plateformes."
+            "content": "mixlink est une plateforme qui permet aux utilisateurs de créer des playlists collaboratives sur différentes plateformes de streaming musical. Notre service vous permet de partager et de contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes sur d'autres plateformes."
         },
         "section3": {
-            "title": "Authentification et comptes utilisateurs",
-            "content": "Lors de votre inscription, vous devez fournir des informations exactes et les maintenir à jour. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités qui se produisent sous votre compte. Vous devez nous informer immédiatement de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.",
-            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via les plateformes de streaming musical que vous utilisez déjà (Spotify, Google, Apple Music, etc.). En utilisant cette méthode de connexion, vous autorisez mixlink à accéder à certaines informations de votre profil sur ces plateformes, conformément à leurs politiques de confidentialité. Vous êtes responsable de toutes les activités qui se produisent sous votre compte et devez nous informer immédiatement de toute utilisation non autorisée ou violation de sécurité."
+            "title": "Authentification et comptes utilisateur",
+            "content": "Lors de l'inscription, vous devez fournir des informations exactes et les maintenir à jour. Vous êtes responsable de maintenir la confidentialité de vos identifiants et de toutes les activités qui se produisent sous votre compte. Vous devez nous notifier immédiatement de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.",
+            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via les plateformes de streaming musical que vous utilisez déjà (Spotify, Google, Soundcloud, etc.). En utilisant cette méthode de connexion, vous autorisez mixlink à accéder à certaines informations de votre profil sur ces plateformes, conformément à leurs politiques de confidentialité. Vous êtes responsable de toutes les activités qui se produisent sous votre compte et devez nous notifier immédiatement de toute utilisation non autorisée ou violation de sécurité."
         },
         "section4": {
-            "title": "Droits d'auteur et propriété intellectuelle",
-            "content": "mixlink respecte les droits d'auteur et s'attend à ce que ses utilisateurs fassent de même. Notre service permet uniquement de référencer du contenu hébergé sur des plateformes de streaming légales, et nous n'hébergeons pas directement de fichiers audio protégés par des droits d'auteur. Si vous pensez que votre travail a été utilisé d'une manière qui constitue une violation de droit d'auteur, veuillez nous contacter."
+            "title": "Copyright et propriété intellectuelle",
+            "content": "mixlink respecte les droits d'auteur et s'attend à ce que ses utilisateurs en fassent de même. Notre service ne permet que de référencer du contenu hébergé sur des plateformes de streaming légales, et nous n'hébergeons pas directement de fichiers audio protégés par des droits d'auteur. Si vous pensez que votre travail a été utilisé d'une manière qui constitue une violation des droits d'auteur, veuillez nous contacter."
         },
         "section5": {
             "title": "Limitations de responsabilité",
-            "content": "mixlink fournit son service 'tel quel' et décline toute responsabilité quant à son exactitude, sa disponibilité ou sa fiabilité. Nous ne sommes pas responsables des interruptions de service dues à des problèmes techniques, des opérations de maintenance ou à des facteurs échappant à notre contrôle raisonnable."
+            "content": "mixlink fournit son service 'tel quel' et décline toute responsabilité quant à son exactitude, disponibilité ou fiabilité. Nous ne sommes pas responsables des interruptions de service dues à des problèmes techniques, des opérations de maintenance ou des facteurs hors de notre contrôle raisonnable."
         },
         "section6": {
             "title": "Résiliation",
-            "content": "Nous nous réservons le droit de suspendre ou de mettre fin à votre accès au service, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris, sans limitation, si vous enfreignez les présentes conditions d'utilisation."
+            "content": "Nous nous réservons le droit de suspendre ou de résilier votre accès au service, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris, sans limitation, si vous violez ces conditions d'utilisation."
         }
     },
     "privacy": {
         "title": "Politique de confidentialité",
-        "last_updated": "Dernière mise à jour: {date}",
+        "last_updated": "Dernière mise à jour : {date}",
         "section1": {
-            "title": "Collecte des informations",
-            "content": "Nous collectons des informations lorsque vous vous inscrivez sur notre site, vous connectez à votre compte, créez des playlists ou partagez du contenu. Les informations collectées incluent votre nom, adresse e-mail, et éventuellement vos préférences musicales et historique d'utilisation de l'application.",
-            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via vos plateformes de streaming musical préférées comme Spotify, Google, Apple Music, etc. Lorsque vous vous connectez, nous recevons certaines informations de ces services, notamment votre nom, adresse e-mail, photo de profil et identifiant unique. Nous collectons également des informations sur vos préférences musicales et votre historique d'utilisation de notre application pour améliorer votre expérience."
+            "title": "Collecte d'informations",
+            "content": "Nous collectons des informations lorsque vous vous inscrivez sur notre site, vous connectez à votre compte, créez des playlists ou partagez du contenu. Les informations collectées incluent votre nom, adresse e-mail, et potentiellement vos préférences musicales et l'historique d'utilisation de l'application.",
+            "content_oauth": "mixlink utilise l'authentification OAuth pour vous permettre de vous connecter via vos plateformes de streaming musical préférées telles que Spotify, Google, Soundcloud, etc. Lorsque vous vous connectez, nous recevons certaines informations de ces services, y compris votre nom, adresse e-mail, photo de profil et identifiant unique. Nous collectons également des informations sur vos préférences musicales et votre historique d'utilisation de notre application pour améliorer votre expérience."
         },
         "section2": {
             "title": "Utilisation des informations",
-            "content": "Les informations que nous collectons sont utilisées pour personnaliser votre expérience, améliorer notre site web, améliorer le service client et traiter les transactions. Nous pouvons également utiliser ces informations pour envoyer des emails périodiques concernant des mises à jour de notre service ou d'autres produits et services."
+            "content": "Les informations que nous collectons sont utilisées pour personnaliser votre expérience, améliorer notre site web, améliorer le service client et traiter les transactions. Nous pouvons également utiliser ces informations pour envoyer des e-mails périodiques concernant les mises à jour de notre service ou d'autres produits et services."
         },
         "section3": {
             "title": "Protection des informations",
-            "content": "Nous mettons en œuvre diverses mesures de sécurité pour protéger la sécurité de vos informations personnelles. Nous utilisons un cryptage avancé pour protéger les informations sensibles transmises en ligne et nous protégeons également vos informations hors ligne."
+            "content": "Nous mettons en œuvre diverses mesures de sécurité pour protéger la sécurité de vos informations personnelles. Nous utilisons un chiffrement avancé pour protéger les informations sensibles transmises en ligne, et nous protégeons également vos informations hors ligne."
         },
         "section4": {
             "title": "Cookies",
-            "content": "Notre site web utilise des cookies pour améliorer l'expérience utilisateur. Un cookie est un petit fichier placé sur le disque dur de votre ordinateur. Vous pouvez refuser l'utilisation de cookies en modifiant les paramètres de votre navigateur, mais cela peut affecter certaines fonctionnalités de notre service."
+            "content": "Notre site web utilise des cookies pour améliorer l'expérience utilisateur. Un cookie est un petit fichier placé sur le disque dur de votre ordinateur. Vous pouvez refuser l'utilisation des cookies en modifiant les paramètres de votre navigateur, mais cela peut affecter certaines fonctionnalités de notre service."
         },
         "section5": {
-            "title": "Partage des informations",
-            "content": "Nous ne vendons, n'échangeons ni ne transférons vos informations personnelles identifiables à des tiers, sauf lorsque cela est nécessaire pour fournir un service que vous avez demandé ou lorsque nous avons votre autorisation. Cela n'inclut pas les tiers de confiance qui nous aident à exploiter notre site web ou à mener nos affaires, tant que ces parties conviennent de garder ces informations confidentielles."
+            "title": "Partage d'informations",
+            "content": "Nous ne vendons, n'échangeons ni ne transférons vos informations personnellement identifiables à des tiers, sauf lorsque nécessaire pour fournir un service que vous avez demandé ou lorsque nous avons votre permission. Cela n'inclut pas les tiers de confiance qui nous aident à exploiter notre site web ou à mener nos activités, tant que ces parties acceptent de garder ces informations confidentielles."
         },
         "section6": {
             "title": "Vos droits",
             "content": "Vous avez le droit d'accéder, de mettre à jour ou de supprimer les informations que nous avons sur vous. Vous pouvez exercer ces droits en nous contactant via notre page de contact. Nous répondrons à votre demande dans un délai raisonnable.",
-            "content_oauth": "Vous avez le droit d'accéder, de mettre à jour ou de supprimer les informations que nous avons sur vous. Vous pouvez à tout moment vous déconnecter d'un ou plusieurs services de streaming connectés à votre compte mixlink en accédant à votre profil. Vous pouvez également supprimer entièrement votre compte mixlink, ce qui supprimera toutes vos données de nos serveurs. Si vous souhaitez exercer d'autres droits concernant vos données, vous pouvez nous contacter via notre page de contact. Nous répondrons à votre demande dans un délai raisonnable."
+            "content_oauth": "Vous avez le droit d'accéder, de mettre à jour ou de supprimer les informations que nous avons sur vous. Vous pouvez déconnecter un ou plusieurs services de streaming connectés à votre compte mixlink à tout moment en accédant à votre profil. Vous pouvez également supprimer complètement votre compte mixlink, ce qui supprimera toutes vos données de nos serveurs. Si vous souhaitez exercer d'autres droits concernant vos données, vous pouvez nous contacter via notre page de contact. Nous répondrons à votre demande dans un délai raisonnable."
         }
     },
     "contact": {
         "title": "Contactez-nous",
         "description": "Vous avez des questions ou des suggestions ? N'hésitez pas à nous contacter et nous vous répondrons dans les plus brefs délais.",
-        "info_title": "Nos coordonnées",
+        "info_title": "Nos informations de contact",
         "email_title": "Email",
         "phone_title": "Téléphone",
         "address_title": "Adresse",
@@ -278,24 +303,23 @@
             "subject": "Sujet",
             "subject_placeholder": "Entrez le sujet de votre message",
             "message": "Message",
-            "message_placeholder": "Rédigez votre message ici...",
+            "message_placeholder": "Écrivez votre message ici...",
             "submit": "Envoyer le message",
-            "success_message": "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.",
+            "success_message": "Votre message a été envoyé avec succès. Nous vous répondrons bientôt.",
             "error_message": "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer.",
-            "error_rate_limit": "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
             "validation": {
                 "name_required": "Veuillez entrer votre nom",
                 "email_required": "Veuillez entrer votre email",
                 "email_valid": "Veuillez entrer un email valide",
                 "subject_required": "Veuillez entrer un sujet",
                 "message_required": "Veuillez entrer votre message",
-                "message_min": "Le message doit comporter au moins {min} caractères"
+                "message_min": "Le message doit contenir au moins {min} caractères"
             }
         }
     },
     "faq": {
-        "title": "Foire aux questions",
-        "description": "Trouvez des réponses aux questions les plus fréquemment posées sur mixlink et ses fonctionnalités.",
+        "title": "Questions fréquemment posées",
+        "description": "Trouvez des réponses aux questions les plus couramment posées sur mixlink et ses fonctionnalités.",
         "didnt_find": "Vous n'avez pas trouvé la réponse à votre question ?",
         "contact_us": "Contactez-nous directement et nous serons ravis de vous aider.",
         "contact_button": "Nous contacter",
@@ -308,29 +332,29 @@
         "general": {
             "what_is": {
                 "question": "Qu'est-ce que mixlink ?",
-                "answer": "mixlink est une plateforme qui vous permet de créer des playlists collaboratives entre différentes plateformes de streaming musical. Vous pouvez partager et contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes."
+                "answer": "mixlink est une plateforme qui vous permet de créer des playlists collaboratives sur différentes plateformes de streaming musical. Vous pouvez partager et contribuer à des playlists sans avoir besoin de changer d'application ou de créer de nouveaux comptes."
             },
             "how_works": {
                 "question": "Comment fonctionne mixlink ?",
-                "answer": "mixlink crée un pont entre les différentes plateformes de streaming. Vous créez une playlist, partagez le lien avec vos amis, et chacun peut ajouter des morceaux depuis sa plateforme préférée. Notre système gère les références vers les morceaux sur les différentes plateformes."
+                "answer": "mixlink crée un pont entre différentes plateformes de streaming. Vous créez une playlist, partagez le lien avec vos amis, et tout le monde peut ajouter des morceaux depuis sa plateforme préférée. Notre système gère les références aux morceaux sur différentes plateformes."
             },
             "platforms": {
                 "question": "Quelles plateformes de streaming sont prises en charge ?",
-                "answer": "Actuellement, mixlink prend en charge Spotify, Apple Music, YouTube Music et Deezer. Nous travaillons continuellement à l'ajout de nouvelles plateformes pour offrir une expérience encore plus complète."
+                "answer": "Actuellement, mixlink prend en charge Spotify, Soundcloud, YouTube Music et Deezer. Nous travaillons continuellement à l'ajout de nouvelles plateformes pour offrir une expérience encore plus complète."
             }
         },
         "account": {
             "create": {
                 "question": "Comment créer un compte ?",
-                "answer": "mixlink utilise l'authentification OAuth, ce qui signifie que vous n'avez pas besoin de créer un compte distinct. Vous pouvez simplement vous connecter avec votre compte Spotify, Google ou Apple Music existant. Cliquez sur 'Connexion' dans le menu et choisissez votre plateforme préférée pour commencer."
+                "answer": "mixlink utilise l'authentification OAuth, ce qui signifie que vous n'avez pas besoin de créer un compte séparé. Vous pouvez simplement vous connecter avec votre compte Spotify, Google ou Soundcloud existant. Cliquez sur 'Connexion' dans le menu et choisissez votre plateforme préférée pour commencer."
             },
             "delete": {
                 "question": "Comment supprimer mon compte ?",
-                "answer": "Pour supprimer votre compte mixlink, connectez-vous, accédez à votre profil, puis aux paramètres du compte. Vous y trouverez l'option 'Supprimer mon compte'. Une fois confirmée, toutes vos données seront supprimées de nos serveurs. Notez que cela ne modifiera pas vos comptes sur les plateformes de streaming connectées."
+                "answer": "Pour supprimer votre compte mixlink, connectez-vous, allez dans votre profil, puis dans les paramètres du compte. Vous y trouverez l'option 'Supprimer mon compte'. Une fois confirmé, toutes vos données seront supprimées de nos serveurs. Notez que cela ne modifiera pas vos comptes sur les plateformes de streaming connectées."
             },
             "oauth": {
                 "question": "Puis-je connecter plusieurs comptes de streaming à mon compte mixlink ?",
-                "answer": "Oui, vous pouvez connecter plusieurs comptes de services de streaming à votre profil mixlink. Cela vous permettra d'ajouter facilement du contenu à partir de n'importe lequel de ces services et d'exporter vos playlists vers eux. Vous pouvez gérer vos connexions dans la section 'Services connectés' de votre profil."
+                "answer": "Oui, vous pouvez connecter plusieurs comptes de services de streaming à votre profil mixlink. Cela vous permettra d'ajouter facilement du contenu depuis n'importe lequel de ces services et d'exporter vos playlists vers eux. Vous pouvez gérer vos connexions dans la section 'Services connectés' de votre profil."
             }
         },
         "subscription": {
@@ -339,18 +363,18 @@
                 "answer": "Avec un compte gratuit, vous pouvez créer jusqu'à 5 playlists et ajouter jusqu'à 50 morceaux par playlist. Vous pouvez également participer à des playlists collaboratives créées par d'autres utilisateurs."
             },
             "premium": {
-                "question": "Qu'offre l'abonnement Premium ?",
-                "answer": "L'abonnement Premium débloque des fonctionnalités supplémentaires comme un nombre illimité de playlists, un nombre illimité de morceaux par playlist, et un historique complet de toutes vos playlists."
+                "question": "Que propose l'abonnement Premium ?",
+                "answer": "L'abonnement Premium débloque des fonctionnalités supplémentaires comme des playlists illimitées, un nombre illimité de morceaux par playlist et un historique complet de toutes vos playlists."
             },
             "cancel": {
                 "question": "Comment annuler mon abonnement ?",
-                "answer": "Pour annuler votre abonnement, accédez à la section 'Abonnement' de votre profil et cliquez sur 'Se désabonner'. Votre abonnement restera actif jusqu'à la fin de la période en cours, puis ne sera pas renouvelé."
+                "answer": "Pour annuler votre abonnement, allez dans la section 'Abonnement' de votre profil et cliquez sur 'Se désabonner'. Votre abonnement restera actif jusqu'à la fin de la période en cours, puis ne sera pas renouvelé."
             }
         },
         "technical": {
             "browser": {
-                "question": "Quels navigateurs sont supportés ?",
-                "answer": "mixlink est compatible avec les versions récentes des principaux navigateurs web : Chrome, Firefox, Safari, et Edge. Pour une expérience optimale, nous vous recommandons de maintenir votre navigateur à jour."
+                "question": "Quels navigateurs sont pris en charge ?",
+                "answer": "mixlink est compatible avec les versions récentes des principaux navigateurs web : Chrome, Firefox, Safari et Edge. Pour une meilleure expérience, nous recommandons de garder votre navigateur à jour."
             },
             "mobile": {
                 "question": "mixlink est-il disponible sur mobile ?",
@@ -365,20 +389,32 @@
     "session": {
         "create": {
             "title": "Créer une session",
-            "button": "Créer la session",
+            "button": "Créer une session",
             "success": "Session créée avec succès !",
             "error": "Erreur lors de la création de la session",
             "error_session_not_found": "Session introuvable",
-            "error_not_host": "Vous n'êtes pas l'hôte de cette session"
+            "error_not_host": "Vous n'êtes pas l'hôte de cette session",
+            "error_max_playlists_reached": "Vous avez atteint le nombre maximum de playlists pour votre plan.",
+            "no_subscription": "Vous devez être abonné pour créer une session.",
+            "errors": {
+                "name_required": "Le nom de la session est requis",
+                "playlist_name_required": "Le nom de la playlist est requis",
+                "max_participants_invalid": "Le nombre maximum de participants doit être entre 1 et 10"
+            }
         },
         "form": {
             "name": "Nom",
             "name_placeholder": "Nom de la session",
+            "playlist_name": "Nom de la playlist",
+            "playlist_name_placeholder": "Nom de la playlist à exporter",
             "participants_limit": "Avec votre plan {plan}, vous pouvez inviter jusqu'à {limit} participants",
             "validation": {
                 "name_required": "Le nom est requis",
                 "name_min": "Le nom doit contenir au moins 3 caractères",
-                "name_max": "Le nom ne peut pas dépasser 50 caractères"
+                "name_max": "Le nom ne peut pas dépasser 50 caractères",
+                "playlist_name_required": "Le nom de la playlist est requis",
+                "playlist_name_min": "Le nom de la playlist doit contenir au moins 3 caractères",
+                "playlist_name_max": "Le nom de la playlist ne peut pas dépasser 50 caractères"
             }
         },
         "share": {
@@ -408,13 +444,8 @@
             "waiting": "En attente de participants...",
             "error_session_not_found": "Session introuvable"
         },
-        "playlist": {
-            "title": "Playlist collaborative",
-            "empty": "Aucune musique ajoutée",
-            "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !"
-        },
         "join": {
-            "title": "Rejoindre la session",
+            "title": "Rejoindre une session",
             "description": "Entrez votre pseudo pour rejoindre la session",
             "code": "Code de session",
             "code_placeholder": "Entrez le code de session",
@@ -423,7 +454,7 @@
             "button": "Rejoindre",
             "join_button": "Rejoindre",
             "success": "Vous avez rejoint la session avec succès !",
-            "error": "Erreur lors de la connexion à la session",
+            "error": "Erreur lors de la participation à la session",
             "already_joined": "Vous avez déjà rejoint cette session",
             "validation": {
                 "code_required": "Le code de session est requis",
@@ -432,16 +463,16 @@
                 "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères"
             },
             "errors": {
-                "session_not_found": "Session introuvable",
                 "pseudo_taken": "Ce pseudo est déjà pris",
-                "session_full": "La session est pleine"
+                "session_full": "La session est pleine",
+                "session_not_found": "Session introuvable"
             }
         },
         "rejoin": {
-            "title": "Rejoindre la session existante",
+            "title": "Rejoindre une session existante",
             "button": "Rejoindre la session",
             "success": "Vous avez rejoint la session avec succès !",
-            "error": "Erreur lors de la reconnexion à la session",
+            "error": "Erreur lors de la participation à la session",
             "alert_title": "Session active détectée",
             "alert_description": "Vous avez déjà une session active : {name}. Voulez-vous la rejoindre ?"
         },
@@ -451,23 +482,13 @@
             "confirm": "Quitter",
             "button": "Quitter"
         },
-        "remove": {
-            "error": "Erreur lors de la suppression du participant",
-            "errors": {
-                "pseudo_required": "Le pseudo est requis",
-                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères",
-                "session_not_found": "Session introuvable",
-                "participant_not_found": "Participant introuvable",
-                "only_host_can_kick": "Seul l'hôte peut exclure des participants"
-            }
-        },
         "end": {
             "title": "Terminer la session",
             "confirmation": "Êtes-vous sûr de vouloir terminer cette session ? Cette action est irréversible.",
             "confirm": "Terminer",
             "button": "Terminer la session",
             "success": "Session terminée avec succès",
-            "error": "Erreur lors de la terminaison de la session",
+            "error": "Erreur lors de la fin de session",
             "error_forbidden": "Vous n'êtes pas autorisé à terminer cette session",
             "error_session_not_found": "Session introuvable"
         },
@@ -480,16 +501,29 @@
             "participants": "{current}/{max} participants"
         },
         "kick": {
-            "title": "Exclure un participant",
-            "button": "Supprimer",
-            "confirmation": "Êtes-vous sûr de vouloir exclure \"{pseudo}\" de la session ?",
-            "confirm": "Exclure",
-            "success": "\"{pseudo}\" a été exclu de la session",
-            "error": "Erreur lors de l'exclusion du participant",
-            "kicked_notification": "Vous avez été exclu de la session par l'hôte."
+            "title": "Retirer le participant",
+            "button": "Retirer",
+            "confirmation": "Êtes-vous sûr de vouloir retirer \"{pseudo}\" de la session ?",
+            "confirm": "Retirer",
+            "success": "\"{pseudo}\" a été retiré de la session",
+            "error": "Erreur lors du retrait du participant",
+            "kicked_notification": "Vous avez été retiré de la session par l'hôte."
+        },
+        "remove": {
+            "error": "Erreur lors du retrait du participant",
+            "errors": {
+                "pseudo_required": "Le pseudo est requis",
+                "pseudo_length": "Le pseudo doit contenir entre 2 et 20 caractères",
+                "session_not_found": "Session introuvable",
+                "participant_not_found": "Participant introuvable",
+                "only_host_can_kick": "Seul l'hôte peut retirer des participants"
+            }
         },
         "get_by_code": {
             "error_session_not_found": "Session introuvable"
+        },
+        "mercure": {
+            "connection_error": "Erreur de connexion temps réel"
         }
     },
     "provider": {
@@ -501,6 +535,7 @@
     },
     "subscription": {
         "start": {
+            "success": "Abonnement démarré avec succès.",
             "error_plan_not_found": "Le plan demandé est introuvable.",
             "error_stripe_price_id_not_configured": "Le plan n'est pas configuré correctement pour Stripe.",
             "error_unable_to_create_checkout_session": "Impossible de créer la session de paiement Stripe."
@@ -511,10 +546,42 @@
             "success": "Abonnement annulé avec succès."
         },
         "change": {
+            "success": "Abonnement changé avec succès.",
             "error_no_active_subscription": "Aucun abonnement actif trouvé.",
             "error_plan_not_found": "Le plan demandé est introuvable.",
             "error_already_subscribed_to_this_plan": "Vous êtes déjà abonné à ce plan.",
-            "error_failed_to_change_subscription": "Échec du changement d'abonnement."
+            "error_failed_to_change_subscription": "Échec du changement d'abonnement.",
+            "error": "Erreur lors du changement d'abonnement.",
+            "warning": {
+                "downgrade": "Vous allez rétrograder votre abonnement. Certaines fonctionnalités seront désactivées.",
+                "participants_limit": "Avec le plan gratuit, vous ne pourrez plus inviter que 3 participants maximum.",
+                "active_sessions": "Vos sessions actives avec plus de 3 participants seront affectées.",
+                "playlist_limit": "Avec le plan gratuit, vous ne pourrez conserver que 3 playlists maximum. Les plus anciennes seront conservées.",
+                "free_limitations": "Le plan gratuit a des limitations. Consultez les détails ci-dessus."
+            },
+            "blocking": {
+                "title": "Changement d'abonnement impossible",
+                "active_session": "Vous devez terminer votre session active avant de pouvoir passer au plan gratuit. Les sessions actives ne sont pas compatibles avec les limitations du plan gratuit."
+            },
+            "confirmation": {
+                "title": "Confirmer le changement d'abonnement",
+                "summary": "Résumé du changement",
+                "current": "Plan actuel",
+                "new": "Nouveau plan",
+                "features": "Comparaison des fonctionnalités",
+                "features_gained": "Fonctionnalités ajoutées",
+                "features_lost": "Fonctionnalités perdues",
+                "billing_title": "Informations de facturation",
+                "warnings": "Avertissements importants",
+                "understand": "Je comprends les conséquences de ce changement d'abonnement",
+                "confirm": "Confirmer le changement",
+                "billing": {
+                    "cancel_info": "Votre abonnement sera annulé. Vous continuerez à bénéficier des fonctionnalités premium jusqu'à la fin de la période payée.",
+                    "immediate_charge": "Le montant de votre nouveau plan sera facturé immédiatement, en plus de votre plan actuel.",
+                    "first_subscription": "Vous serez facturé immédiatement pour votre premier abonnement premium.",
+                    "proration": "Un crédit au prorata sera appliqué pour la période non utilisée de votre ancien plan."
+                }
+            }
         }
     },
     "soundcloud": {
@@ -523,5 +590,88 @@
         "email_success": "Votre email a bien été enregistré !",
         "email_error": "Veuillez saisir une adresse email valide.",
         "email_info": "Pour le bon fonctionnement de l'application avec SoundCloud, vous devez définir une adresse email. Si vous connectez d'autres méthodes d'authentification, utilisez la même adresse email."
+    },
+    "music_search": {
+        "placeholder": "Rechercher un morceau, un artiste...",
+        "search_button": "Rechercher",
+        "input_required": "Veuillez saisir un terme de recherche.",
+        "no_results": "Aucun résultat trouvé.",
+        "title": "Titre",
+        "artists": "Artistes",
+        "add_button": "Ajouter",
+        "added": "'{{title}}' ajouté !",
+        "show_more": "Afficher plus",
+        "already_in_playlist": "Ce morceau est déjà dans la playlist."
+    },
+    "playlist": {
+        "title": "Playlist collaborative",
+        "empty": "Aucune musique ajoutée",
+        "empty_description": "Commencez à ajouter des morceaux à la playlist collaborative !",
+        "songs_count": "{count} morceaux",
+        "add_song": {
+            "success": "Morceau ajouté à la playlist !",
+            "error": "Erreur lors de l'ajout du morceau à la playlist.",
+            "no_playlist": "Aucune playlist sélectionnée.",
+            "invalid_data": "Données de morceau invalides.",
+            "limit_reached": "Nombre maximum de morceaux atteint pour cette playlist.",
+            "not_found": "Playlist introuvable.",
+            "unauthorized": "Vous n'êtes pas autorisé à ajouter un morceau.",
+            "already_in_playlist": "Ce morceau est déjà dans la playlist."
+        },
+        "remove_song": {
+            "confirm_title": "Retirer le morceau ?",
+            "confirm": "Voulez-vous vraiment retirer le morceau : {title} ?",
+            "success": "Morceau retiré de la playlist.",
+            "error": "Erreur lors du retrait du morceau."
+        },
+        "export": {
+            "button": "Exporter la playlist",
+            "disabled": {
+                "no_songs": "La playlist ne contient aucun morceau à exporter",
+                "no_platforms": "Aucune plateforme de streaming connectée",
+                "not_allowed": "Vous n'êtes pas autorisé à exporter cette playlist",
+                "already_exported": "Cette playlist a déjà été exportée (limitation plan gratuit)"
+            },
+            "error": {
+                "load_platforms": "Erreur lors du chargement des plateformes disponibles",
+                "network_error": "Erreur de réseau lors de l'export",
+                "user_not_connected": "Vous n'êtes pas connecté à cette plateforme",
+                "playlist_not_found": "Playlist introuvable",
+                "export_failed": "Échec de l'export de la playlist",
+                "no_songs": "La playlist ne contient aucun morceau",
+                "no_platform_available": "Aucune plateforme disponible pour l'export",
+                "token_expired": "Session expirée, veuillez vous reconnecter",
+                "token_refresh_failed": "Impossible de renouveler la session",
+                "no_refresh_token": "Session expirée. Veuillez vous reconnecter pour obtenir un nouveau token.",
+                "youtube_permissions": "Permissions YouTube insuffisantes. Veuillez vous reconnecter et accepter toutes les permissions.",
+                "free_user_limit_reached": "Vous avez déjà exporté cette playlist. Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist."
+            },
+            "success": "Playlist exportée avec succès !",
+            "confirmation": {
+                "title": "Confirmer l'export",
+                "message": "Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist. Voulez-vous continuer ?",
+                "confirm": "Exporter"
+            },
+            "modal": {
+                "title": "Exporter la playlist",
+                "description": "Export en cours vers votre plateforme connectée...",
+                "description_waiting": "Prêt à exporter vers votre plateforme connectée.",
+                "description_completed": "Export terminé avec succès !",
+                "description_error": "Une erreur s'est produite lors de l'export.",
+                "select_platform": "Sélectionner une plateforme",
+                "progress": "Export en cours... {current}/{total} morceaux traités",
+                "success_title": "Export réussi !",
+                "exported_tracks": "{count} morceaux exportés avec succès",
+                "failed_tracks": "{count} morceaux n'ont pas pu être exportés",
+                "open_playlist": "Ouvrir la playlist",
+                "error_title": "Erreur lors de l'export",
+                "export_button": "Exporter"
+            }
+        }
+    },
+    "platforms": {
+        "spotify": "Spotify",
+        "youtube": "YouTube Music",
+        "soundcloud": "SoundCloud"
     }
 }

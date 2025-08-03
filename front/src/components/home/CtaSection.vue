@@ -2,6 +2,17 @@
     import { useI18n } from 'vue-i18n';
     import { isDark } from '@/composables/dark';
     import RocketLaunchIcon from 'vue-material-design-icons/RocketLaunch.vue';
+    import { useAuthStore } from '@/stores/authStore';
+
+    const authStore = useAuthStore();
+
+    const emit = defineEmits({
+        openCreateSessionModal: {
+            type: Function,
+            required: true,
+            default: () => {},
+        },
+    });
 
     const { t } = useI18n();
 </script>
@@ -23,7 +34,12 @@
                         {{ t('home.cta.subtitle') }}
                     </el-text>
 
-                    <el-button type="primary" size="large" class="cta-button" @click="$router.push('/login')">
+                    <el-button
+                        type="primary"
+                        size="large"
+                        class="cta-button"
+                        @click="authStore.isAuthenticated ? emit('openCreateSessionModal') : $router.push('/login')"
+                    >
                         {{ t('home.cta.button') }}
                         <span class="button-arrow">→</span>
                     </el-button>

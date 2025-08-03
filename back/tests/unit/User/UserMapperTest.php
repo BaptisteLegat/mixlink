@@ -7,8 +7,11 @@ use App\Entity\Provider;
 use App\Entity\Session;
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Playlist\PlaylistMapper;
 use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
+use App\Repository\PlaylistRepository;
+use App\Security\Provider\SoundCloudUserData;
 use App\Session\Mapper\SessionMapper;
 use App\Session\Model\SessionModel;
 use App\Subscription\SubscriptionMapper;
@@ -26,6 +29,8 @@ class UserMapperTest extends TestCase
     private ProviderMapper|MockObject $providerMapper;
     private SubscriptionMapper|MockObject $subscriptionMapper;
     private SessionMapper|MockObject $sessionMapper;
+    private PlaylistMapper|MockObject $playlistMapper;
+    private PlaylistRepository|MockObject $playlistRepository;
     private UserMapper $userMapper;
 
     protected function setUp(): void
@@ -33,10 +38,14 @@ class UserMapperTest extends TestCase
         $this->providerMapper = $this->createMock(ProviderMapper::class);
         $this->subscriptionMapper = $this->createMock(SubscriptionMapper::class);
         $this->sessionMapper = $this->createMock(SessionMapper::class);
+        $this->playlistMapper = $this->createMock(PlaylistMapper::class);
+        $this->playlistRepository = $this->createMock(PlaylistRepository::class);
         $this->userMapper = new UserMapper(
             $this->providerMapper,
             $this->subscriptionMapper,
-            $this->sessionMapper
+            $this->sessionMapper,
+            $this->playlistMapper,
+            $this->playlistRepository
         );
     }
 
@@ -135,7 +144,7 @@ class UserMapperTest extends TestCase
             'last_name' => 'SCLast',
             'avatar_url' => 'http://soundcloud.com/avatar.jpg',
         ];
-        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+        $soundcloudUser = new SoundCloudUserData($soundcloudData);
 
         $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, null);
 
@@ -156,7 +165,7 @@ class UserMapperTest extends TestCase
             'last_name' => 'NewLast',
             'avatar_url' => 'http://soundcloud.com/newavatar.jpg',
         ];
-        $soundcloudUser = new \Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner($soundcloudData);
+        $soundcloudUser = new SoundCloudUserData($soundcloudData);
 
         $user = $this->userMapper->mapEntity($soundcloudUser, ApiReference::SOUNDCLOUD, $existingUser);
 

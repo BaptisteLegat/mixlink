@@ -36,7 +36,12 @@ export async function apiDeleteAccount() {
     });
 
     if (!response.ok) {
-        throw new Error('common.error_delete_account');
+        const errorData = await response.json();
+        const error = new Error('Failed to delete account');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return response.json();
@@ -50,8 +55,11 @@ export async function apiDisconnectProvider(providerId) {
 
     if (!response.ok) {
         const errorData = await response.json();
-
-        throw new Error(errorData.error || 'provider.disconnect.error');
+        const error = new Error('Failed to disconnect provider');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return response.json();
@@ -69,7 +77,11 @@ export async function fetchWithAuth(path, options = {}) {
 
     if (!response.ok && !response.redirected) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'common.error_request_failed');
+        const error = new Error('Request failed');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
     }
 
     return response;
@@ -85,4 +97,83 @@ export async function updateSoundCloudEmail(email) {
 
 export function getOAuthUrl(provider) {
     return `${import.meta.env.VITE_API_BASE_URL}/api/auth/${provider}`;
+}
+
+export async function searchMusicApi(query) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/search/music?q=${encodeURIComponent(query)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        const error = new Error('Search failed');
+        if (data.error) {
+            error.translationKey = data.error;
+        }
+        throw error;
+    }
+    return data;
+}
+
+export async function apiAddSongToPlaylist(playlistId, songData) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/playlist/${playlistId}/add-song`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(songData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        const error = new Error('Failed to add song');
+        if (data.errors) {
+            error.errors = data.errors;
+        } else if (data.error) {
+            error.translationKey = data.error;
+        }
+        throw error;
+    }
+    return data;
+}
+
+export async function apiRemoveSongFromPlaylist(playlistId, spotifyId) {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/playlist/${playlistId}/remove-song/${spotifyId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        const error = new Error('Failed to remove song');
+        if (data.error) {
+            error.translationKey = data.error;
+        }
+        throw error;
+    }
+
+    return data;
+}
+
+export async function apiExportPlaylist(playlistId, platform) {
+    const response = await fetchWithAuth(`/api/playlist/${playlistId}/export/${platform}`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        const error = new Error('Failed to export playlist');
+        if (errorData.error) {
+            error.translationKey = errorData.error;
+        }
+        throw error;
+    }
+
+    return response.json();
 }

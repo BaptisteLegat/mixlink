@@ -43,6 +43,7 @@ class SessionMercurePublisherTest extends TestCase
                 return 'session_update' === $data['event'] && 'CODE123' === $data['session']['code'];
             }))
         ;
+
         $this->publisher->publishSessionUpdate($session, 'session_update');
     }
 
@@ -57,6 +58,7 @@ class SessionMercurePublisherTest extends TestCase
                 $this->arrayHasKey('event')
             )
         ;
+
         $this->publisher->publishSessionUpdate($session, 'session_update');
     }
 
@@ -73,6 +75,7 @@ class SessionMercurePublisherTest extends TestCase
                 return 'participant_joined' === $data['event'] && 'John' === $data['participant']['pseudo'];
             }))
         ;
+
         $this->publisher->publishParticipantUpdate($session, 'participant_joined', $participantData);
     }
 
@@ -108,6 +111,7 @@ class SessionMercurePublisherTest extends TestCase
                 $this->arrayHasKey('sessionCode')
             )
         ;
+
         $method->invoke($this->publisher, 'session/CODE123', ['event' => 'test', 'session' => fopen('php://memory', 'r')], 'CODE123', 'test');
     }
 
@@ -127,6 +131,61 @@ class SessionMercurePublisherTest extends TestCase
                 $this->arrayHasKey('sessionCode')
             )
         ;
+
         $this->publisher->publishParticipantUpdate($session, 'participant_joined', ['id' => 1, 'pseudo' => 'John']);
+    }
+
+    public function testPublishPlaylistUpdatePublishesCorrectData(): void
+    {
+        $sessionCode = 'CODE123';
+        $playlistData = ['id' => 1, 'name' => 'Playlist Test'];
+
+        $this->mercureHubMock->expects($this->once())
+            ->method('publish')
+            ->with($this->callback(function (Update $update) {
+                $data = json_decode($update->getData(), true);
+
+                return 'playlist_updated' === $data['event'] && 1 === $data['playlist']['id'];
+            }))
+        ;
+
+        $this->publisher->publishPlaylistUpdate($sessionCode, $playlistData);
+    }
+
+    public function testPublishPlaylistUpdateHandlesExceptionOnMercurePublish(): void
+    {
+        $sessionCode = 'CODE123';
+        $playlistData = ['id' => 1, 'name' => 'Playlist Test'];
+
+        $this->mercureHubMock->expects($this->once())
+            ->method('publish')
+            ->willThrowException(new Exception('Mercure error'))
+        ;
+
+        $this->loggerMock->expects($this->once())
+            ->method('error')
+            ->with(
+                $this->equalTo('Failed to publish playlist update to Mercure'),
+                $this->arrayHasKey('sessionCode')
+            )
+        ;
+
+        $this->publisher->publishPlaylistUpdate($sessionCode, $playlistData);
+    }
+
+    public function testPublishPlaylistUpdateHandlesRuntimeExceptionOnJsonEncode(): void
+    {
+        $sessionCode = 'CODE123';
+        $playlistData = ['id' => 1, 'name' => 'Playlist Test', 'invalid_data' => fopen('php://memory', 'r')];
+
+        $this->loggerMock->expects($this->once())
+            ->method('error')
+            ->with(
+                $this->equalTo('Failed to publish playlist update to Mercure'),
+                $this->arrayHasKey('sessionCode')
+            )
+        ;
+
+        $this->publisher->publishPlaylistUpdate($sessionCode, $playlistData);
     }
 }

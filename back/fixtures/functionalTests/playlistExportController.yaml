@@ -1,0 +1,211 @@
+include:
+  - '../templates/plan.yaml'
+  - '../templates/playlist.yaml'
+  - '../templates/provider.yaml'
+  - '../templates/song.yaml'
+  - '../templates/subscription.yaml'
+  - '../templates/user.yaml'
+
+App\Entity\Plan:
+  free (extends plan_free):
+    subscriptions: ['@subscription-free-export']
+  premium (extends plan_premium):
+    subscriptions: ['@subscription-spotify-export', '@subscription-google-export', '@subscription-soundcloud-export', '@subscription-premium-export', '@subscription-inactive-export']
+
+App\Entity\Provider:
+  export-provider-spotify (extends spotify):
+    user: '@export-user-spotify'
+    accessToken: 'spotify_export_token'
+    refreshToken: 'spotify_refresh_token'
+
+  export-provider-google (extends google):
+    user: '@export-user-google'
+    accessToken: 'google_export_token'
+    refreshToken: 'google_refresh_token'
+
+  export-provider-soundcloud (extends soundcloud):
+    user: '@export-user-soundcloud'
+    accessToken: 'soundcloud_export_token'
+    refreshToken: 'soundcloud_refresh_token'
+
+  export-provider-free (extends spotify):
+    user: '@export-user-free'
+    accessToken: 'free_export_token'
+    refreshToken: 'free_refresh_token'
+
+  export-provider-premium (extends spotify):
+    user: '@export-user-premium'
+    accessToken: 'premium_export_token'
+    refreshToken: 'premium_refresh_token'
+
+  export-provider-no-sub (extends spotify):
+    user: '@export-user-no-subscription'
+    accessToken: 'no_sub_export_token'
+    refreshToken: 'no_sub_refresh_token'
+
+  export-provider-inactive (extends spotify):
+    user: '@export-user-inactive'
+    accessToken: 'inactive_export_token'
+    refreshToken: 'inactive_refresh_token'
+
+  export-provider-not-owner (extends spotify):
+    user: '@export-user-not-owner'
+    accessToken: 'not_owner_export_token'
+    refreshToken: 'not_owner_refresh_token'
+
+App\Entity\Playlist:
+  export-playlist-spotify (extends playlist):
+    name: 'Spotify Export Playlist'
+    user: '@export-user-spotify'
+    songs: ['@export-song-1', '@export-song-2']
+    hasBeenExported: false
+
+  export-playlist-google (extends playlist):
+    name: 'Google Export Playlist'
+    user: '@export-user-google'
+    songs: ['@export-song-1', '@export-song-2']
+    hasBeenExported: false
+
+  export-playlist-soundcloud (extends playlist):
+    name: 'SoundCloud Export Playlist'
+    user: '@export-user-soundcloud'
+    songs: ['@export-song-1', '@export-song-2']
+    hasBeenExported: false
+
+  export-playlist-free (extends playlist):
+    name: 'Free User Playlist'
+    user: '@export-user-free'
+    songs: ['@export-song-1', '@export-song-2']
+    hasBeenExported: false
+
+  export-playlist-free-already-exported (extends playlist):
+    name: 'Free User Already Exported'
+    user: '@export-user-free'
+    songs: ['@export-song-1']
+    hasBeenExported: true
+
+  export-playlist-premium (extends playlist):
+    name: 'Premium User Playlist'
+    user: '@export-user-premium'
+    songs: ['@export-song-1', '@export-song-2', '@export-song-3']
+    hasBeenExported: false
+
+  export-playlist-no-subscription (extends playlist):
+    name: 'No Subscription Playlist'
+    user: '@export-user-no-subscription'
+    songs: ['@export-song-1']
+    hasBeenExported: false
+
+  export-playlist-inactive (extends playlist):
+    name: 'Inactive Subscription Playlist'
+    user: '@export-user-inactive'
+    songs: ['@export-song-1']
+    hasBeenExported: false
+
+  export-playlist-other-user (extends playlist):
+    name: 'Other User Playlist'
+    user: '@export-user-spotify'
+    songs: ['@export-song-1']
+    hasBeenExported: false
+
+App\Entity\Song:
+  export-song-1 (extends song):
+    spotifyId: 'export_spotify_1'
+    title: 'Export Song 1'
+    artists: 'Export Artist 1'
+    image: 'https://example.com/export1.jpg'
+
+  export-song-2 (extends song):
+    spotifyId: 'export_spotify_2'
+    title: 'Export Song 2'
+    artists: 'Export Artist 2'
+    image: 'https://example.com/export2.jpg'
+
+  export-song-3 (extends song):
+    spotifyId: 'export_spotify_3'
+    title: 'Export Song 3'
+    artists: 'Export Artist 3'
+    image: 'https://example.com/export3.jpg'
+
+App\Entity\Subscription:
+  subscription-free-export (extends subscription):
+    plan: '@free'
+    user: '@export-user-free'
+    status: 'active'
+    startDate: '<(new DateTime("2025-01-01"))>'
+    endDate: '<(new DateTime("2025-12-31"))>'
+
+  subscription-spotify-export (extends subscription):
+    plan: '@premium'
+    user: '@export-user-spotify'
+    status: 'active'
+    startDate: '<(new DateTime("2025-01-01"))>'
+    endDate: '<(new DateTime("2025-12-31"))>'
+
+  subscription-google-export (extends subscription):
+    plan: '@premium'
+    user: '@export-user-google'
+    status: 'active'
+    startDate: '<(new DateTime("2025-01-01"))>'
+    endDate: '<(new DateTime("2025-12-31"))>'
+
+  subscription-soundcloud-export (extends subscription):
+    plan: '@premium'
+    user: '@export-user-soundcloud'
+    status: 'active'
+    startDate: '<(new DateTime("2025-01-01"))>'
+    endDate: '<(new DateTime("2025-12-31"))>'
+
+  subscription-premium-export (extends subscription):
+    plan: '@premium'
+    user: '@export-user-premium'
+    status: 'active'
+    startDate: '<(new DateTime("2025-01-01"))>'
+    endDate: '<(new DateTime("2025-12-31"))>'
+
+  subscription-inactive-export (extends subscription):
+    plan: '@premium'
+    user: '@export-user-inactive'
+    status: 'inactive'
+    startDate: '<(new DateTime("2024-01-01"))>'
+    endDate: '<(new DateTime("2024-06-01"))>'
+
+App\Entity\User:
+  export-user-spotify (extends john-doe):
+    email: 'export-spotify@test.fr'
+    providers: ['@export-provider-spotify']
+    subscription: '@subscription-spotify-export'
+
+  export-user-google (extends john-doe):
+    email: 'export-google@test.fr'
+    providers: ['@export-provider-google']
+    subscription: '@subscription-google-export'
+
+  export-user-soundcloud (extends john-doe):
+    email: 'export-soundcloud@test.fr'
+    providers: ['@export-provider-soundcloud']
+    subscription: '@subscription-soundcloud-export'
+
+  export-user-free (extends john-doe):
+    email: 'export-free@test.fr'
+    providers: ['@export-provider-free']
+    subscription: '@subscription-free-export'
+
+  export-user-premium (extends john-doe):
+    email: 'export-premium@test.fr'
+    providers: ['@export-provider-premium']
+    subscription: '@subscription-premium-export'
+
+  export-user-no-subscription (extends john-doe):
+    email: 'export-no-sub@test.fr'
+    providers: ['@export-provider-no-sub']
+
+  export-user-inactive (extends john-doe):
+    email: 'export-inactive@test.fr'
+    providers: ['@export-provider-inactive']
+    subscription: '@subscription-inactive-export'
+
+  export-user-not-owner (extends john-doe):
+    email: 'export-not-owner@test.fr'
+    providers: ['@export-provider-not-owner']
+    subscription: '@subscription-premium-export'

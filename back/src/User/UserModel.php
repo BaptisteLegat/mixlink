@@ -2,6 +2,7 @@
 
 namespace App\User;
 
+use App\Playlist\PlaylistModel;
 use App\Provider\ProviderModel;
 use App\Session\Model\SessionModel;
 use App\Subscription\SubscriptionModel;
@@ -22,6 +23,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'providers', type: 'array', items: new OA\Items(ref: '#/components/schemas/ProviderModel'), description: 'Connected OAuth providers'),
         new OA\Property(property: 'subscription', ref: '#/components/schemas/SubscriptionModel', nullable: true, description: 'User subscription'),
         new OA\Property(property: 'currentSession', ref: '#/components/schemas/SessionModel', nullable: true, description: 'Current active session'),
+        new OA\Property(property: 'exportedPlaylists', type: 'array', items: new OA\Items(ref: '#/components/schemas/PlaylistModel'), description: 'User exported playlists'),
     ]
 )]
 class UserModel
@@ -39,6 +41,8 @@ class UserModel
     private array $providers = [];
     private ?SubscriptionModel $subscription = null;
     private ?SessionModel $currentSession = null;
+    /** @var array<PlaylistModel> */
+    private array $exportedPlaylists = [];
 
     public function getId(): string
     {
@@ -161,6 +165,24 @@ class UserModel
     }
 
     /**
+     * @return array<PlaylistModel>
+     */
+    public function getExportedPlaylists(): array
+    {
+        return $this->exportedPlaylists;
+    }
+
+    /**
+     * @param array<PlaylistModel> $exportedPlaylists
+     */
+    public function setExportedPlaylists(array $exportedPlaylists): self
+    {
+        $this->exportedPlaylists = $exportedPlaylists;
+
+        return $this;
+    }
+
+    /**
      * Convert the model to an array.
      *
      * @return array<string, mixed>
@@ -177,6 +199,7 @@ class UserModel
             'providers' => array_map(fn (ProviderModel $provider) => $provider->toArray(), $this->providers),
             'subscription' => $this->subscription ? $this->subscription->toArray() : null,
             'currentSession' => $this->currentSession ? $this->currentSession->toArray() : null,
+            'exportedPlaylists' => array_map(fn (PlaylistModel $playlist) => $playlist->toArray(), $this->exportedPlaylists),
         ];
     }
 }

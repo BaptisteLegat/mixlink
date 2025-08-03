@@ -82,4 +82,33 @@ class SessionMercurePublisher
             ]);
         }
     }
+
+    /**
+     * @param array<string, mixed> $playlistData
+     */
+    public function publishPlaylistUpdate(string $sessionCode, array $playlistData): void
+    {
+        try {
+            $payload = json_encode([
+                'event' => 'playlist_updated',
+                'playlist' => $playlistData,
+            ]);
+
+            if (false === $payload) {
+                throw new RuntimeException('Failed to encode Mercure payload');
+            }
+
+            $update = new Update(
+                "session/{$sessionCode}",
+                $payload
+            );
+
+            $this->mercureHub->publish($update);
+        } catch (Exception $e) {
+            $this->logger->error('Failed to publish playlist update to Mercure', [
+                'sessionCode' => $sessionCode,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }

@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isAuthenticated = ref(false);
     const subscription = ref(null);
     const providers = ref([]);
+    const exportedPlaylists = ref([]);
     const isLoading = ref(false);
     const router = useRouter();
 
@@ -29,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
                 isAuthenticated.value = true;
                 subscription.value = response.subscription || null;
                 providers.value = response.providers || [];
+                exportedPlaylists.value = response.exportedPlaylists || [];
 
                 const sessionStore = useSessionStore();
                 if (response.currentSession) {
@@ -55,6 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = false;
         subscription.value = null;
         providers.value = [];
+        exportedPlaylists.value = [];
     }
 
     async function subscribe(planName) {
@@ -112,6 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         subscription,
         providers,
+        exportedPlaylists,
         isLoading,
         subscribe,
         fetchUser,

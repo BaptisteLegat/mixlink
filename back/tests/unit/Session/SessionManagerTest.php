@@ -4,6 +4,7 @@ namespace App\Tests\Unit\Session;
 
 use App\Entity\Session;
 use App\Entity\User;
+use App\Playlist\PlaylistManager;
 use App\Repository\SessionRepository;
 use App\Session\Manager\SessionManager;
 use App\Session\Manager\SessionParticipantManager;
@@ -22,6 +23,7 @@ class SessionManagerTest extends TestCase
     private SessionMapper|MockObject $sessionMapperMock;
     private SessionMercurePublisher|MockObject $mercurePublisherMock;
     private SessionParticipantManager|MockObject $sessionParticipantManagerMock;
+    private PlaylistManager|MockObject $playlistManagerMock;
     private SessionManager $sessionManager;
 
     protected function setUp(): void
@@ -31,12 +33,14 @@ class SessionManagerTest extends TestCase
         $this->sessionMapperMock = $this->createMock(SessionMapper::class);
         $this->mercurePublisherMock = $this->createMock(SessionMercurePublisher::class);
         $this->sessionParticipantManagerMock = $this->createMock(SessionParticipantManager::class);
+        $this->playlistManagerMock = $this->createMock(PlaylistManager::class);
         $this->sessionManager = new SessionManager(
             $this->sessionRepositoryMock,
             $this->loggerMock,
             $this->sessionMapperMock,
             $this->mercurePublisherMock,
-            $this->sessionParticipantManagerMock
+            $this->sessionParticipantManagerMock,
+            $this->playlistManagerMock,
         );
     }
 
@@ -47,7 +51,7 @@ class SessionManagerTest extends TestCase
             ->setFirstName('John')
         ;
 
-        $request = new CreateSessionRequest('Session Test', 5);
+        $request = new CreateSessionRequest('Session Test', 'Playlist Test', 5);
         $session = new Session();
 
         $this->sessionMapperMock->expects($this->once())
@@ -66,12 +70,15 @@ class SessionManagerTest extends TestCase
             ->with($session, true)
         ;
 
+        $this->playlistManagerMock->expects($this->once())
+            ->method('createSessionPlaylist')
+            ->with($host, 'CODE123', 'Playlist Test')
+        ;
+
         $this->sessionParticipantManagerMock->expects($this->once())
             ->method('joinSession')
             ->with($session, 'John')
         ;
-
-        $this->loggerMock->expects($this->once())->method('info');
 
         $result = $this->sessionManager->createSession($host, $request);
         $this->assertSame($session, $result);
@@ -96,7 +103,6 @@ class SessionManagerTest extends TestCase
             ->with($session, true)
         ;
 
-        $this->loggerMock->expects($this->once())->method('info');
         $this->sessionManager->endSession($session, $host);
     }
 

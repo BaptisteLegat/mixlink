@@ -4,14 +4,16 @@ namespace App\User;
 
 use App\ApiResource\ApiReference;
 use App\Entity\User;
+use App\Playlist\PlaylistMapper;
 use App\Provider\ProviderMapper;
+use App\Repository\PlaylistRepository;
+use App\Security\Provider\SoundCloudUserData;
 use App\Session\Mapper\SessionMapper;
 use App\Subscription\SubscriptionMapper;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 
 class UserMapper
 {
@@ -19,6 +21,8 @@ class UserMapper
         private ProviderMapper $providerMapper,
         private SubscriptionMapper $subscriptionMapper,
         private SessionMapper $sessionMapper,
+        private PlaylistMapper $playlistMapper,
+        private PlaylistRepository $playlistRepository,
     ) {
     }
 
@@ -40,7 +44,7 @@ class UserMapper
             $this->mapGoogleUser($resourceOwner, $user);
         } elseif ($resourceOwner instanceof SpotifyResourceOwner) {
             $this->mapSpotifyUser($resourceOwner, $user);
-        } elseif ($resourceOwner instanceof SoundCloudResourceOwner) {
+        } elseif ($resourceOwner instanceof SoundCloudUserData) {
             $this->mapSoundcloudUser($resourceOwner, $user);
         }
 
@@ -70,7 +74,7 @@ class UserMapper
         }
     }
 
-    private function mapSoundcloudUser(SoundCloudResourceOwner $resourceOwner, User $user): void
+    private function mapSoundcloudUser(SoundCloudUserData $resourceOwner, User $user): void
     {
         $user->setFirstName((string) $resourceOwner->getFirstName());
         $user->setLastName((string) $resourceOwner->getLastName());
@@ -104,6 +108,10 @@ class UserMapper
 
         $session = $user->getCurrentSession();
         $userModel->setCurrentSession(null !== $session ? $this->sessionMapper->mapModel($session) : null);
+
+        $exportedPlaylists = $this->playlistRepository->findExportedPlaylistsByUser($user);
+        $playlistModels = array_map(fn ($playlist) => $this->playlistMapper->mapModel($playlist), $exportedPlaylists);
+        $userModel->setExportedPlaylists($playlistModels);
 
         return $userModel;
     }

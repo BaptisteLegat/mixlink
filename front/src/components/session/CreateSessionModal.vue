@@ -19,8 +19,11 @@
 
     const form = ref({
         name: '',
+        playlistName: '',
         maxParticipants: 3,
     });
+
+    const validationErrors = ref({});
 
     const maxParticipantsLimit = computed(() => {
         return subscriptionStore.currentPlanMaxParticipants;
@@ -50,6 +53,11 @@
             { min: 3, message: t('session.form.validation.name_min'), trigger: 'blur' },
             { max: 50, message: t('session.form.validation.name_max'), trigger: 'blur' },
         ],
+        playlistName: [
+            { required: true, message: t('session.form.validation.playlist_name_required'), trigger: 'blur' },
+            { min: 3, message: t('session.form.validation.playlist_name_min'), trigger: 'blur' },
+            { max: 50, message: t('session.form.validation.playlist_name_max'), trigger: 'blur' },
+        ],
     };
 
     const formRef = ref(null);
@@ -68,8 +76,10 @@
     function resetForm() {
         form.value = {
             name: '',
+            playlistName: '',
             maxParticipants: maxParticipantsLimit.value,
         };
+        validationErrors.value = {};
         if (formRef.value) {
             formRef.value.resetFields();
         }
@@ -88,14 +98,25 @@
         await formRef.value.validate(async (valid) => {
             if (valid) {
                 loading.value = true;
+                validationErrors.value = {};
                 try {
                     const session = await sessionStore.createSession(form.value);
                     createdSession.value = session;
+                    validationErrors.value = {};
 
                     ElMessage.success(t('session.create.success'));
                 } catch (error) {
-                    console.error('Error creating session:', error);
-                    ElMessage.error(t('session.create.error'));
+                    if (error.validationErrors) {
+                        validationErrors.value = {};
+                        error.validationErrors.forEach((validationError) => {
+                            const field = validationError.propertyPath;
+                            const messageKey = validationError.message;
+                            validationErrors.value[field] = t(messageKey);
+                        });
+                    } else {
+                        const errorMessage = error.translationKey ? t(error.translationKey) : t('session.create.error');
+                        ElMessage.error(errorMessage);
+                    }
                 } finally {
                     loading.value = false;
                 }
@@ -145,6 +166,12 @@
         createdSession.value = null;
     }
 
+    function clearValidationError(field) {
+        if (validationErrors.value[field]) {
+            delete validationErrors.value[field];
+        }
+    }
+
     function navigateToSession() {
         if (createdSession.value) {
             window.location.href = `/session/${createdSession.value.code}`;
@@ -153,6 +180,7 @@
 
     defineExpose({
         showDialog,
+        clearValidationError,
     });
 </script>
 
@@ -243,11 +271,33 @@
         </div>
 
         <div v-else class="create-session-form">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
                 <el-form-item :label="t('session.form.name')" prop="name">
-                    <el-input v-model="form.name" :placeholder="t('session.form.name_placeholder')" maxlength="50" show-word-limit />
+                    <el-input
+                        v-model="form.name"
+                        :placeholder="t('session.form.name_placeholder')"
+                        maxlength="50"
+                        show-word-limit
+                        :class="{ 'is-error': validationErrors.name }"
+                        @input="clearValidationError('name')"
+                    />
+                    <div v-if="validationErrors.name" class="el-form-item__error">
+                        {{ validationErrors.name }}
+                    </div>
                 </el-form-item>
-
+                <el-form-item :label="t('session.form.playlist_name')" prop="playlistName">
+                    <el-input
+                        v-model="form.playlistName"
+                        :placeholder="t('session.form.playlist_name_placeholder')"
+                        maxlength="50"
+                        show-word-limit
+                        :class="{ 'is-error': validationErrors.playlistName }"
+                        @input="clearValidationError('playlistName')"
+                    />
+                    <div v-if="validationErrors.playlistName" class="el-form-item__error">
+                        {{ validationErrors.playlistName }}
+                    </div>
+                </el-form-item>
                 <el-alert
                     :title="t('session.form.participants_limit', { limit: maxParticipantsLimit, plan: planTitle })"
                     type="info"
@@ -286,25 +336,85 @@
 <style lang="scss" scoped>
     .create-session-form {
         .el-form-item {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            align-items: flex-start;
+            .el-form-item__label {
+                white-space: nowrap;
+                font-weight: 500;
+                color: var(--el-text-color-primary);
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .el-form-item__content {
+                width: 100%;
+            }
+            .el-form-item__error {
+                margin-top: 2px;
+                font-size: 13px;
+                color: var(--el-color-danger);
+            }
+
+            .el-input.is-error .el-input__wrapper {
+                box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+            }
         }
     }
 
-    .share-session {
+    .el-dialog {
+        background: var(--el-bg-color-overlay, #18181c);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        padding: 0 0 12px 0;
+        max-width: 500px;
+        width: 95vw;
+    }
+
+    .el-dialog__header {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .el-dialog__body {
+        padding-top: 0;
+    }
+
+    .el-form-item__label.is-required::before {
+        color: #e57373;
+        font-size: 1.1em;
+        margin-right: 3px;
+        position: relative;
+        top: 1px;
+    }
+
+    @media (max-width: 600px) {
+        .el-dialog {
+            max-width: 98vw;
+            padding: 0 0 8px 0;
+        }
+        .el-dialog__header {
+            font-size: 1.1rem;
+        }
+        .el-form-item__label {
+            font-size: 15px;
+        }
+    }
+
+    .share-session,
+    .existing-session {
         .session-info {
             margin-bottom: 20px;
         }
-
         .share-options {
             .share-item {
                 margin-bottom: 15px;
-
                 label {
                     display: block;
                     margin-bottom: 5px;
                     font-weight: 500;
                 }
-
                 .share-input-group {
                     display: flex;
                     align-items: center;

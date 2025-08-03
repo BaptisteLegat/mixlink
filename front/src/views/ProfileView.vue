@@ -5,6 +5,8 @@
     import GradientBackground from '@/components/ui/GradientBackground.vue';
     import DeleteAccountModal from '@/components/user/DeleteAccountModal.vue';
     import DisconnectProviderModal from '@/components/user/DisconnectProviderModal.vue';
+    import PlaylistHistorySection from '@/components/user/PlaylistHistorySection.vue';
+    import CurrentPlanFeatures from '@/components/user/CurrentPlanFeatures.vue';
     import UserIcon from 'vue-material-design-icons/Account.vue';
     import PlanSelector from '@/components/subscription/PlanSelector.vue';
     import UnsubscribeModal from '@/components/subscription/UnsubscribeModal.vue';
@@ -125,6 +127,8 @@
                                 {{ hasActiveSubscription ? t('profile.change_subscription') : t('profile.choose_subscription') }}
                             </el-text>
                             <PlanSelector :compact="true" />
+                            <CurrentPlanFeatures />
+                            <PlaylistHistorySection />
                             <el-divider v-if="authStore.providers && authStore.providers.length > 0" />
                             <div class="connected-services" v-if="authStore.providers && authStore.providers.length > 0">
                                 <el-text tag="p" class="info-label">{{ t('profile.connected_services') }}</el-text>

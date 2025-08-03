@@ -6,6 +6,7 @@ use App\Mail\ContactModel;
 use Exception;
 use JsonException;
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 
+#[Route('/api')]
+#[OA\Tag(name: 'Mailer', description: 'Mailer endpoints')]
 class MailerController extends AbstractController
 {
     private const string NO_REPLY_EMAIL = 'noreply@mix-link.fr';
     private const string CONTACT_EMAIL = 'contact@mix-link.fr';
 
-    #[Route('/api/contact', name: 'api_contact', methods: ['POST'])]
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
+
+    #[Route('/contact', name: 'api_contact', methods: ['POST'])]
     #[OA\Post(
         path: '/api/contact',
         summary: 'Send an email from the contact form',
@@ -133,6 +140,11 @@ class MailerController extends AbstractController
 
             return new JsonResponse(['success' => true]);
         } catch (Exception $e) {
+            $this->logger->error('Error sending contact email', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return new JsonResponse(['error' => 'contact.form.error_message'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -12,7 +12,12 @@
     const dialogVisible = ref(false);
     const loading = ref(false);
 
-    const emit = defineEmits(['account-deleted']);
+    const emit = defineEmits({
+        'account-deleted': {
+            type: 'update',
+            default: () => {},
+        },
+    });
 
     async function confirmDelete() {
         loading.value = true;
@@ -23,7 +28,8 @@
             router.push('/');
         } catch (error) {
             console.error('Delete account error:', error);
-            ElMessage.error(t('profile.delete_account.error'));
+            const errorMessage = error.translationKey ? t(error.translationKey) : t('profile.delete_account.error');
+            ElMessage.error(errorMessage);
         } finally {
             loading.value = false;
         }

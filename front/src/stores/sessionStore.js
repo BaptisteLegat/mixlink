@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { fetchWithAuth } from '@/api.js';
+import { apiAddSongToPlaylist, apiRemoveSongFromPlaylist } from '@/api';
 
 export const useSessionStore = defineStore('session', () => {
     const currentSession = ref(null);
@@ -16,16 +17,27 @@ export const useSessionStore = defineStore('session', () => {
         try {
             const response = await fetchWithAuth('/api/session', {
                 method: 'POST',
-                body: JSON.stringify(sessionData),
+                body: JSON.stringify({
+                    ...sessionData,
+                    playlistName: sessionData.playlistName,
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create session');
+                const errorData = await response.json();
+                const error = new Error('Failed to create session');
+                if (errorData.errors) {
+                    error.validationErrors = errorData.errors;
+                } else if (errorData.error) {
+                    error.translationKey = errorData.error;
+                }
+                throw error;
             }
 
             const session = await response.json();
             mySessions.value.push(session);
             currentSession.value = session;
+
             return session;
         } finally {
             isLoading.value = false;
@@ -40,11 +52,17 @@ export const useSessionStore = defineStore('session', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Session not found');
+                const errorData = await response.json();
+                const error = new Error('Session not found');
+                if (errorData.error) {
+                    error.translationKey = errorData.error;
+                }
+                throw error;
             }
 
             const session = await response.json();
             currentSession.value = session;
+
             return session;
         } finally {
             isLoading.value = false;
@@ -98,7 +116,12 @@ export const useSessionStore = defineStore('session', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to end session');
+                const errorData = await response.json();
+                const error = new Error('Failed to end session');
+                if (errorData.error) {
+                    error.translationKey = errorData.error;
+                }
+                throw error;
             }
 
             mySessions.value = mySessions.value.filter((session) => session.code !== code);
@@ -124,7 +147,11 @@ export const useSessionStore = defineStore('session', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'session.remove.error');
+                const error = new Error('Failed to remove participant');
+                if (result.error) {
+                    error.translationKey = result.error;
+                }
+                throw error;
             }
 
             return result;
@@ -144,7 +171,11 @@ export const useSessionStore = defineStore('session', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'session.join.error');
+                const error = new Error('Failed to join session');
+                if (result.error) {
+                    error.translationKey = result.error;
+                }
+                throw error;
             }
 
             return result;
@@ -178,6 +209,24 @@ export const useSessionStore = defineStore('session', () => {
         }
     }
 
+    async function addSongToPlaylist(playlistId, songData) {
+        const result = await apiAddSongToPlaylist(playlistId, songData);
+        if (currentSession.value && currentSession.value.playlist && currentSession.value.playlist.id === playlistId) {
+            await getSessionByCode(currentSession.value.code);
+        }
+
+        return result;
+    }
+
+    async function removeSongFromPlaylist(playlistId, spotifyId) {
+        const result = await apiRemoveSongFromPlaylist(playlistId, spotifyId);
+        if (currentSession.value && currentSession.value.playlist && currentSession.value.playlist.id === playlistId) {
+            await getSessionByCode(currentSession.value.code);
+        }
+
+        return result;
+    }
+
     function leaveCurrentSession() {
         currentSession.value = null;
     }
@@ -202,5 +251,7 @@ export const useSessionStore = defineStore('session', () => {
         initCurrentSessionFromProfile,
         getParticipants,
         checkGuestSession,
+        addSongToPlaylist,
+        removeSongFromPlaylist,
     };
 });

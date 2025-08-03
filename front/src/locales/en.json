@@ -72,6 +72,27 @@
             "disconnect_main_title": "Warning: Main Authentication Service",
             "disconnect_main_warning": "This service is used to log in to mixlink. If you disconnect it, you will be automatically logged out of your mixlink account.",
             "disconnect_main_success": "Service disconnected. You have been logged out of your account."
+        },
+        "playlist_history": {
+            "title": "Playlist History",
+            "description": "Find all your playlists exported from mixlink.",
+            "default_name": "Unnamed Playlist",
+            "created_on": "Created on",
+            "updated_on": "Updated on",
+            "open_playlist": "Open",
+            "songs_count": "{count} song | {count} songs",
+            "view_songs": "View songs",
+            "and_more": "and {count} other | and {count} others",
+            "no_playlists": "No exported playlists yet",
+            "remaining_playlists": "{remaining}/{total} playlists remaining",
+            "plan_limit_title": "Playlists limited by your plan",
+            "plan_limit_description": "You see {visible} playlists out of {total} total. Upgrade to premium plan to see all your playlists."
+        },
+        "current_plan_features": {
+            "title": "Included Features",
+            "max_participants": "Up to {count} participants per session",
+            "upgrade_title": "Upgrade to premium for more features",
+            "upgrade_description": "Unlock advanced features and increase the number of participants in your sessions."
         }
     },
     "footer": {
@@ -120,8 +141,8 @@
             "change_plan_cta": "Change plan",
             "free": {
                 "title": "Free",
-                "feature1": "Create up to 5 playlists",
-                "feature2": "Add up to 50 songs per playlist",
+                "feature1": "Create up to 3 playlists",
+                "feature2": "Add up to 30 songs per playlist",
                 "feature3": "Maximum of 3 participants per session",
                 "cta": "Get Started, Free"
             },
@@ -188,7 +209,9 @@
         "cancel": "Cancel",
         "loading": "Loading...",
         "close": "Close",
+        "month": "month",
         "unauthorized": "You are not authorized",
+        "confirm": "Confirm",
         "error_fetch_profile": "Error fetching profile.",
         "error_logout": "Error during logout.",
         "error_delete_account": "Error deleting account.",
@@ -215,7 +238,7 @@
         "section3": {
             "title": "Authentication and user accounts",
             "content": "When registering, you must provide accurate information and keep it up to date. You are responsible for maintaining the confidentiality of your credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account or any other security breach.",
-            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Apple Music, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through the music streaming platforms you already use (Spotify, Google, Soundcloud, etc.). By using this sign-in method, you authorize mixlink to access certain information from your profile on these platforms, in accordance with their privacy policies. You are responsible for all activities that occur under your account and must notify us immediately of any unauthorized use or security breach."
         },
         "section4": {
             "title": "Copyright and intellectual property",
@@ -236,7 +259,7 @@
         "section1": {
             "title": "Information collection",
             "content": "We collect information when you register on our site, log in to your account, create playlists, or share content. The information collected includes your name, email address, and potentially your music preferences and application usage history.",
-            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Apple Music, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
+            "content_oauth": "mixlink uses OAuth authentication to allow you to sign in through your preferred music streaming platforms such as Spotify, Google, Soundcloud, etc. When you connect, we receive certain information from these services, including your name, email address, profile picture, and unique identifier. We also collect information about your music preferences and your usage history of our application to enhance your experience."
         },
         "section2": {
             "title": "Use of information",
@@ -313,13 +336,13 @@
             },
             "platforms": {
                 "question": "Which streaming platforms are supported?",
-                "answer": "Currently, mixlink supports Spotify, Apple Music, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
+                "answer": "Currently, mixlink supports Spotify, Soundcloud, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
             }
         },
         "account": {
             "create": {
                 "question": "How do I create an account?",
-                "answer": "mixlink uses OAuth authentication, which means you don't need to create a separate account. You can simply sign in with your existing Spotify, Google, or Apple Music account. Click on 'Login' in the menu and choose your preferred platform to get started."
+                "answer": "mixlink uses OAuth authentication, which means you don't need to create a separate account. You can simply sign in with your existing Spotify, Google, or Soundcloud account. Click on 'Login' in the menu and choose your preferred platform to get started."
             },
             "delete": {
                 "question": "How can I delete my account?",
@@ -366,16 +389,28 @@
             "success": "Session created successfully!",
             "error": "Error creating session",
             "error_session_not_found": "Session not found",
-            "error_not_host": "You are not the host of this session"
+            "error_not_host": "You are not the host of this session",
+            "error_max_playlists_reached": "You have reached the maximum number of playlists for your plan.",
+            "no_subscription": "You need to be subscribed to create a session.",
+            "errors": {
+                "name_required": "Session name is required",
+                "playlist_name_required": "Playlist name is required",
+                "max_participants_invalid": "Maximum participants must be between 1 and 10"
+            }
         },
         "form": {
             "name": "Name",
             "name_placeholder": "Session name",
+            "playlist_name": "Playlist name",
+            "playlist_name_placeholder": "Name of the playlist to export",
             "participants_limit": "With your {plan} plan, you can invite up to {limit} participants",
             "validation": {
                 "name_required": "Name is required",
                 "name_min": "Name must be at least 3 characters",
-                "name_max": "Name cannot exceed 50 characters"
+                "name_max": "Name cannot exceed 50 characters",
+                "playlist_name_required": "Playlist name is required",
+                "playlist_name_min": "Playlist name must be at least 3 characters",
+                "playlist_name_max": "Playlist name cannot exceed 50 characters"
             }
         },
         "share": {
@@ -394,7 +429,9 @@
         "info": {
             "name": "Name",
             "code": "Code",
-            "description": "Description"
+            "description": "Description",
+            "max_participants": "Maximum participants",
+            "participants": "participants"
         },
         "participants": {
             "title": "Participants",
@@ -402,11 +439,6 @@
             "guest": "Guest",
             "waiting": "Waiting for participants...",
             "error_session_not_found": "Session not found"
-        },
-        "playlist": {
-            "title": "Collaborative Playlist",
-            "empty": "No music added",
-            "empty_description": "Start adding tracks to the collaborative playlist!"
         },
         "join": {
             "title": "Join session",
@@ -485,6 +517,9 @@
         },
         "get_by_code": {
             "error_session_not_found": "Session not found"
+        },
+        "mercure": {
+            "connection_error": "Real-time connection error"
         }
     },
     "provider": {
@@ -496,6 +531,7 @@
     },
     "subscription": {
         "start": {
+            "success": "Subscription started successfully.",
             "error_plan_not_found": "Requested plan not found.",
             "error_stripe_price_id_not_configured": "The plan is not properly configured for Stripe.",
             "error_unable_to_create_checkout_session": "Unable to create Stripe checkout session."
@@ -506,10 +542,42 @@
             "success": "Subscription cancelled successfully."
         },
         "change": {
+            "success": "Subscription changed successfully.",
             "error_no_active_subscription": "No active subscription found.",
             "error_plan_not_found": "Requested plan not found.",
             "error_already_subscribed_to_this_plan": "You are already subscribed to this plan.",
-            "error_failed_to_change_subscription": "Failed to change subscription."
+            "error_failed_to_change_subscription": "Failed to change subscription.",
+            "error": "Error changing subscription.",
+            "warning": {
+                "downgrade": "You are about to downgrade your subscription. Some features will be disabled.",
+                "participants_limit": "With the free plan, you can only invite up to 3 participants maximum.",
+                "active_sessions": "Your active sessions with more than 3 participants will be affected.",
+                "playlist_limit": "With the free plan, you can only keep 3 playlists maximum. The oldest ones will be kept.",
+                "free_limitations": "The free plan has limitations. Check the details above."
+            },
+            "blocking": {
+                "title": "Subscription change not possible",
+                "active_session": "You must end your active session before switching to the free plan. Active sessions are not compatible with free plan limitations."
+            },
+            "confirmation": {
+                "title": "Confirm subscription change",
+                "summary": "Change summary",
+                "current": "Current plan",
+                "new": "New plan",
+                "features": "Feature comparison",
+                "features_gained": "Features added",
+                "features_lost": "Features lost",
+                "billing_title": "Billing information",
+                "warnings": "Important warnings",
+                "understand": "I understand the consequences of this subscription change",
+                "confirm": "Confirm change",
+                "billing": {
+                    "cancel_info": "Your subscription will be cancelled. You will continue to enjoy premium features until the end of the paid period.",
+                    "immediate_charge": "The amount for your new plan will be charged immediately, in addition to your current plan.",
+                    "first_subscription": "You will be charged immediately for your first premium subscription.",
+                    "proration": "A prorated credit will be applied for the unused period of your old plan."
+                }
+            }
         }
     },
     "soundcloud": {
@@ -518,5 +586,88 @@
         "email_success": "Your email has been successfully registered!",
         "email_error": "Please enter a valid email.",
         "email_info": "For the proper functioning of the application with SoundCloud, you must define an email address. If you connect other authentication methods, use the same email address."
+    },
+    "music_search": {
+        "placeholder": "Search for a song, artist...",
+        "search_button": "Search",
+        "input_required": "Please enter a search term.",
+        "no_results": "No results found.",
+        "title": "Title",
+        "artists": "Artists",
+        "add_button": "Add",
+        "added": "'{{title}}' added!",
+        "show_more": "Show more",
+        "already_in_playlist": "This song is already in the playlist."
+    },
+    "playlist": {
+        "title": "Collaborative Playlist",
+        "empty": "No music added",
+        "empty_description": "Start adding tracks to the collaborative playlist!",
+        "songs_count": "{count} songs",
+        "add_song": {
+            "success": "Song added to playlist!",
+            "error": "Error adding song to playlist.",
+            "no_playlist": "No playlist selected.",
+            "invalid_data": "Invalid song data.",
+            "limit_reached": "Maximum number of songs reached for this playlist.",
+            "not_found": "Playlist not found.",
+            "unauthorized": "You are not authorized to add a song.",
+            "already_in_playlist": "This song is already in the playlist."
+        },
+        "remove_song": {
+            "confirm_title": "Remove song?",
+            "confirm": "Do you really want to remove the song: {title}?",
+            "success": "Song removed from playlist.",
+            "error": "Error while removing the song."
+        },
+        "export": {
+            "button": "Export playlist",
+            "disabled": {
+                "no_songs": "The playlist contains no songs to export",
+                "no_platforms": "No streaming platform connected",
+                "not_allowed": "You are not allowed to export this playlist",
+                "already_exported": "This playlist has already been exported (free plan limitation)"
+            },
+            "error": {
+                "load_platforms": "Error loading available platforms",
+                "network_error": "Network error during export",
+                "user_not_connected": "You are not connected to this platform",
+                "playlist_not_found": "Playlist not found",
+                "export_failed": "Playlist export failed",
+                "no_songs": "The playlist contains no songs",
+                "no_platform_available": "No platform available for export",
+                "token_expired": "Session expired, please reconnect",
+                "token_refresh_failed": "Unable to refresh session",
+                "no_refresh_token": "Session expired. Please reconnect to get a new token.",
+                "youtube_permissions": "Insufficient YouTube permissions. Please reconnect and accept all permissions.",
+                "free_user_limit_reached": "You have already exported this playlist. With the free plan, you can only export once per playlist."
+            },
+            "success": "Playlist exported successfully!",
+            "confirmation": {
+                "title": "Confirm export",
+                "message": "With the free plan, you can only export once per playlist. Do you want to continue?",
+                "confirm": "Export"
+            },
+            "modal": {
+                "title": "Export playlist",
+                "description": "Exporting to your connected platform...",
+                "description_waiting": "Ready to export to your connected platform.",
+                "description_completed": "Export completed successfully!",
+                "description_error": "An error occurred during export.",
+                "select_platform": "Select a platform",
+                "progress": "Exporting... {current}/{total} tracks processed",
+                "success_title": "Export successful!",
+                "exported_tracks": "{count} tracks exported successfully",
+                "failed_tracks": "{count} tracks could not be exported",
+                "open_playlist": "Open playlist",
+                "error_title": "Export error",
+                "export_button": "Export"
+            }
+        }
+    },
+    "platforms": {
+        "spotify": "Spotify",
+        "youtube": "YouTube Music",
+        "soundcloud": "SoundCloud"
     }
 }

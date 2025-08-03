@@ -32,7 +32,7 @@
     <el-footer class="footer">
         <el-row justify="center" align="middle" class="footer-container">
             <el-col :span="24" class="text-center">
-                <el-link :underline="false" @click="navigateTo('/')">
+                <el-link underline="never" @click="navigateTo('/')">
                     <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
                     <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" class="logo" fit="contain" />
                     <h1 :class="isDark ? 'primary-dark' : 'primary'" class="logo-text">link</h1>
@@ -43,7 +43,7 @@
                     <el-link
                         v-for="(social, index) in socialLinks"
                         :key="`social-${index}`"
-                        :underline="false"
+                        underline="never"
                         :href="social.url"
                         target="_blank"
                         :aria-label="social.name"
@@ -57,7 +57,7 @@
                     <el-link
                         v-for="(link, index) in footerLinks"
                         :key="`footer-link-${index}`"
-                        :underline="false"
+                        underline="never"
                         @click="navigateTo(link.path)"
                         class="footer-link"
                     >

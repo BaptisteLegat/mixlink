@@ -8,9 +8,9 @@ use App\Entity\User;
 use App\Provider\ProviderMapper;
 use App\Provider\ProviderModel;
 use App\Security\OAuthUserData;
+use App\Security\Provider\SoundCloudUserData;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use PHPUnit\Framework\TestCase;
 
 class ProviderMapperTest extends TestCase
@@ -74,7 +74,7 @@ class ProviderMapperTest extends TestCase
 
     public function testMapEntitySoundCloud(): void
     {
-        $soundcloud = new SoundCloudResourceOwner([
+        $soundcloud = new SoundCloudUserData([
             'id' => 'sc_123',
             'full_name' => 'SC User',
             'avatar_url' => 'http://soundcloud.com/avatar.jpg',
@@ -158,7 +158,7 @@ class ProviderMapperTest extends TestCase
 
     public function testMapEntityWithExistingProviderSoundCloud(): void
     {
-        $soundcloud = new SoundCloudResourceOwner([
+        $soundcloud = new SoundCloudUserData([
             'id' => 'sc_456',
             'full_name' => 'SC User 2',
             'avatar_url' => 'http://soundcloud.com/avatar2.jpg',

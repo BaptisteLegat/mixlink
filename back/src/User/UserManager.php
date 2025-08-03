@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\UserRepository;
 use App\Security\OAuthUserData;
+use App\Security\Provider\SoundCloudUserData;
 use App\Subscription\SubscriptionManager;
 use App\Trait\TraceableTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +16,6 @@ use Exception;
 use InvalidArgumentException;
 use Kerox\OAuth2\Client\Provider\SpotifyResourceOwner;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Martin1982\OAuth2\Client\Provider\SoundCloudResourceOwner;
 use Psr\Log\LoggerInterface;
 
 class UserManager
@@ -34,12 +34,12 @@ class UserManager
 
     public function create(OAuthUserData $oauthUserData, string $provider): User
     {
-        /** @var GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner */
+        /** @var GoogleUser|SpotifyResourceOwner|SoundCloudUserData $resourceOwner */
         $resourceOwner = $oauthUserData->getUser();
 
         $email = '';
 
-        if (!$resourceOwner instanceof SoundCloudResourceOwner) {
+        if (!$resourceOwner instanceof SoundCloudUserData) {
             $email = (string) $resourceOwner->getEmail();
         }
 
@@ -65,7 +65,7 @@ class UserManager
     }
 
     /**
-     * @param GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner
+     * @param GoogleUser|SpotifyResourceOwner|SoundCloudUserData $resourceOwner
      */
     private function findExistingUser($resourceOwner, string $provider, string $email): ?User
     {
@@ -77,7 +77,7 @@ class UserManager
     }
 
     /**
-     * @param GoogleUser|SpotifyResourceOwner|SoundCloudResourceOwner $resourceOwner
+     * @param GoogleUser|SpotifyResourceOwner|SoundCloudUserData $resourceOwner
      */
     private function findSoundCloudUser($resourceOwner, string $provider): ?User
     {
@@ -207,7 +207,7 @@ class UserManager
         });
 
         if (1 !== count($activeProviders) || ApiReference::SOUNDCLOUD !== $activeProviders[0]->getName()) {
-            throw new InvalidArgumentException('profile.email.not_soundcloud_only');
+            throw new InvalidArgumentException('The user has not only a SoundCloud provider');
         }
         $existingUser = $this->userRepository->findOneBy(['email' => $email]);
         if ($existingUser && $existingUser->getId() !== $user->getId()) {

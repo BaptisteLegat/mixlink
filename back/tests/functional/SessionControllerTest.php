@@ -106,8 +106,8 @@ class SessionControllerTest extends WebTestCase
 
         $payload = [
             'name' => 'Nouvelle session',
-            'description' => 'Description de test',
-            'maxParticipants' => 5,
+            'playlistName' => 'Playlist de test',
+            'maxParticipants' => 3,
         ];
         $this->client->request(
             'POST',
@@ -117,11 +117,14 @@ class SessionControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($payload)
         );
+
         $this->assertResponseStatusCodeSame(201);
+
         $data = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertArrayHasKey('id', $data);
         $this->assertEquals('Nouvelle session', $data['name']);
-        $this->assertEquals(5, $data['maxParticipants']);
+        $this->assertEquals(3, $data['maxParticipants']);
         $this->assertArrayHasKey('host', $data);
         $this->assertArrayHasKey('createdAt', $data);
         $this->assertArrayHasKey('code', $data);
@@ -138,6 +141,27 @@ class SessionControllerTest extends WebTestCase
             json_encode(['name' => 'Session'])
         );
         $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testCreateSessionWithoutSubscription(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'session-host-no-subscription@test.fr']);
+        $provider = $user->getProviders()->first();
+        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
+
+        $this->client->request(
+            'POST',
+            '/api/session',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['name' => 'Session'])
+        );
+        $this->assertResponseStatusCodeSame(403);
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('error', $data);
+        $this->assertEquals('session.create.no_subscription', $data['error']);
     }
 
     public function testCreateSessionInvalidData(): void
@@ -157,7 +181,76 @@ class SessionControllerTest extends WebTestCase
         );
         $this->assertResponseStatusCodeSame(400);
         $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
+        $this->assertNotEmpty($data['errors']);
+
+        $errorMessages = array_column($data['errors'], 'message');
+        $this->assertContains('session.create.errors.name_required', $errorMessages);
+        $this->assertContains('session.create.errors.playlist_name_required', $errorMessages);
+    }
+
+    public function testCreateSessionMaxPlaylistsReached(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'session-host-max-playlists@test.fr']);
+        $provider = $user->getProviders()->first();
+        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
+
+        $payload = [
+            'name' => 'Nouvelle session',
+            'playlistName' => 'Playlist de test',
+            'maxParticipants' => 5,
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/session',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload)
+        );
+
+        $this->assertResponseStatusCodeSame(403);
+        $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $data);
+        $this->assertEquals('session.create.error_max_playlists_reached', $data['error']);
+    }
+
+    public function testCreateSessionWithException(): void
+    {
+        $user = $this->userRepository->findOneBy(['email' => 'session-host@test.fr']);
+        $provider = $user->getProviders()->first();
+        $this->providerManagerMock->method('findByAccessToken')->willReturn($user);
+        $this->client->getCookieJar()->set(new Cookie('AUTH_TOKEN', $provider->getAccessToken()));
+
+        $sessionManagerMock = $this->createMock(SessionManager::class);
+        $sessionManagerMock->method('createSession')
+            ->willThrowException(new Exception('Test exception'))
+        ;
+
+        static::getContainer()->set(SessionManager::class, $sessionManagerMock);
+
+        $payload = [
+            'name' => 'Nouvelle session',
+            'playlistName' => 'Playlist de test',
+            'maxParticipants' => 5,
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/session',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload)
+        );
+
+        $this->assertResponseStatusCodeSame(400);
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('error', $data);
+        $this->assertEquals('session.create.error', $data['error']);
     }
 
     public function testJoinSessionPseudoRequired(): void

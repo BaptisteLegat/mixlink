@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { fetchWithAuth } from '@/api.js';
+import { useSessionStore } from '@/stores/sessionStore';
 
 export const useMercureStore = defineStore('mercure', () => {
     const mercureConnection = ref(null);
@@ -18,7 +19,12 @@ export const useMercureStore = defineStore('mercure', () => {
                 method: 'GET',
             });
             if (!tokenResponse.ok) {
-                error.value = await tokenResponse.text();
+                const errorData = await tokenResponse.json();
+                const mercureError = new Error('Mercure connection failed');
+                if (errorData.error) {
+                    mercureError.translationKey = errorData.error;
+                }
+                error.value = mercureError;
                 isConnected.value = false;
 
                 return;
@@ -31,6 +37,12 @@ export const useMercureStore = defineStore('mercure', () => {
             mercureConnection.value.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 lastMessage.value = data;
+                if (data.event === 'playlist_updated' && data.playlist) {
+                    const sessionStore = useSessionStore();
+                    if (sessionStore.currentSession && sessionStore.currentSession.playlist) {
+                        sessionStore.currentSession.playlist = data.playlist;
+                    }
+                }
                 if (onMessage) {
                     onMessage(data);
                 }

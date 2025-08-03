@@ -33,6 +33,9 @@ class Plan implements BlameableInterface, TimestampableInterface
         self::CUSTOME_MADE => 'Custom',
     ];
 
+    public const MAX_SONGS_FREE = 30;
+    public const MAX_PLAYLISTS_FREE = 3;
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -144,5 +147,23 @@ class Plan implements BlameableInterface, TimestampableInterface
         $this->stripePriceId = $stripePriceId;
 
         return $this;
+    }
+
+    public function getMaxSongs(): ?int
+    {
+        if (self::FREE === $this->name) {
+            return self::MAX_SONGS_FREE;
+        }
+
+        return null;
+    }
+
+    public function getMaxPlaylists(): ?int
+    {
+        if (self::FREE === $this->name) {
+            return self::MAX_PLAYLISTS_FREE;
+        }
+
+        return null;
     }
 }

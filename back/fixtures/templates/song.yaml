@@ -1,0 +1,10 @@
+App\Entity\Song:
+  song (template):
+    spotifyId: 'spotify_song_id_123'
+    title: 'Test Song'
+    artists: 'Test Artist'
+    image: 'https://example.com/image.jpg'
+    createdBy: "anon."
+    createdAt: <(new DateTime('2022-08-04 13:36:07.489379'))>
+    updatedBy: "anon."
+    updatedAt: <(new DateTime('2022-08-04 13:36:07.489379'))>

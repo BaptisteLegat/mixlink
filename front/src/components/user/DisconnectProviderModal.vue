@@ -16,21 +16,27 @@
     const currentProvider = ref(null);
 
     const providerIcon = computed(() => {
-        if (!currentProvider.value) return null;
+        if (!currentProvider.value) {
+            return null;
+        }
 
         return getProviderIcon(currentProvider.value.name);
     });
 
     const providerName = computed(() => {
-        if (!currentProvider.value) return '';
+        if (!currentProvider.value) {
+            return '';
+        }
 
         return getProviderDisplayName(currentProvider.value.name);
     });
 
     const isCurrentAuthProvider = computed(() => {
-        if (!currentProvider.value) return false;
+        if (!currentProvider.value) {
+            return false;
+        }
 
-        return currentProvider.value.isMain === true;
+        return currentProvider.value.name === authStore.user.providers.find((p) => p.isMain === true).name;
     });
 
     function showDialog(provider) {
@@ -56,7 +62,8 @@
             }
         } catch (error) {
             console.error('Error disconnecting provider:', error);
-            ElMessage.error(t('profile.providers.disconnect_error'));
+            const errorMessage = error.translationKey ? t(error.translationKey) : t('profile.providers.disconnect_error');
+            ElMessage.error(errorMessage);
         } finally {
             loading.value = false;
             currentProvider.value = null;

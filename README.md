@@ -6,11 +6,13 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 
 ## Fonctionnalités principales
 
-- **Authentification OAuth** : Connexions sécurisées via Spotify et Google.
+- **Authentification OAuth** : Connexions sécurisées via Spotify, SoundCloud et Google.
 - **Système de souscription** : Abonnez-vous à des plans freemium via Stripe pour accéder à des fonctionnalités avancées.
-- **Création de sessions** : Créez des sessions collaboratives où les participants peuvent ajouter des morceaux à une playlist.
-- **Ajout de morceaux** : Ajoutez des morceaux à des playlists personnalisées en quelques clics.
+- **Gestion des participants** : Ajoutez ou retirez des participants de la session.
+- **Création de sessions** : Créez des sessions collaboratives où les participants et l'hôte peuvent ajouter des morceaux à une playlist.
+- **Gestion des morceaux** : Ajoutez, retirez ou triez les morceaux de la playlist.
 - **Export de playlists** : Exportez la playlist finale sur le service de streaming de l'utilisateur connecté (hôte).
+- **Historique des playlists** : Consultez l'historique de toutes vos playlists exportées depuis votre page profil.
 - **Formulaire de contact** : Page de contact intégrée pour envoyer des messages.
 - **Interface utilisateur moderne** : Expérience fluide, responsive et intuitive grâce à Vue.js et Element Plus.
 - **Support multilingue** : Disponible en français et en anglais.

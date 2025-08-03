@@ -2,6 +2,7 @@
 
 namespace App\Session\Model;
 
+use App\Playlist\PlaylistModel;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -17,6 +18,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'host', ref: '#/components/schemas/UserModel', description: 'Session host'),
         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', description: 'Creation date'),
         new OA\Property(property: 'endedAt', type: 'string', format: 'date-time', nullable: true, description: 'End date'),
+        new OA\Property(property: 'playlist', ref: '#/components/schemas/PlaylistModel', nullable: true, description: 'Associated playlist'),
     ]
 )]
 class SessionModel
@@ -29,6 +31,7 @@ class SessionModel
     private array $host = [];
     private string $createdAt = '';
     private ?string $endedAt = null;
+    private ?PlaylistModel $playlist = null;
 
     public function getId(): string
     {
@@ -120,6 +123,18 @@ class SessionModel
         return $this;
     }
 
+    public function getPlaylist(): ?PlaylistModel
+    {
+        return $this->playlist;
+    }
+
+    public function setPlaylist(?PlaylistModel $playlist): self
+    {
+        $this->playlist = $playlist;
+
+        return $this;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -133,6 +148,7 @@ class SessionModel
             'host' => $this->host,
             'createdAt' => $this->createdAt,
             'endedAt' => $this->endedAt,
+            'playlist' => $this->playlist?->toArray(),
         ];
     }
 }

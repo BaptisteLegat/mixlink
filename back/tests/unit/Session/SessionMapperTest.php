@@ -2,22 +2,35 @@
 
 namespace App\Tests\Unit\Session;
 
+use App\Entity\Playlist;
 use App\Entity\Session;
+use App\Entity\Song;
 use App\Entity\User;
+use App\Playlist\PlaylistManager;
+use App\Playlist\PlaylistMapper;
+use App\Playlist\PlaylistModel;
 use App\Session\Mapper\SessionMapper;
 use App\Session\Model\Request\CreateSessionRequest;
 use App\Session\Model\SessionModel;
 use DateTime;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class SessionMapperTest extends TestCase
 {
+    private PlaylistManager|MockObject $playlistManagerMock;
+    private PlaylistMapper|MockObject $playlistMapperMock;
     private SessionMapper $sessionMapper;
 
     protected function setUp(): void
     {
-        $this->sessionMapper = new SessionMapper();
+        $this->playlistManagerMock = $this->createMock(PlaylistManager::class);
+        $this->playlistMapperMock = $this->createMock(PlaylistMapper::class);
+        $this->sessionMapper = new SessionMapper(
+            $this->playlistManagerMock,
+            $this->playlistMapperMock,
+        );
     }
 
     public function testMapEntity(): void
@@ -28,7 +41,7 @@ class SessionMapperTest extends TestCase
             ->setEmail('john@doe.com')
         ;
 
-        $request = new CreateSessionRequest('Session Test', 5);
+        $request = new CreateSessionRequest('Session Test', 'Playlist Test', 5);
         $session = $this->sessionMapper->mapEntity($request, $host);
         $this->assertInstanceOf(Session::class, $session);
         $this->assertEquals('Session Test', $session->getName());
@@ -70,6 +83,46 @@ class SessionMapperTest extends TestCase
             'profilePicture' => 'pic.jpg',
             'roles' => ['ROLE_USER'],
         ], $model->getHost());
+    }
+
+    public function testMapModelWithPlaylist(): void
+    {
+        $playlist = new Playlist()
+            ->setName('Playlist Test')
+            ->addSong(new Song())
+        ;
+
+        $host = new User()
+            ->setFirstName('John')
+            ->setLastName('Doe')
+            ->setEmail('john@doe.com')
+            ->setProfilePicture('pic.jpg')
+            ->setRoles(['ROLE_USER'])
+            ->addPlaylist($playlist)
+        ;
+
+        $session = new Session()
+            ->setName('Session Test')
+            ->setCode('CODE123')
+            ->setMaxParticipants(5)
+            ->setHost($host)
+        ;
+
+        $this->playlistManagerMock->expects($this->once())
+            ->method('getPlaylistBySessionCode')
+            ->with('CODE123')
+            ->willReturn($playlist)
+        ;
+
+        $this->playlistMapperMock->expects($this->once())
+            ->method('mapModel')
+            ->with($playlist)
+            ->willReturn(new PlaylistModel())
+        ;
+
+        $model = $this->sessionMapper->mapModel($session);
+        $this->assertInstanceOf(SessionModel::class, $model);
+        $this->assertEquals('Session Test', $model->getName());
     }
 
     public function testMapModelWithNullHost(): void

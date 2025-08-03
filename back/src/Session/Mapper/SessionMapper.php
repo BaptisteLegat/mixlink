@@ -4,29 +4,40 @@ namespace App\Session\Mapper;
 
 use App\Entity\Session;
 use App\Entity\User;
+use App\Playlist\PlaylistManager;
+use App\Playlist\PlaylistMapper;
 use App\Session\Model\Request\CreateSessionRequest;
 use App\Session\Model\SessionModel;
 use RuntimeException;
 
 class SessionMapper
 {
+    public function __construct(
+        private PlaylistManager $playlistManager,
+        private PlaylistMapper $playlistMapper,
+    ) {
+    }
+
     public function mapEntity(CreateSessionRequest $request, User $host): Session
     {
-        $session = new Session();
-        $session->setName($request->name);
-        $session->setMaxParticipants($request->maxParticipants);
-        $session->setHost($host);
+        $session = (new Session())
+            ->setName($request->getName())
+            ->setMaxParticipants($request->getMaxParticipants())
+            ->setHost($host)
+        ;
 
         return $session;
     }
 
     public function mapModel(Session $session): SessionModel
     {
-        $model = new SessionModel();
-        $model->setId($session->getId()?->toRfc4122() ?? '');
-        $model->setName($session->getName());
-        $model->setCode($session->getCode());
-        $model->setMaxParticipants($session->getMaxParticipants());
+        $code = $session->getCode();
+        $model = (new SessionModel())
+            ->setId($session->getId()?->toRfc4122() ?? '')
+            ->setName($session->getName())
+            ->setCode($code)
+            ->setMaxParticipants($session->getMaxParticipants())
+        ;
 
         $host = $session->getHost();
         if (null === $host) {
@@ -43,9 +54,18 @@ class SessionMapper
         ];
 
         $model->setHost($hostArray);
-
         $model->setCreatedAt($session->getCreatedAt()?->format('c') ?? '');
         $model->setEndedAt($session->getEndedAt()?->format('c'));
+
+        $playlist = null;
+        if (null !== $code) {
+            $playlistEntity = $this->playlistManager->getPlaylistBySessionCode($code);
+            if (null !== $playlistEntity) {
+                $playlist = $this->playlistMapper->mapModel($playlistEntity);
+            }
+        }
+
+        $model->setPlaylist($playlist);
 
         return $model;
     }

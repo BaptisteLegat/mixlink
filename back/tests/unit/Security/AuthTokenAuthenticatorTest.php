@@ -8,6 +8,8 @@ use App\Security\AuthTokenAuthenticator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 class AuthTokenAuthenticatorTest extends TestCase
@@ -54,6 +56,13 @@ class AuthTokenAuthenticatorTest extends TestCase
         $request = new Request();
         $request->cookies->set('AUTH_TOKEN', 'invalid');
 
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByAccessToken')
+            ->with('invalid')
+            ->willReturn(null)
+        ;
+
         $result = $this->authTokenAuthenticator->authenticate($request);
 
         $this->assertInstanceOf(SelfValidatingPassport::class, $result);
@@ -72,8 +81,36 @@ class AuthTokenAuthenticatorTest extends TestCase
         $request = new Request();
         $request->cookies->set('AUTH_TOKEN', 'test');
 
+        $this->providerManagerMocked
+            ->expects($this->once())
+            ->method('findByAccessToken')
+            ->with('test')
+            ->willReturn(null)
+        ;
+
         $result = $this->authTokenAuthenticator->authenticate($request);
 
         $this->assertInstanceOf(SelfValidatingPassport::class, $result);
+    }
+
+    public function testOnAuthenticationSuccess(): void
+    {
+        $request = new Request();
+        $token = $this->createMock(TokenInterface::class);
+        $firewallName = 'main';
+
+        $result = $this->authTokenAuthenticator->onAuthenticationSuccess($request, $token, $firewallName);
+
+        $this->assertNull($result);
+    }
+
+    public function testOnAuthenticationFailure(): void
+    {
+        $request = new Request();
+        $exception = $this->createMock(AuthenticationException::class);
+
+        $result = $this->authTokenAuthenticator->onAuthenticationFailure($request, $exception);
+
+        $this->assertNull($result);
     }
 }

@@ -10,6 +10,8 @@
     import GuestJoinCard from '@/components/session/GuestJoinCard.vue';
     import ParticipantsCard from '@/components/session/ParticipantsCard.vue';
     import PlaylistCard from '@/components/session/PlaylistCard.vue';
+    import MusicSearchBar from '@/components/session/MusicSearchBar.vue';
+    import PlaylistExportButton from '@/components/playlist/PlaylistExportButton.vue';
 
     const { t } = useI18n();
     const route = useRoute();
@@ -33,6 +35,14 @@
         if (!session.value) return participants.value;
 
         return participants.value.filter((p) => p.pseudo !== session.value.host.firstName && p.pseudo !== session.value.host.email);
+    });
+
+    const currentAuthProvider = computed(() => {
+        if (!authStore.user) {
+            return null;
+        }
+
+        return authStore.providers.find((p) => p.isMain === true);
     });
 
     function checkGuestJoined() {
@@ -67,7 +77,8 @@
             error.value = null;
         } catch (err) {
             console.error('Error loading session:', err);
-            error.value = t('session.error.not_found');
+            const errorMessage = err.translationKey ? t(err.translationKey) : t('session.error.not_found');
+            error.value = errorMessage;
         } finally {
             isLoading.value = false;
         }
@@ -103,6 +114,8 @@
             onMessage: handleMercureMessage,
             onError: (e) => {
                 console.error('Mercure connection error:', e);
+                const errorKey = e.translationKey ? e.translationKey : 'session.mercure.connection_error';
+                ElMessage.error(t(errorKey));
             },
         });
     }
@@ -117,7 +130,8 @@
             await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             await loadParticipants();
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.kick.error');
+            ElMessage.error(errorMessage);
         }
     }
 
@@ -138,7 +152,8 @@
             sessionStore.leaveCurrentSession();
             router.push('/');
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.leave.error');
+            ElMessage.error(errorMessage);
         }
     }
 
@@ -156,7 +171,8 @@
             router.push('/');
         } catch (error) {
             if (error.message) {
-                ElMessage.error(t('session.end.error'));
+                const errorMessage = error.translationKey ? t(error.translationKey) : t('session.end.error');
+                ElMessage.error(errorMessage);
             }
         }
     }
@@ -188,7 +204,8 @@
 
             await loadParticipants();
         } catch (error) {
-            ElMessage.error(t(error.message));
+            const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.join.error');
+            ElMessage.error(errorMessage);
         }
     }
 
@@ -205,6 +222,8 @@
                 sessionStore.leaveCurrentSession();
                 router.push('/');
 
+                break;
+            case 'playlist_updated':
                 break;
             default:
                 console.log('Unknown Mercure event:', data.event);
@@ -246,7 +265,6 @@
             loadParticipants();
         }
     }
-
     onMounted(async () => {
         checkGuestJoined();
         await loadSession();
@@ -274,7 +292,7 @@
             </el-result>
         </div>
         <div v-else class="session-container">
-            <SessionHeader :session="session" :isHost="isHost" @end-session="endSession" @leave-session="leaveSession" />
+            <SessionHeader :session="session" :isHost="isHost" :hasJoined="hasJoined" @end-session="endSession" @leave-session="leaveSession" />
             <GuestJoinCard
                 v-if="!hasJoined"
                 :currentUserPseudo="currentUserPseudo"
@@ -290,7 +308,21 @@
                 :isHost="isHost"
                 @kick-participant="kickParticipant"
             />
-            <PlaylistCard />
+            <MusicSearchBar v-if="hasJoined" />
+            <div v-if="hasJoined" class="playlist-section">
+                <PlaylistCard :playlist="sessionStore.currentSession?.playlist" />
+                <div class="export-section">
+                    <PlaylistExportButton
+                        v-if="sessionStore.currentSession?.playlist?.id && isHost"
+                        :playlistId="sessionStore.currentSession.playlist.id"
+                        :songsCount="sessionStore.currentSession.playlist?.songs?.length || 0"
+                        :platform="currentAuthProvider?.name"
+                        :hasBeenExported="sessionStore.currentSession.playlist?.hasBeenExported"
+                        :isFreePlan="!authStore.subscription || !authStore.subscription.isActive || 'free' === authStore.subscription.plan?.name"
+                        :exportedPlaylistUrl="sessionStore.currentSession.playlist?.exportedPlaylistUrl"
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -411,17 +443,25 @@
             }
         }
 
-        .playlist-card {
-            .playlist-header {
-                display: flex;
-                align-items: center;
-                font-weight: 600;
+        .playlist-section {
+            .playlist-card {
+                .playlist-header {
+                    display: flex;
+                    align-items: center;
+                    font-weight: 600;
+                }
+
+                .playlist-content {
+                    min-height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
             }
 
-            .playlist-content {
-                min-height: 300px;
+            .export-section {
+                margin-top: 20px;
                 display: flex;
-                align-items: center;
                 justify-content: center;
             }
         }
@@ -490,13 +530,15 @@
                 }
             }
 
-            .playlist-card {
-                .playlist-header {
-                    font-size: 16px;
-                }
+            .playlist-section {
+                .playlist-card {
+                    .playlist-header {
+                        font-size: 16px;
+                    }
 
-                .playlist-content {
-                    min-height: 200px;
+                    .playlist-content {
+                        min-height: 200px;
+                    }
                 }
             }
         }
