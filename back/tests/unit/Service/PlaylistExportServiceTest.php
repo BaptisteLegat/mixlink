@@ -8,12 +8,10 @@ use App\Service\Export\ExportServiceFactory;
 use App\Service\Export\ExportServiceInterface;
 use App\Service\Export\Model\ExportResult;
 use App\Service\PlaylistExportService;
-use Doctrine\Common\Collections\Collection;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Uid\Uuid;
 
 class PlaylistExportServiceTest extends TestCase
 {
@@ -48,7 +46,6 @@ class PlaylistExportServiceTest extends TestCase
             failedTracks: 1,
             platform: 'spotify',
         );
-
 
         $this->exportServiceFactoryMock
             ->expects($this->once())

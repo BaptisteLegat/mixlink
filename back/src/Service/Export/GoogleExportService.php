@@ -37,9 +37,9 @@ class GoogleExportService implements ExportServiceInterface
             throw new InvalidArgumentException('User is not connected to Google');
         }
 
-        $accessToken = $this->tokenManager->getValidAccessToken($provider);
+        $this->tokenManager->getValidAccessToken($provider);
 
-        $playlistData = $this->createYouTubePlaylist($provider, $playlist->getName() ?? 'MixLink Playlist');
+        $playlistData = $this->createYouTubePlaylist($provider, $playlist->getName() ?? 'mixlink Playlist');
 
         $playlistId = $playlistData['id'];
         $playlistUrl = 'https://www.youtube.com/playlist?list='.$playlistId;
@@ -85,7 +85,7 @@ class GoogleExportService implements ExportServiceInterface
                 'json' => [
                     'snippet' => [
                         'title' => $playlistName,
-                        'description' => 'Created with MixLink',
+                        'description' => 'Created with mixlink',
                     ],
                     'status' => [
                         'privacyStatus' => 'private',

@@ -39,7 +39,7 @@ class SoundCloudExportService implements ExportServiceInterface
             throw new InvalidArgumentException('User is not connected to SoundCloud');
         }
 
-        $playlistData = $this->createSoundCloudPlaylist($provider, $playlist->getName() ?? 'MixLink Playlist');
+        $playlistData = $this->createSoundCloudPlaylist($provider, $playlist->getName() ?? 'mixlink Playlist');
 
         $playlistId = $playlistData['id'];
         $playlistUrl = $playlistData['permalink_url'];
@@ -82,7 +82,7 @@ class SoundCloudExportService implements ExportServiceInterface
                 'json' => [
                     'playlist' => [
                         'title' => $playlistName,
-                        'description' => 'Created with MixLink',
+                        'description' => 'Created with mixlink',
                         'sharing' => 'private',
                     ],
                 ],
@@ -141,12 +141,20 @@ class SoundCloudExportService implements ExportServiceInterface
         $cleanTitle = $this->cleanSearchTerm($title);
         $cleanArtists = $this->cleanSearchTerm($artists);
 
+        // For complex titles like "PATT (Party All The Time)", also try with parentheses content
+        $titleWithParentheses = $this->extractTitleWithParentheses($title);
+
         $searchQueries = [
             $cleanTitle.' '.$cleanArtists,
+            $titleWithParentheses.' '.$cleanArtists,
             $cleanTitle,
+            $titleWithParentheses,
             $cleanArtists.' '.$cleanTitle,
             $cleanTitle.' '.$this->extractMainArtist($cleanArtists),
+            $titleWithParentheses.' '.$this->extractMainArtist($cleanArtists),
         ];
+
+        $searchQueries = array_values(array_unique($searchQueries));
 
         foreach ($searchQueries as $searchQuery) {
             try {
@@ -166,7 +174,7 @@ class SoundCloudExportService implements ExportServiceInterface
                 );
 
                 if (!empty($data)) {
-                    $bestMatch = $this->findBestMatch($data, $cleanTitle, $cleanArtists);
+                    $bestMatch = $this->findBestMatch($data, $cleanTitle, $cleanArtists, $titleWithParentheses);
                     if (null !== $bestMatch) {
                         return $bestMatch;
                     }
@@ -182,10 +190,11 @@ class SoundCloudExportService implements ExportServiceInterface
     /**
      * @param array<int, array<string, mixed>> $tracks
      */
-    private function findBestMatch(array $tracks, string $title, string $artists): ?int
+    private function findBestMatch(array $tracks, string $title, string $artists, string $titleWithParentheses = ''): ?int
     {
         $titleLower = strtolower($title);
         $artistsLower = strtolower($artists);
+        $titleWithParenthesesLower = strtolower($titleWithParentheses);
 
         $bestScore = 0;
         $bestTrackId = null;
@@ -201,6 +210,11 @@ class SoundCloudExportService implements ExportServiceInterface
             $isRemix = $this->isRemixOrCover($trackTitle);
 
             $score = $this->calculateMatchScore($trackTitle, $trackUser, $titleLower, $artistsLower);
+
+            if (!empty($titleWithParenthesesLower) && $titleWithParenthesesLower !== $titleLower) {
+                $scoreWithParentheses = $this->calculateMatchScore($trackTitle, $trackUser, $titleWithParenthesesLower, $artistsLower);
+                $score = max($score, $scoreWithParentheses);
+            }
 
             if ($isRemix) {
                 $score = (int) ($score / self::REMIX_SCORE_DIVISOR);
@@ -243,6 +257,11 @@ class SoundCloudExportService implements ExportServiceInterface
             return true;
         }
 
+        // Special case: if "remix" appears at the end (likely in artist name), it's still a remix
+        if (preg_match('/\bremix\s*$/i', $trackTitle)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -281,6 +300,18 @@ class SoundCloudExportService implements ExportServiceInterface
         return $score;
     }
 
+    private function extractTitleWithParentheses(string $title): string
+    {
+        // If there are parentheses, extract the content and combine with the main part
+        if (preg_match('/^([^(]+)\s*\(([^)]+)\)/', $title, $matches)) {
+            $parenthesesPart = trim($matches[2]);
+
+            return $parenthesesPart;
+        }
+
+        return $title;
+    }
+
     private function cleanSearchTerm(string $term): string
     {
         $term = preg_replace('/\s*\([^)]*\)/', '', $term) ?? '';
@@ -294,7 +325,7 @@ class SoundCloudExportService implements ExportServiceInterface
 
     private function extractMainArtist(string $artists): string
     {
-        // Prendre le premier artiste (avant la virgule)
+        // Assuming the main artist is the first one listed, split by commas
         $mainArtist = explode(',', $artists)[0];
 
         return trim($mainArtist);
@@ -330,8 +361,8 @@ class SoundCloudExportService implements ExportServiceInterface
 
                 $putData = [
                     'playlist' => [
-                        'title' => $playlistData['title'] ?? 'MixLink Playlist',
-                        'description' => $playlistData['description'] ?? 'Created with MixLink',
+                        'title' => $playlistData['title'] ?? 'mixlink Playlist',
+                        'description' => $playlistData['description'] ?? 'Created with mixlink',
                         'sharing' => $playlistData['sharing'] ?? 'private',
                         'tracks' => $cleanTracks,
                     ],

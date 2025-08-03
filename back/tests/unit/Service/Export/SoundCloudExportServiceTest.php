@@ -272,7 +272,7 @@ class SoundCloudExportServiceTest extends TestCase
         $getPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $getPlaylistResponse->method('toArray')->willReturn([
             'title' => $playlistName,
-            'description' => 'Created with MixLink',
+            'description' => 'Created with mixlink',
             'sharing' => 'private',
             'tracks' => [],
         ]);
@@ -324,7 +324,7 @@ class SoundCloudExportServiceTest extends TestCase
         ;
 
         $this->tokenManagerMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getValidAccessToken')
             ->willReturn('token')
         ;
@@ -341,7 +341,7 @@ class SoundCloudExportServiceTest extends TestCase
         $emptySearchResponse->method('toArray')->willReturn([]);
 
         $this->httpClientMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $createPlaylistResponse,
@@ -382,7 +382,7 @@ class SoundCloudExportServiceTest extends TestCase
         ;
 
         $this->tokenManagerMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getValidAccessToken')
             ->willReturn('token')
         ;
@@ -407,7 +407,7 @@ class SoundCloudExportServiceTest extends TestCase
         $emptySearchResponse->method('toArray')->willReturn([]);
 
         $this->httpClientMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $createPlaylistResponse,
@@ -566,7 +566,7 @@ class SoundCloudExportServiceTest extends TestCase
         $getPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $getPlaylistResponse->method('toArray')->willReturn([
             'title' => $playlistName,
-            'description' => 'Created with MixLink',
+            'description' => 'Created with mixlink',
             'sharing' => 'private',
             'tracks' => [],
         ]);
@@ -736,7 +736,7 @@ class SoundCloudExportServiceTest extends TestCase
         ;
 
         $this->tokenManagerMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getValidAccessToken')
             ->willReturn('token')
         ;
@@ -759,7 +759,7 @@ class SoundCloudExportServiceTest extends TestCase
         ]);
 
         $this->httpClientMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $createPlaylistResponse,
@@ -827,7 +827,7 @@ class SoundCloudExportServiceTest extends TestCase
         $getPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $getPlaylistResponse->method('toArray')->willReturn([
             'title' => 'Test Playlist',
-            'description' => 'Created with MixLink',
+            'description' => 'Created with mixlink',
             'sharing' => 'private',
             'tracks' => [],
         ]);
@@ -877,7 +877,7 @@ class SoundCloudExportServiceTest extends TestCase
         ;
 
         $this->tokenManagerMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getValidAccessToken')
             ->willReturn('token')
         ;
@@ -904,7 +904,7 @@ class SoundCloudExportServiceTest extends TestCase
         $emptySearchResponse->method('toArray')->willReturn([]);
 
         $this->httpClientMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $createPlaylistResponse,
@@ -972,7 +972,7 @@ class SoundCloudExportServiceTest extends TestCase
         $getPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
         $getPlaylistResponse->method('toArray')->willReturn([
             'title' => 'Test Playlist',
-            'description' => 'Created with MixLink',
+            'description' => 'Created with mixlink',
             'sharing' => 'private',
             'tracks' => [
                 ['id' => $existingTrackId],
@@ -1163,5 +1163,53 @@ class SoundCloudExportServiceTest extends TestCase
 
         $result = $method->invoke($this->soundCloudExportService, 'Song Title cover by Artist');
         $this->assertTrue($result);
+    }
+
+    public function testIsRemixOrCoverWithRemixAtEnd(): void
+    {
+        $reflectionClass = new ReflectionClass($this->soundCloudExportService);
+        $method = $reflectionClass->getMethod('isRemixOrCover');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->soundCloudExportService, 'Original Track Artist remix');
+        $this->assertTrue($result);
+    }
+
+    public function testExtractTitleWithParenthesesWithParentheses(): void
+    {
+        $reflectionClass = new ReflectionClass($this->soundCloudExportService);
+        $method = $reflectionClass->getMethod('extractTitleWithParentheses');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->soundCloudExportService, 'Main Title (Remix Version)');
+        $this->assertEquals('Remix Version', $result);
+    }
+
+    public function testExtractTitleWithParenthesesWithoutParentheses(): void
+    {
+        $reflectionClass = new ReflectionClass($this->soundCloudExportService);
+        $method = $reflectionClass->getMethod('extractTitleWithParentheses');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->soundCloudExportService, 'Main Title Without Parentheses');
+        $this->assertEquals('Main Title Without Parentheses', $result);
+    }
+
+    public function testFindBestMatchWithTitleWithParentheses(): void
+    {
+        $reflectionClass = new ReflectionClass($this->soundCloudExportService);
+        $method = $reflectionClass->getMethod('findBestMatch');
+        $method->setAccessible(true);
+
+        $tracks = [
+            [
+                'id' => 123456,
+                'title' => 'Remix Version',
+                'user' => ['username' => 'Test Artist'],
+            ],
+        ];
+
+        $result = $method->invoke($this->soundCloudExportService, $tracks, 'Test Song', 'Test Artist', 'Remix Version');
+        $this->assertEquals(123456, $result);
     }
 }

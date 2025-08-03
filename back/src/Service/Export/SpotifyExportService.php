@@ -39,7 +39,7 @@ class SpotifyExportService implements ExportServiceInterface
         $userProfile = $this->getSpotifyUserProfile($provider);
         $spotifyUserId = $userProfile['id'];
 
-        $playlistData = $this->createSpotifyPlaylist($provider, $spotifyUserId, $playlist->getName() ?? 'MixLink Playlist');
+        $playlistData = $this->createSpotifyPlaylist($provider, $spotifyUserId, $playlist->getName() ?? 'mixlink Playlist');
 
         $playlistId = $playlistData['id'];
         $playlistUrl = $playlistData['external_urls']['spotify'];
@@ -98,7 +98,7 @@ class SpotifyExportService implements ExportServiceInterface
             [
                 'json' => [
                     'name' => $playlistName,
-                    'description' => 'Created with MixLink',
+                    'description' => 'Created with mixlink',
                     'public' => false,
                 ],
             ]

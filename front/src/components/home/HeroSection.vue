@@ -120,7 +120,7 @@
                 <div ref="imageRef" class="hero-image">
                     <el-image
                         :src="LandingPageImg"
-                        alt="MixLink Demo"
+                        alt="mixlink Demo"
                         fit="contain"
                         v-motion="{
                             initial: { y: 0 },
