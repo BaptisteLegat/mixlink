@@ -7,6 +7,7 @@ use App\Entity\Playlist;
 use App\Entity\User;
 use App\Provider\ProviderManager;
 use App\Repository\PlaylistRepository;
+use App\Service\Export\Model\ExportResult;
 use App\Service\PlaylistExportService;
 use App\Voter\AuthenticationVoter;
 use Exception;
@@ -125,6 +126,29 @@ class PlaylistExportController extends AbstractController
         /** @var User $user */
         $user = $this->providerManager->findByAccessToken($accessToken);
 
+        $validationResponse = $this->validateExportRequest($playlist, $user);
+        if (null !== $validationResponse) {
+            return $validationResponse;
+        }
+
+        try {
+            $exportResult = $this->performExport($playlist, $user, $platform);
+
+            return new JsonResponse([
+                'success' => true,
+                ...$exportResult->toArray(),
+            ]);
+        } catch (InvalidArgumentException $e) {
+            return $this->handleInvalidArgumentException($e, $playlist, $platform);
+        } catch (RuntimeException $e) {
+            return $this->handleRuntimeException($e, $playlist, $platform);
+        } catch (Exception $e) {
+            return $this->handleUnexpectedException($e, $playlist, $platform);
+        }
+    }
+
+    private function validateExportRequest(Playlist $playlist, User $user): ?JsonResponse
+    {
         if ($playlist->getUser() !== $user) {
             return new JsonResponse(['error' => 'playlist.export.not_owner'], Response::HTTP_FORBIDDEN);
         }
@@ -139,49 +163,60 @@ class PlaylistExportController extends AbstractController
             return new JsonResponse(['error' => 'playlist.export.free_user_limit_reached'], Response::HTTP_FORBIDDEN);
         }
 
-        try {
-            $exportResult = $this->playlistExportService->exportPlaylist($playlist, $user, $platform);
+        return null;
+    }
 
-            $playlist->setExportedPlaylistId($exportResult->playlistId);
-            $playlist->setExportedPlaylistUrl($exportResult->playlistUrl);
+    private function performExport(Playlist $playlist, User $user, string $platform): ExportResult
+    {
+        $exportResult = $this->playlistExportService->exportPlaylist($playlist, $user, $platform);
 
-            if ($isFreePlan) {
-                $playlist->setHasBeenExported(true);
-            }
+        $playlist->setExportedPlaylistId($exportResult->playlistId);
+        $playlist->setExportedPlaylistUrl($exportResult->playlistUrl);
 
-            $this->playlistRepository->save($playlist, true);
-
-            return new JsonResponse([
-                'success' => true,
-                ...$exportResult->toArray(),
-            ]);
-        } catch (InvalidArgumentException $e) {
-            $this->logger->warning('Playlist export failed - invalid argument', [
-                'playlistId' => $playlist->getId(),
-                'platform' => $platform,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (RuntimeException $e) {
-            $this->logger->error('Playlist export failed', [
-                'playlistId' => $playlist->getId(),
-                'platform' => $platform,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return new JsonResponse(['error' => 'playlist.export.failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        } catch (Exception $e) {
-            $this->logger->error('Unexpected error during playlist export', [
-                'playlistId' => $playlist->getId(),
-                'platform' => $platform,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return new JsonResponse(['error' => 'playlist.export.unexpected_error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        $subscription = $user->getSubscription();
+        $isFreePlan = Plan::FREE === $subscription?->getPlan()?->getName();
+        if ($isFreePlan) {
+            $playlist->setHasBeenExported(true);
         }
+
+        $this->playlistRepository->save($playlist, true);
+
+        return $exportResult;
+    }
+
+    private function handleInvalidArgumentException(InvalidArgumentException $e, Playlist $playlist, string $platform): JsonResponse
+    {
+        $this->logger->warning('Playlist export failed - invalid argument', [
+            'playlistId' => $playlist->getId(),
+            'platform' => $platform,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+    }
+
+    private function handleRuntimeException(RuntimeException $e, Playlist $playlist, string $platform): JsonResponse
+    {
+        $this->logger->error('Playlist export failed', [
+            'playlistId' => $playlist->getId(),
+            'platform' => $platform,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return new JsonResponse(['error' => 'playlist.export.failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    private function handleUnexpectedException(Exception $e, Playlist $playlist, string $platform): JsonResponse
+    {
+        $this->logger->error('Unexpected error during playlist export', [
+            'playlistId' => $playlist->getId(),
+            'platform' => $platform,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return new JsonResponse(['error' => 'playlist.export.unexpected_error'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

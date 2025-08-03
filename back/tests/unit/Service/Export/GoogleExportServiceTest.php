@@ -137,11 +137,6 @@ class GoogleExportServiceTest extends TestCase
         $this->googleExportService->exportPlaylist($playlist, $user);
     }
 
-    public function testGetPlatformName(): void
-    {
-        $this->assertEquals('google', $this->googleExportService->getPlatformName());
-    }
-
     public function testIsUserConnectedWithValidProvider(): void
     {
         $provider = new Provider()
@@ -1062,43 +1057,62 @@ class GoogleExportServiceTest extends TestCase
         $this->assertEquals('google', $result->platform);
     }
 
-    public function testExportPlaylistWithErrorDetailsInErrorsArray(): void
+    public function testExportPlaylistWith401ErrorAndRetryThrowsGoogleApiException(): void
     {
         $provider = new Provider()
             ->setName('google')
-            ->setAccessToken('token')
+            ->setAccessToken('old-token')
+            ->setRefreshToken('refresh-token')
         ;
 
         $user = new User()->addProvider($provider);
 
-        $playlist = new Playlist();
-        $playlist->setName('Test Playlist');
+        $playlist = new Playlist()->setName('Test Playlist');
 
         $this->tokenManagerMock
             ->expects($this->exactly(2))
             ->method('getValidAccessToken')
-            ->willReturn('token')
+            ->with($provider)
+            ->willReturn('old-token')
         ;
 
-        $errorResponse = $this->createMock(ResponseInterface::class);
-        $errorResponse->method('getStatusCode')->willReturn(Response::HTTP_BAD_REQUEST);
-        $errorResponse->method('toArray')->willReturn([
-            'error' => [
-                'errors' => [
-                    ['message' => 'Invalid playlist name'],
-                    ['message' => 'Missing required field'],
-                ],
-            ],
-        ]);
+        $this->tokenManagerMock
+            ->expects($this->once())
+            ->method('hasRefreshToken')
+            ->with($provider)
+            ->willReturn(true)
+        ;
+
+        $this->tokenManagerMock
+            ->expects($this->once())
+            ->method('refreshAccessToken')
+            ->with($provider)
+            ->willReturn('new-token')
+        ;
 
         $this->httpClientMock
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('request')
-            ->willReturn($errorResponse)
+            ->willReturnCallback(function ($method, $url, $options) {
+                static $callCount = 0;
+                ++$callCount;
+
+                if (1 === $callCount) {
+                    throw new RuntimeException('YouTube API authentication failed (401): Unauthorized');
+                } else {
+                    $response = $this->createMock(ResponseInterface::class);
+                    $response->method('getStatusCode')->willReturn(Response::HTTP_BAD_REQUEST);
+                    $response->method('toArray')->with(false)->willReturn([
+                        'error' => ['message' => 'Invalid playlist data'],
+                    ]);
+
+                    return $response;
+                }
+            })
         ;
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('YouTube API request failed (400):');
+        $this->expectExceptionMessage('Failed to refresh token and retry request: YouTube API request failed (400): Invalid playlist data');
 
         $this->googleExportService->exportPlaylist($playlist, $user);
     }

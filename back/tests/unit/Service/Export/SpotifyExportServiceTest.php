@@ -128,11 +128,6 @@ class SpotifyExportServiceTest extends TestCase
         $this->spotifyExportService->exportPlaylist($playlist, $user);
     }
 
-    public function testGetPlatformName(): void
-    {
-        $this->assertEquals('spotify', $this->spotifyExportService->getPlatformName());
-    }
-
     public function testIsUserConnectedWithValidProvider(): void
     {
         $provider = new Provider()

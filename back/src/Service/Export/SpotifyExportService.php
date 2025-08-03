@@ -2,6 +2,7 @@
 
 namespace App\Service\Export;
 
+use App\ApiResource\ApiReference;
 use App\Entity\Playlist;
 use App\Entity\Provider;
 use App\Entity\Song;
@@ -51,20 +52,14 @@ class SpotifyExportService implements ExportServiceInterface
             playlistUrl: $playlistUrl,
             exportedTracks: $exportResult['exported_tracks'],
             failedTracks: $exportResult['failed_tracks'],
-            platform: $this->getPlatformName(),
+            platform: ApiReference::SPOTIFY,
         );
-    }
-
-    #[Override]
-    public function getPlatformName(): string
-    {
-        return 'spotify';
     }
 
     #[Override]
     public function isUserConnected(User $user): bool
     {
-        $provider = $user->getProviderByName('spotify');
+        $provider = $user->getProviderByName(ApiReference::SPOTIFY);
 
         return null !== $provider && null !== $provider->getAccessToken();
     }

@@ -10,7 +10,5 @@ interface ExportServiceInterface
 {
     public function exportPlaylist(Playlist $playlist, User $user): ExportResult;
 
-    public function getPlatformName(): string;
-
     public function isUserConnected(User $user): bool;
 }
