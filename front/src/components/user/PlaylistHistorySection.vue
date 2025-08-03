@@ -54,17 +54,38 @@
         if (!url) {
             return 'unknown';
         }
-        if (url.includes('spotify.com')) {
-            return 'spotify';
-        }
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            return 'google';
-        }
-        if (url.includes('soundcloud.com')) {
-            return 'soundcloud';
-        }
 
-        return 'unknown';
+        try {
+            const urlObj = new URL(url);
+            const hostname = urlObj.hostname.toLowerCase();
+
+            if (hostname === 'spotify.com' || hostname === 'www.spotify.com' || hostname.endsWith('.spotify.com')) {
+                return 'spotify';
+            }
+
+            if (
+                hostname === 'youtube.com' ||
+                hostname === 'www.youtube.com' ||
+                hostname === 'm.youtube.com' ||
+                hostname === 'youtu.be' ||
+                hostname.endsWith('.youtube.com')
+            ) {
+                return 'google';
+            }
+
+            if (
+                hostname === 'soundcloud.com' ||
+                hostname === 'www.soundcloud.com' ||
+                hostname === 'm.soundcloud.com' ||
+                hostname.endsWith('.soundcloud.com')
+            ) {
+                return 'soundcloud';
+            }
+
+            return 'unknown';
+        } catch {
+            return 'unknown';
+        }
     };
 </script>
 <template>
