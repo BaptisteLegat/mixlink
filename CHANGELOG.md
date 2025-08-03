@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.3.0] - 2025-08-03
+
+### Added
+-  Search functionality for playlists in the session page, allowing users to quickly find specific song by title or artist (for host or participants).
+- Add song into the playlist from the search results, enabling users to easily add songs to the session playlist. Everyone can see the added song.
+- Remove songs from the playlist for the host, allowing them to manage the session playlist effectively. Everyone can see the removed song.
+- Export functionality for playlists in an active session. The host can export the current session's playlist to Spotify, YouTube, or SoundCloud.
+- History of playlists in the user profile, allowing users to view their previously exported playlists.
+
+### Changed
+- Updated the README.md file to include new features.
+
+### Fixed
+- PKCE (Proof Key for Code Exchange) for SoundCloud by removing a package who does not support it.
+
 ## [1.2.2] - 2025-07-27
 
 ### Added
