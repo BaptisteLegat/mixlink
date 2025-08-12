@@ -5,6 +5,7 @@
     import { useSessionStore } from '@/stores/sessionStore';
     import { useAuthStore } from '@/stores/authStore';
     import { useMercureStore } from '@/stores/mercureStore';
+    import { useSEO } from '@/composables/useSEO';
     import { ElMessage, ElMessageBox } from 'element-plus';
     import SessionHeader from '@/components/session/SessionHeader.vue';
     import GuestJoinCard from '@/components/session/GuestJoinCard.vue';
@@ -12,6 +13,8 @@
     import PlaylistCard from '@/components/session/PlaylistCard.vue';
     import MusicSearchBar from '@/components/session/MusicSearchBar.vue';
     import PlaylistExportButton from '@/components/playlist/PlaylistExportButton.vue';
+
+    useSEO('session');
 
     const { t } = useI18n();
     const route = useRoute();

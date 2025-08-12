@@ -4,10 +4,75 @@
         <meta charset="UTF-8">
         <link rel="icon" href="/logo.png" type="image/png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>mixlink</title>
+        <meta name="theme-color" content="#5820a0">
+        <meta name="description" content="Créez, partagez et collaborez sur des playlists musicales avec mixlink">
+        <meta name="keywords" content="musique, playlist, collaboration, streaming, spotify, soundcloud">
+        <meta name="author" content="Baptiste Legat">
+        <meta name="robots" content="index, follow">
+        <meta name="language" content="fr">
+        <link rel="canonical" href="https://mixlink.fr/">
+
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="mixlink">
+        <meta property="og:url" content="https://mixlink.fr/">
+        <meta property="og:title" content="mixlink - Playlists Collaboratives">
+        <meta property="og:description" content="Créez, partagez et collaborez sur des playlists musicales avec mixlink">
+        <meta property="og:image" content="https://mixlink.fr/logo.png">
+        <meta property="og:image:alt" content="Logo mixlink">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="mixlink - Playlists Collaboratives">
+        <meta name="twitter:description" content="Créez, partagez et collaborez sur des playlists musicales avec mixlink">
+        <meta name="twitter:image" content="https://mixlink.fr/logo.png">
+
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="mixlink">
+        <link rel="apple-touch-icon" href="/logo.png">
+
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href="https://mixlink.fr/" />
+        <meta name="author" content="MixLink" />
+        <meta name="language" content="fr-FR" />
+        <meta name="geo.region" content="FR" />
+        <meta name="geo.placename" content="France" />
+        <meta name="distribution" content="global" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="1 days" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://api.spotify.com" />
+        <link rel="preconnect" href="https://accounts.spotify.com" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//api.spotify.com" />
+        <link rel="dns-prefetch" href="//accounts.spotify.com" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://api.stripe.com" crossorigin>
+        <link rel="dns-prefetch" href="//fonts.gstatic.com">
+        <link rel="preload" href="/src/assets/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/src/assets/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossorigin>
+
+        <link rel="preload" href="/src/assets/main.scss" as="style">
+        <title>mixlink - Playlists Collaboratives</title>
     </head>
-    <body style="margin: 0; padding: 0;">
-        <div id="app"></div>
+    <body style="margin: 0; padding: 0;" role="document">
+        <div id="app" role="main" aria-label="Application mixlink"></div>
         <script type="module" src="/src/main.js"></script>
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then((registration) => {
+                            console.log('SW registered: ', registration);
+                        })
+                        .catch((registrationError) => {
+                            console.log('SW registration failed: ', registrationError);
+                        });
+                });
+            }
+        </script>
     </body>
 </html>

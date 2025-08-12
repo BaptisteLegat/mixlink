@@ -2,6 +2,7 @@
     import { ref, computed } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { useAuthStore } from '@/stores/authStore';
+    import { useSEO } from '@/composables/useSEO';
     import GradientBackground from '@/components/ui/GradientBackground.vue';
     import DeleteAccountModal from '@/components/user/DeleteAccountModal.vue';
     import DisconnectProviderModal from '@/components/user/DisconnectProviderModal.vue';
@@ -18,6 +19,8 @@
     import { Close } from '@element-plus/icons-vue';
 
     const { t } = useI18n();
+
+    useSEO('profile');
     const authStore = useAuthStore();
     const router = useRouter();
 

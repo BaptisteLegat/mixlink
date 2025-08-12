@@ -7,7 +7,7 @@ $background-color: #ffffff;
 $error-color: #e74c3c;
 $success-color: #27ae60;
 $warning-color: #f39c12;
-$info-color: #3498db;
+$info-color: $primary-color;
 
 // --- Typography ---
 $app-font-family: 'Satoshi', sans-serif;

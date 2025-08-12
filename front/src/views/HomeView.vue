@@ -1,12 +1,15 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useMotion } from '@vueuse/motion';
+    import { useSEO } from '@/composables/useSEO';
     import HeroSection from '@/components/home/HeroSection.vue';
     import HowItWorks from '@/components/home/HowItWorks.vue';
     import FeaturesSection from '@/components/home/FeaturesSection.vue';
     import PricingSection from '@/components/home/PricingSection.vue';
     import CtaSection from '@/components/home/CtaSection.vue';
     import CreateSessionModal from '@/components/session/CreateSessionModal.vue';
+
+    useSEO('home');
 
     const heroRef = ref(null);
     const featuresRef = ref(null);

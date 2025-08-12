@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Plan du site
+Sitemap: http://localhost:3000/sitemap.xml
+
+Crawl-delay: 1
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.env
+Disallow: /node_modules/

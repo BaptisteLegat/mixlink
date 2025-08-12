@@ -336,7 +336,7 @@
             },
             "platforms": {
                 "question": "Which streaming platforms are supported?",
-                "answer": "Currently, mixlink supports Spotify, Soundcloud, YouTube Music, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
+                "answer": "Currently, mixlink supports Spotify, Soundcloud, YouTube, and Deezer. We are continuously working on adding new platforms to provide an even more comprehensive experience."
             }
         },
         "account": {
@@ -667,7 +667,55 @@
     },
     "platforms": {
         "spotify": "Spotify",
-        "youtube": "YouTube Music",
+        "youtube": "YouTube",
         "soundcloud": "SoundCloud"
+    },
+    "seo": {
+        "appName": "mixlink - Collaborative Playlists",
+        "tagline": "Collaborative Playlists",
+        "description": "Create, share and collaborate on music playlists with mixlink. Connect via Spotify, SoundCloud or YouTube.",
+        "keywords": "music, playlist, collaboration, streaming, spotify, soundcloud, youtube, music sharing",
+        "pages": {
+            "home": {
+                "title": "Home",
+                "description": "Create, share and collaborate on music playlists with mixlink. Connect via Spotify, SoundCloud or YouTube and create unique collaborative sessions.",
+                "keywords": "collaborative playlist, music, music session, spotify, soundcloud, youtube, music sharing"
+            },
+            "contact": {
+                "title": "Contact",
+                "description": "Contact the mixlink team. Send us your questions, suggestions or support requests to improve your collaborative playlist experience.",
+                "keywords": "contact mixlink, support, help, questions, assistance, team"
+            },
+            "login": {
+                "title": "Login",
+                "description": "Sign in to mixlink with Spotify, SoundCloud or YouTube to create and share your collaborative playlists.",
+                "keywords": "login, sign in, spotify, soundcloud, youtube, authentication"
+            },
+            "profile": {
+                "title": "Profile",
+                "description": "Manage your mixlink profile, view your exported playlists and administrate your account settings.",
+                "keywords": "user profile, account, exported playlists, settings, history"
+            },
+            "faq": {
+                "title": "FAQ - Frequently Asked Questions",
+                "description": "Find answers to the most frequently asked questions about mixlink and using collaborative playlists.",
+                "keywords": "faq, frequently asked questions, help, support, documentation, guide"
+            },
+            "privacy": {
+                "title": "Privacy Policy",
+                "description": "Learn how mixlink protects your personal data and respects your privacy when using our services.",
+                "keywords": "privacy, personal data, privacy policy, protection, security"
+            },
+            "terms": {
+                "title": "Terms of Service",
+                "description": "Review mixlink's terms of service and platform usage rules.",
+                "keywords": "terms of service, terms, rules, legal, conditions, tos"
+            },
+            "session": {
+                "title": "Collaborative Session",
+                "description": "Join a collaborative playlist session on mixlink and discover new music with your friends.",
+                "keywords": "collaborative session, shared playlist, group music, collaborative listening"
+            }
+        }
     }
 }

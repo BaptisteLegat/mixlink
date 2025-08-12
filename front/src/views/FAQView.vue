@@ -2,8 +2,11 @@
     import { ref } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { isDark } from '@/composables/dark';
+    import { useSEO } from '@/composables/useSEO';
 
     const { t } = useI18n();
+
+    useSEO('faq');
     const activeNames = ref(['1']);
 
     const faqs = ref([

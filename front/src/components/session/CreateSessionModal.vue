@@ -178,6 +178,12 @@
         }
     }
 
+    function navigateToCurrentSession() {
+        if (sessionStore.currentSession) {
+            window.location.href = `/session/${sessionStore.currentSession.code}`;
+        }
+    }
+
     defineExpose({
         showDialog,
         clearValidationError,
@@ -318,7 +324,7 @@
                 </template>
                 <template v-else-if="sessionStore.currentSession">
                     <el-button @click="handleClose">{{ t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSubmit" :loading="loading">
+                    <el-button type="primary" @click="navigateToCurrentSession">
                         {{ buttonText }}
                     </el-button>
                 </template>

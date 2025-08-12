@@ -2,6 +2,7 @@
     import { ref, reactive } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { ElMessage } from 'element-plus';
+    import { useSEO } from '@/composables/useSEO';
     import EmailIcon from 'vue-material-design-icons/Email.vue';
     import PhoneIcon from 'vue-material-design-icons/Phone.vue';
     import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue';
@@ -9,6 +10,8 @@
     import { sendContactEmail } from '@/services/emailService';
 
     const { t } = useI18n();
+
+    useSEO('contact');
 
     const form = reactive({
         name: '',
