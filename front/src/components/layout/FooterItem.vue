@@ -72,6 +72,7 @@
     .footer {
         border-top: 1px solid #ebeef5;
         padding: 20px 0;
+        min-height: 140px;
     }
 
     .footer-container {

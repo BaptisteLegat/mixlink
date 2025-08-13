@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Plan du site
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://mix-link.fr/sitemap.xml
 
 Crawl-delay: 1
 

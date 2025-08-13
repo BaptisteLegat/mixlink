@@ -30,4 +30,6 @@ coverage
 
 *.tsbuildinfo
 
+# Generated files
 lighthouse-reports/
+public/sitemap.xml

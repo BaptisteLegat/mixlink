@@ -89,7 +89,7 @@
                     type: 'warning',
                 });
             } catch (err) {
-                if (err === 'cancel') {
+                if ('cancel' === err) {
                     return;
                 }
 

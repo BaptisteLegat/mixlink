@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
 
 @use './styles/_variables.scss' as *;
@@ -5,6 +6,10 @@
 
 body {
     font-family: $app-font-family;
+    line-height: $line-height-base;
+    color: $text-color-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -13,6 +18,9 @@ h3,
 h4,
 h5,
 h6 {
+    color: $text-color-primary;
+    font-weight: $font-weight-bold;
+
     &.primary {
         color: $primary-color;
     }
@@ -30,9 +38,40 @@ h6 {
     }
 }
 
+a {
+    color: $primary-color;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+
+    &:hover,
+    &:focus {
+        color: color.adjust($primary-color, $lightness: -10%);
+        text-decoration-thickness: 2px;
+    }
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: $primary-color;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    z-index: 9999;
+    transition: top 0.3s;
+
+    &:focus {
+        top: 6px;
+    }
+}
+
 .el-dialog__headerbtn {
     .el-dialog__close {
-        color: #000000 !important;
+        color: $text-color-primary !important;
 
         &:hover {
             color: $primary-color !important;
@@ -41,13 +80,63 @@ h6 {
 }
 
 html.dark {
+    body {
+        color: $dark-text-primary;
+        background-color: $dark-background;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: $dark-text-primary;
+    }
+
+    a {
+        color: $purple-light;
+
+        &:hover,
+        &:focus {
+            color: color.adjust($purple-light, $lightness: 10%);
+        }
+    }
+
     .el-dialog__headerbtn {
         .el-dialog__close {
-            color: #ffffff !important;
+            color: $dark-text-primary !important;
 
             &:hover {
                 color: $purple !important;
             }
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+@media (prefers-contrast: high) {
+    body {
+        background: white;
+        color: black;
+    }
+
+    a {
+        color: #0000ee;
+        text-decoration: underline;
+    }
+
+    button {
+        border: 2px solid black;
     }
 }

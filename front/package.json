@@ -12,8 +12,8 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "lighthouse:audit": "./lighthouse-audit.sh",
-    "performance:monitor": "./performance-monitor.sh"
+    "analyze:bundle": "npx vite-bundle-analyzer dist/stats.html",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@vueuse/core": "^12.3.0",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitest/eslint-plugin": "1.1.10",
     "@vue/eslint-config-prettier": "^10.1.0",

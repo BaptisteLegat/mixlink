@@ -133,6 +133,9 @@
             await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             await loadParticipants();
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
             const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.kick.error');
             ElMessage.error(errorMessage);
         }
@@ -155,6 +158,9 @@
             sessionStore.leaveCurrentSession();
             router.push('/');
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
             const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.leave.error');
             ElMessage.error(errorMessage);
         }
@@ -173,6 +179,10 @@
             ElMessage.success(t('session.end.success'));
             router.push('/');
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
+
             if (error.message) {
                 const errorMessage = error.translationKey ? t(error.translationKey) : t('session.end.error');
                 ElMessage.error(errorMessage);

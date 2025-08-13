@@ -30,7 +30,7 @@
             await sessionStore.removeSongFromPlaylist(props.playlist.id, song.spotifyId);
             ElMessage.success(t('playlist.remove_song.success'));
         } catch (err) {
-            if (err === 'cancel') {
+            if ('cancel' === err) {
                 return;
             }
 

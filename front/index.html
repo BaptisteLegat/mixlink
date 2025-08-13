@@ -7,10 +7,10 @@
         <meta name="theme-color" content="#5820a0">
         <meta name="description" content="Créez, partagez et collaborez sur des playlists musicales avec mixlink">
         <meta name="keywords" content="musique, playlist, collaboration, streaming, spotify, soundcloud">
-        <meta name="author" content="Baptiste Legat">
-        <meta name="robots" content="index, follow">
-        <meta name="language" content="fr">
-        <link rel="canonical" href="https://mixlink.fr/">
+        <meta name="author" content="MixLink">
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="language" content="fr-FR" />
+        <link rel="canonical" href="https://mixlink.fr/" />
 
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="mixlink">
@@ -25,53 +25,113 @@
         <meta name="twitter:description" content="Créez, partagez et collaborez sur des playlists musicales avec mixlink">
         <meta name="twitter:image" content="https://mixlink.fr/logo.png">
 
-
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="mixlink">
         <link rel="apple-touch-icon" href="/logo.png">
-
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <link rel="canonical" href="https://mixlink.fr/" />
-        <meta name="author" content="MixLink" />
-        <meta name="language" content="fr-FR" />
         <meta name="geo.region" content="FR" />
         <meta name="geo.placename" content="France" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
         <meta name="revisit-after" content="1 days" />
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link rel="preconnect" href="https://api.spotify.com" />
-        <link rel="preconnect" href="https://accounts.spotify.com" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//api.spotify.com" />
-        <link rel="dns-prefetch" href="//accounts.spotify.com" />
+        <link rel="preload" href="/assets/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/assets/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossorigin>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-        <link rel="preconnect" href="https://api.stripe.com" crossorigin>
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
-        <link rel="preload" href="/src/assets/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/src/assets/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossorigin>
 
-        <link rel="preload" href="/src/assets/main.scss" as="style">
         <title>mixlink - Playlists Collaboratives</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.5;
+                color: #212121;
+            }
+            .loading-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            }
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e3e3e3;
+                border-top: 4px solid #5820a0;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .skip-link {
+                position: absolute;
+                top: -40px;
+                left: 6px;
+                background: #5820a0;
+                color: white;
+                padding: 8px;
+                border-radius: 4px;
+                text-decoration: none;
+                font-weight: 600;
+                z-index: 9999;
+                transition: top 0.3s;
+            }
+            .skip-link:focus {
+                top: 6px;
+            }
+        </style>
     </head>
-    <body style="margin: 0; padding: 0;" role="document">
-        <div id="app" role="main" aria-label="Application mixlink"></div>
+    <body role="document">
+        <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner" aria-label="Chargement en cours"></div>
+        </div>
+
+        <div id="app" role="main" aria-label="Application mixlink">
+            <main id="main-content">
+
+            </main>
+        </div>
+
         <script type="module" src="/src/main.js"></script>
         <script>
+            window.addEventListener('load', () => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                    }, 300);
+                }
+            });
+
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then((registration) => {
-                            console.log('SW registered: ', registration);
-                        })
-                        .catch((registrationError) => {
-                            console.log('SW registration failed: ', registrationError);
-                        });
-                });
+                const isLocalhost = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+                if (!isLocalhost) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker
+                            .register('/sw.js')
+                            .then((registration) => {
+                                console.log('SW registered: ', registration);
+                            })
+                            .catch((registrationError) => {
+                                console.log('SW registration failed: ', registrationError);
+                            });
+                    });
+                }
             }
         </script>
     </body>

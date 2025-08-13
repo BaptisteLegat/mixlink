@@ -1,9 +1,9 @@
 <script setup>
     import { useI18n } from 'vue-i18n';
     import { isDark } from '@/composables/dark';
-    import LandingPageImg from '@/assets/images/landing-page.png';
     import { ref } from 'vue';
     import { useMotion } from '@vueuse/motion';
+    import LandingPageImg from '@/assets/images/landing-page.webp';
 
     const { t } = useI18n();
 
@@ -118,22 +118,28 @@
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                 <div ref="imageRef" class="hero-image">
-                    <el-image
-                        :src="LandingPageImg"
-                        alt="mixlink Demo"
-                        fit="contain"
-                        v-motion="{
-                            initial: { y: 0 },
-                            enter: {
-                                y: [0, -15, 0],
-                                transition: {
-                                    duration: 4000,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut',
-                                },
-                            },
-                        }"
-                    />
+                    <picture>
+                        <source
+                            srcset="/src/assets/images/landing-page-640.avif 640w, /src/assets/images/landing-page-320.avif 320w"
+                            sizes="(max-width: 768px) 90vw, 372px"
+                            type="image/avif"
+                        />
+                        <source
+                            srcset="/src/assets/images/landing-page-640.webp 640w, /src/assets/images/landing-page-320.webp 320w"
+                            sizes="(max-width: 768px) 90vw, 372px"
+                            type="image/webp"
+                        />
+                        <img
+                            :src="LandingPageImg"
+                            alt="mixlink Demo"
+                            width="960"
+                            height="960"
+                            decoding="async"
+                            fetchpriority="high"
+                            loading="eager"
+                            style="max-width: 100%; height: auto"
+                        />
+                    </picture>
                 </div>
             </el-col>
         </el-row>
