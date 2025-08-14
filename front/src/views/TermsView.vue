@@ -15,7 +15,7 @@
                     <el-text tag="h1" class="page-title">{{ t('terms.title') }}</el-text>
                     <el-divider />
                     <el-text tag="p" class="last-updated">
-                        {{ t('terms.last_updated', { date: '01/02/2024' }) }}
+                        {{ t('terms.last_updated', { date: '12/08/2025' }) }}
                     </el-text>
 
                     <el-card shadow="hover" class="terms-card">

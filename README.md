@@ -201,6 +201,7 @@ Après l’exécution de ces commandes, ouvrez le fichier `index.html` généré
 ### APIs
 
 - Spotify API
+- SoundCloud API
 - Google API (YouTube)
 - Stripe API (paiements et souscriptions)
 

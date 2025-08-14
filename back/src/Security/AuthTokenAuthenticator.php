@@ -23,20 +23,18 @@ class AuthTokenAuthenticator extends AbstractAuthenticator
     #[Override]
     public function supports(Request $request): ?bool
     {
-        return true;
+        return null !== $request->cookies->get('AUTH_TOKEN');
     }
 
     #[Override]
     public function authenticate(Request $request): Passport
     {
+        /** @var string $accessToken */
         $accessToken = $request->cookies->get('AUTH_TOKEN');
-        if (null === $accessToken) {
-            return new SelfValidatingPassport(new UserBadge('anon.'));
-        }
 
         $user = $this->providerManager->findByAccessToken($accessToken);
         if (!$user instanceof User) {
-            return new SelfValidatingPassport(new UserBadge('anon.'));
+            throw new AuthenticationException('Invalid auth token');
         }
 
         return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier(), function () use ($user) {

@@ -78,6 +78,22 @@ services:
     stdin_open: true
     tty: true
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass "mixlink_redis_password"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
 volumes:
   mercure_data:
   mercure_config:
+  redis_data:

@@ -31,6 +31,13 @@ class AuthTokenAuthenticatorTest extends TestCase
         $this->assertTrue($this->authTokenAuthenticator->supports($request));
     }
 
+    public function testSupportsWithoutToken(): void
+    {
+        $request = new Request();
+
+        $this->assertFalse($this->authTokenAuthenticator->supports($request));
+    }
+
     public function testAuthenticateWithValidToken(): void
     {
         $request = new Request();
@@ -63,17 +70,10 @@ class AuthTokenAuthenticatorTest extends TestCase
             ->willReturn(null)
         ;
 
-        $result = $this->authTokenAuthenticator->authenticate($request);
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('Invalid auth token');
 
-        $this->assertInstanceOf(SelfValidatingPassport::class, $result);
-    }
-
-    public function testAuthenticateWithNoToken(): void
-    {
-        $request = new Request();
-        $result = $this->authTokenAuthenticator->authenticate($request);
-
-        $this->assertInstanceOf(SelfValidatingPassport::class, $result);
+        $this->authTokenAuthenticator->authenticate($request);
     }
 
     public function testAuthenticateWithNoUser(): void
@@ -88,9 +88,10 @@ class AuthTokenAuthenticatorTest extends TestCase
             ->willReturn(null)
         ;
 
-        $result = $this->authTokenAuthenticator->authenticate($request);
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('Invalid auth token');
 
-        $this->assertInstanceOf(SelfValidatingPassport::class, $result);
+        $this->authTokenAuthenticator->authenticate($request);
     }
 
     public function testOnAuthenticationSuccess(): void
