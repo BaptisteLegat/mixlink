@@ -203,7 +203,7 @@
         max-width: 1440px;
         width: 100%;
         box-sizing: border-box;
-        padding: 0 8px;
+        padding: 0 16px;
     }
 
     .profile-section {
@@ -233,6 +233,7 @@
         overflow: hidden;
         padding: 20px;
         box-sizing: border-box;
+        max-width: 100%;
     }
 
     .profile-header {
@@ -296,17 +297,75 @@
     @media (max-width: 768px) {
         .profile-container {
             max-width: 100%;
-            padding: 0 2px;
+            padding: 0 8px;
         }
         .profile-section {
-            padding: 30px 2px;
+            padding: 30px 8px;
         }
         .profile-card {
             border-radius: 12px;
-            padding: 10px;
+            padding: 16px;
+            margin: 0 4px;
         }
         .section-title {
             font-size: 1.3rem;
+        }
+
+        .profile-info .el-row {
+            margin: 0;
+        }
+
+        .profile-info .el-col {
+            padding: 0 4px;
+        }
+
+        .subscription-actions {
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .danger-zone {
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-container {
+            padding: 0 4px;
+        }
+
+        .profile-section {
+            padding: 20px 4px;
+        }
+
+        .profile-card {
+            padding: 12px;
+            margin: 0 2px;
+        }
+
+        .profile-header {
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar {
+            margin-bottom: 12px;
+        }
+
+        .profile-name {
+            font-size: 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+
+        .info-label {
+            font-size: 1.1rem;
+        }
+
+        .subscription-section-title {
+            font-size: 1.1rem;
         }
     }
     .connected-services {
@@ -318,6 +377,11 @@
         flex-wrap: wrap;
         gap: 12px;
         margin-top: 16px;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 8px;
+        }
     }
 
     .provider-card {
@@ -329,25 +393,50 @@
         padding: 12px 16px;
         min-width: 180px;
         position: relative;
+
+        @media (max-width: 768px) {
+            min-width: unset;
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 10px 12px;
+            gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            padding: 8px 10px;
+            gap: 8px;
+        }
     }
 
     .provider-icon {
         color: var(--el-color-primary);
+        flex-shrink: 0;
     }
 
     .provider-details {
         flex-grow: 1;
+        min-width: 0;
     }
 
     .provider-name {
         font-weight: 600;
         margin: 0;
         font-size: 1rem;
+        word-break: break-word;
+        color: #6023c0;
+
+        @media (max-width: 480px) {
+            font-size: 0.9rem;
+        }
     }
 
     .provider-status {
         font-size: 0.85rem;
         color: #67c23a;
+
+        @media (max-width: 480px) {
+            font-size: 0.8rem;
+        }
     }
 
     .disconnect-button {
@@ -355,6 +444,19 @@
         top: -8px;
         right: -8px;
         font-size: 12px;
+        z-index: 10;
+
+        @media (max-width: 768px) {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+        }
+
+        @media (max-width: 480px) {
+            top: -4px;
+            right: -4px;
+            font-size: 10px;
+        }
     }
 
     .danger-zone {

@@ -119,31 +119,33 @@
                 </div>
             </template>
             <el-menu style="border: 0">
-                <el-menu-item @click="toggleLanguage">
+                <el-menu-item index="language" @click="toggleLanguage">
                     {{ getLanguageText }}
                 </el-menu-item>
-                <el-menu-item @click="toggleDarkMode">
+                <el-menu-item index="theme" @click="toggleDarkMode">
                     {{ getThemeText }}
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
                     <el-menu-item
+                        index="rejoin-session"
                         v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
                         @click="() => router.push(`/session/${sessionStore.currentSession.code}`)"
                     >
                         {{ t('session.rejoin.button') }}
                     </el-menu-item>
-                    <el-menu-item v-else-if="!sessionStore.currentSession && hasActiveSubscription" @click="openCreateSessionModal">
+                    <el-menu-item index="create-session" v-else-if="!sessionStore.currentSession && hasActiveSubscription" @click="openCreateSessionModal">
                         {{ t('header.create_session') }}
                     </el-menu-item>
-                    <el-menu-item @click="handleProfile">
+                    <el-menu-item index="profile" @click="handleProfile">
                         {{ t('header.profile') }}
                     </el-menu-item>
-                    <el-menu-item @click="handleLogout">
+                    <el-menu-item index="logout" @click="handleLogout">
                         {{ t('header.logout') }}
                     </el-menu-item>
                 </template>
                 <template v-else>
                     <el-menu-item
+                        index="join-current-session"
                         v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
                         @click="
                             () => {
@@ -154,10 +156,10 @@
                     >
                         {{ t('header.join_current_session') }}
                     </el-menu-item>
-                    <el-menu-item v-else-if="!guestSessionCode || !guestPseudo" @click="openJoinSessionModal">
+                    <el-menu-item index="join-session" v-else-if="!guestSessionCode || !guestPseudo" @click="openJoinSessionModal">
                         {{ t('header.join_session') }}
                     </el-menu-item>
-                    <el-menu-item @click="handleLogin">
+                    <el-menu-item index="login" @click="handleLogin">
                         {{ t('header.login') }}
                     </el-menu-item>
                 </template>
