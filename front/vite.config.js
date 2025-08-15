@@ -143,7 +143,6 @@ export default defineConfig(({ mode }) => {
                     }
                 },
             },
-            // Optimisation des chunks pour réduire le JS inutilisé
             chunkSizeWarningLimit: 1000,
             sourcemap: false
         },
