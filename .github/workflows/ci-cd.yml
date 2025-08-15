@@ -90,7 +90,7 @@ jobs:
           bin/console c:c --env=test
           XDEBUG_MODE=off vendor/bin/phpunit tests/functional
   build-backend:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     needs: symfony-tests
     runs-on: ubuntu-latest
     steps:
@@ -108,15 +108,22 @@ jobs:
         run: |
           echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
+      - name: Determine tags
+        id: tags
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "TAGS=ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest,ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:${{ github.sha }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "TAGS=ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest-develop,ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:develop-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./back
           file: ./back/Dockerfile.prod
           push: true
-          tags: |
-            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:latest
-            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/backend:${{ github.sha }}
+          tags: ${{ steps.tags.outputs.TAGS }}
 
   frontend-tests:
     if: '! github.event.pull_request.draft'
@@ -164,7 +171,7 @@ jobs:
       #     npm run test:e2e
 
   build-frontend:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     needs: frontend-tests
     runs-on: ubuntu-latest
     steps:
@@ -182,15 +189,22 @@ jobs:
         run: |
           echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
+      - name: Determine tags
+        id: tags
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "TAGS=ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest,ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:${{ github.sha }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "TAGS=ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest-develop,ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:develop-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./front
           file: ./front/Dockerfile.prod
           push: true
-          tags: |
-            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest
-            ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:${{ github.sha }}
+          tags: ${{ steps.tags.outputs.TAGS }}
 
   deploy-preprod:
     if: github.ref == 'refs/heads/develop'
