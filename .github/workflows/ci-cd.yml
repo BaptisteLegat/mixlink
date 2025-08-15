@@ -218,9 +218,12 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
-          timeout: 60s
+          timeout: 120s
           command_timeout: 15m
           debug: true
+          port: 2222
+          use_insecure_cipher: false
+          request_pty: true
           script: |
             cd /home/baptiste/mixlink-preprod
             echo "Pulling latest images..."
@@ -243,9 +246,12 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
-          timeout: 60s
+          timeout: 120s
           command_timeout: 15m
           debug: true
+          port: 2222
+          use_insecure_cipher: false
+          request_pty: true
           script: |
             cd /home/baptiste/mixlink
             echo "Pulling latest images..."
