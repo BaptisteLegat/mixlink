@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.3.1] - 2025-08-15
+
+### Added
+
+- Add redis image into Docker Compose for improved caching and performance.
+- Add cache for search results in the session page.
+- Improve the accessibility of the website.
+
+### Fixed
+- Fixed an issue where the log was writing errors for nothing when a non-logged in user is anonymous
+
 ## [1.3.0] - 2025-08-03
 
 ### Added
