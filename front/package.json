@@ -11,11 +11,15 @@
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "analyze:bundle": "npx vite-bundle-analyzer dist/stats.html",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@vueuse/core": "^12.3.0",
     "@vueuse/motion": "^3.0.3",
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^7.1.0",
     "element-plus": "^2.9.2",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
@@ -25,15 +29,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitest/eslint-plugin": "1.1.10",
     "@vue/eslint-config-prettier": "^10.1.0",
     "@vue/test-utils": "^2.4.6",
+    "chrome-launcher": "^1.2.0",
     "cypress": "^13.16.0",
     "eslint": "^9.14.0",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-vue": "^9.30.0",
     "jsdom": "^25.0.1",
+    "lighthouse": "^12.8.1",
     "prettier": "^3.3.3",
     "sass": "^1.83.0",
     "sass-embedded": "^1.83.0",
@@ -42,6 +49,7 @@
     "unplugin-vue-components": "^0.28.0",
     "vite": "^6.0.9",
     "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-pwa": "^1.0.2",
     "vite-plugin-vue-devtools": "^7.6.5",
     "vitest": "^3.0.7"
   }

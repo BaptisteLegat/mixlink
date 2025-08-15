@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
 import { useAuthStore } from '@/stores/authStore';
 
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomeView,
+        component: () => import('@/views/HomeView.vue'),
     },
     {
         path: '/login',

@@ -178,6 +178,12 @@
         }
     }
 
+    function navigateToCurrentSession() {
+        if (sessionStore.currentSession) {
+            window.location.href = `/session/${sessionStore.currentSession.code}`;
+        }
+    }
+
     defineExpose({
         showDialog,
         clearValidationError,
@@ -185,7 +191,7 @@
 </script>
 
 <template>
-    <el-dialog v-model="dialogVisible" :title="modalTitle" width="500px" center destroy-on-close @close="handleClose">
+    <el-dialog v-model="dialogVisible" :title="modalTitle" width="75%" :max-width="500" center destroy-on-close @close="handleClose">
         <div v-if="createdSession" class="share-session">
             <el-alert
                 :title="t('session.share.success_title')"
@@ -303,7 +309,6 @@
                     type="info"
                     show-icon
                     :closable="false"
-                    style="margin-bottom: 20px"
                 />
             </el-form>
         </div>
@@ -318,7 +323,7 @@
                 </template>
                 <template v-else-if="sessionStore.currentSession">
                     <el-button @click="handleClose">{{ t('common.cancel') }}</el-button>
-                    <el-button type="primary" @click="handleSubmit" :loading="loading">
+                    <el-button type="primary" @click="navigateToCurrentSession">
                         {{ buttonText }}
                     </el-button>
                 </template>
@@ -350,7 +355,6 @@
                 width: 100%;
             }
             .el-form-item__error {
-                margin-top: 2px;
                 font-size: 13px;
                 color: var(--el-color-danger);
             }
@@ -427,5 +431,37 @@
         display: flex;
         justify-content: flex-end;
         gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .dialog-footer {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dialog-footer .el-button {
+            width: 100%;
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dialog-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .el-button {
+                margin-left: 0 !important;
+            }
+        }
+    }
+
+    :deep(.el-dialog) {
+        @media (max-width: 768px) {
+            margin: 5vh auto;
+            width: 90% !important;
+            max-width: none !important;
+        }
     }
 </style>

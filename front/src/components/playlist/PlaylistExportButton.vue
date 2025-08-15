@@ -89,7 +89,7 @@
                     type: 'warning',
                 });
             } catch (err) {
-                if (err === 'cancel') {
+                if ('cancel' === err) {
                     return;
                 }
 
@@ -218,7 +218,7 @@
             </el-alert>
         </div>
 
-        <el-dialog v-model="showExportModal" :title="$t('playlist.export.modal.title')" width="500px" :close-on-click-modal="false">
+        <el-dialog v-model="showExportModal" :title="$t('playlist.export.modal.title')" width="90%" :max-width="500" :close-on-click-modal="false">
             <div class="export-content">
                 <p class="export-description">
                     {{ exportDescription }}
@@ -368,5 +368,33 @@
         display: flex;
         justify-content: flex-end;
         gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .export-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .export-button-container {
+            min-width: 100%;
+        }
+
+        .dialog-footer {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dialog-footer .el-button {
+            width: 100%;
+        }
+    }
+
+    :deep(.el-dialog) {
+        @media (max-width: 768px) {
+            margin: 5vh auto;
+            width: 90% !important;
+            max-width: none !important;
+        }
     }
 </style>

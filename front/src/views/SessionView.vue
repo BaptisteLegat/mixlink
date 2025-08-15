@@ -5,6 +5,7 @@
     import { useSessionStore } from '@/stores/sessionStore';
     import { useAuthStore } from '@/stores/authStore';
     import { useMercureStore } from '@/stores/mercureStore';
+    import { useSEO } from '@/composables/useSEO';
     import { ElMessage, ElMessageBox } from 'element-plus';
     import SessionHeader from '@/components/session/SessionHeader.vue';
     import GuestJoinCard from '@/components/session/GuestJoinCard.vue';
@@ -12,6 +13,8 @@
     import PlaylistCard from '@/components/session/PlaylistCard.vue';
     import MusicSearchBar from '@/components/session/MusicSearchBar.vue';
     import PlaylistExportButton from '@/components/playlist/PlaylistExportButton.vue';
+
+    useSEO('session');
 
     const { t } = useI18n();
     const route = useRoute();
@@ -130,6 +133,9 @@
             await sessionStore.removeParticipant(sessionCode.value, pseudo, 'kick');
             await loadParticipants();
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
             const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.kick.error');
             ElMessage.error(errorMessage);
         }
@@ -152,6 +158,9 @@
             sessionStore.leaveCurrentSession();
             router.push('/');
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
             const errorMessage = error.translationKey ? t(error.translationKey) : error.message ? t(error.message) : t('session.leave.error');
             ElMessage.error(errorMessage);
         }
@@ -170,6 +179,10 @@
             ElMessage.success(t('session.end.success'));
             router.push('/');
         } catch (error) {
+            if ('cancel' === error) {
+                return;
+            }
+
             if (error.message) {
                 const errorMessage = error.translationKey ? t(error.translationKey) : t('session.end.error');
                 ElMessage.error(errorMessage);

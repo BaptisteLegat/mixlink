@@ -74,7 +74,7 @@
     });
 </script>
 <template>
-    <el-dialog v-model="dialogVisible" :title="t('session.join.title')" width="400px" :before-close="handleClose" append-to-body>
+    <el-dialog v-model="dialogVisible" :title="t('session.join.title')" width="70%" :max-width="400" :before-close="handleClose" append-to-body>
         <el-form ref="formRef" :model="form" :rules="rules">
             <el-form-item :label="t('session.join.code')" prop="code">
                 <el-input
@@ -112,11 +112,35 @@
         justify-content: flex-end;
         gap: 10px;
     }
-</style>
-<style scoped>
-    .dialog-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
+
+    @media (max-width: 768px) {
+        .dialog-footer {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dialog-footer .el-button {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dialog-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .el-button {
+            margin-left: 0 !important;
+        }
+    }
+
+    :deep(.el-dialog) {
+        @media (max-width: 768px) {
+            margin: 5vh auto;
+            width: 90% !important;
+            max-width: none !important;
+        }
     }
 </style>

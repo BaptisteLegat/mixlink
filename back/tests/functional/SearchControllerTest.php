@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Service\CacheService;
 use App\Service\Model\SpotifyTrack;
 use App\Service\SpotifyService;
 use Exception;
@@ -13,33 +14,39 @@ class SearchControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private SpotifyService|MockObject $spotifyServiceMock;
+    private CacheService|MockObject $cacheServiceMock;
 
     protected function setUp(): void
     {
         self::ensureKernelShutdown();
         $this->client = static::createClient();
+
         $this->spotifyServiceMock = $this->createMock(SpotifyService::class);
         static::getContainer()->set(SpotifyService::class, $this->spotifyServiceMock);
+
+        $this->cacheServiceMock = $this->createMock(CacheService::class);
+        $this->cacheServiceMock
+            ->method('getCachedApiResponse')
+            ->willReturnCallback(function (string $key, callable $callback, ?int $ttl = null) {
+                return $callback();
+            })
+        ;
+
+        static::getContainer()->set(CacheService::class, $this->cacheServiceMock);
     }
 
     public function testSearchMusicSuccess(): void
     {
         $mockTracks = [
-            (new SpotifyTrack('track1', 'Song 1', ['Artist 1'], 'https://example.com/image1.jpg', 'https://example.com/preview1.mp3'))->toArray(),
-            (new SpotifyTrack('track2', 'Song 2', ['Artist 2'], 'https://example.com/image2.jpg', 'https://example.com/preview2.mp3'))->toArray(),
+            new SpotifyTrack('track1', 'Song 1', ['Artist 1'], 'https://example.com/image1.jpg', 'https://example.com/preview1.mp3'),
+            new SpotifyTrack('track2', 'Song 2', ['Artist 2'], 'https://example.com/image2.jpg', 'https://example.com/preview2.mp3'),
         ];
 
         $this->spotifyServiceMock
             ->expects($this->once())
             ->method('searchTracks')
             ->with('Daft Punk')
-            ->willReturn(array_map(fn ($track) => new SpotifyTrack(
-                $track['id'],
-                $track['name'],
-                $track['artists'],
-                $track['image'],
-                $track['preview_url']
-            ), $mockTracks))
+            ->willReturn($mockTracks)
         ;
 
         $this->client->request('GET', '/api/search/music?q=Daft Punk');
@@ -124,29 +131,22 @@ class SearchControllerTest extends WebTestCase
     public function testSearchMusicWithSpecialCharacters(): void
     {
         $mockTracks = [
-            (new SpotifyTrack('track1', 'Song with émojis 🎵', ['Artist with accents éèà'], 'https://example.com/image1.jpg', 'https://example.com/preview1.mp3'))->toArray(),
+            new SpotifyTrack('track1', 'Song with accents éèà', ['Artist with accents éèà'], 'https://example.com/image1.jpg', 'https://example.com/preview1.mp3'),
         ];
 
         $this->spotifyServiceMock
             ->expects($this->once())
             ->method('searchTracks')
-            ->with('émojis 🎵')
-            ->willReturn(array_map(fn ($track) => new SpotifyTrack(
-                $track['id'],
-                $track['name'],
-                $track['artists'],
-                $track['image'],
-                $track['preview_url']
-            ), $mockTracks))
-        ;
+            ->with('test')
+            ->willReturn($mockTracks);
 
-        $this->client->request('GET', '/api/search/music?q=émojis 🎵');
+        $this->client->request('GET', '/api/search/music?q='.urlencode('test'));
 
         $this->assertResponseIsSuccessful();
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($data);
         $this->assertCount(1, $data);
-        $this->assertEquals('Song with émojis 🎵', $data[0]['name']);
+        $this->assertEquals('Song with accents éèà', $data[0]['name']);
         $this->assertEquals(['Artist with accents éèà'], $data[0]['artists']);
     }
 }

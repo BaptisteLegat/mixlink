@@ -2,7 +2,7 @@
 
 $--colors: (
     'primary': (
-        'base': $purple,
+        'base': $primary-color,
     ),
     'success': (
         'base': $success-color,
@@ -17,7 +17,7 @@ $--colors: (
         'base': $error-color,
     ),
     'info': (
-        'base': $purple,
+        'base': $primary-color,
     ),
     'text': (
         'primary': #ffffff,

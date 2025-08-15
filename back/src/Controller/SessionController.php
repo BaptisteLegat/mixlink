@@ -373,12 +373,6 @@ class SessionController extends AbstractController
 
         $participants = $this->participantManager->getActiveParticipants($session);
 
-        $this->logger->info('Getting participants for session', [
-            'sessionCode' => $code,
-            'sessionId' => $session->getId()?->toRfc4122(),
-            'participantCount' => count($participants),
-        ]);
-
         $participantData = array_map(function ($participant) {
             return [
                 'id' => $participant->getId()?->toRfc4122(),

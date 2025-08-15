@@ -4,6 +4,7 @@
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     import { useAuthStore } from '@/stores/authStore';
+    import { useSEO } from '@/composables/useSEO';
     import GoogleIcon from 'vue-material-design-icons/Google.vue';
     import SpotifyIcon from 'vue-material-design-icons/Spotify.vue';
     import SoundcloudIcon from 'vue-material-design-icons/Soundcloud.vue';
@@ -14,6 +15,8 @@
     const { t } = useI18n();
     const authStore = useAuthStore();
     const router = useRouter();
+
+    useSEO('login');
 
     const cardRef = ref(null);
     const googleButtonRef = ref(null);

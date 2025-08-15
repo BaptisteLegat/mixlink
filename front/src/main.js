@@ -13,4 +13,10 @@ import router from '@/router';
 const pinia = createPinia();
 const app = createApp(App);
 
-app.use(MotionPlugin).use(i18n).use(router).use(pinia).use(ElementPlus, { locale: fr }).mount('#app');
+app.use(ElementPlus, {
+    locale: fr,
+    size: 'default',
+    zIndex: 3000,
+});
+
+app.use(MotionPlugin).use(i18n).use(router).use(pinia).mount('#app');

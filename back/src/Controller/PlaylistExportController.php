@@ -39,7 +39,7 @@ class PlaylistExportController extends AbstractController
     #[OA\Post(
         path: '/api/playlist/{id}/export/{platform}',
         summary: 'Export playlist to streaming platform',
-        description: 'Exports a playlist to the specified streaming platform (Spotify, YouTube Music, SoundCloud)',
+        description: 'Exports a playlist to the specified streaming platform (Spotify, YouTube, SoundCloud)',
         tags: ['Playlist Export'],
         parameters: [
             new OA\Parameter(

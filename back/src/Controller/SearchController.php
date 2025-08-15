@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\CacheService;
 use App\Service\SpotifyService;
 use Exception;
 use OpenApi\Attributes as OA;
@@ -16,8 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 #[OA\Tag(name: 'Search', description: 'Search endpoints')]
 class SearchController extends AbstractController
 {
-    public function __construct(private SpotifyService $spotifyService, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private SpotifyService $spotifyService,
+        private LoggerInterface $logger,
+        private CacheService $cacheService,
+    ) {
     }
 
     #[Route('/search/music', name: 'api_search_music', methods: ['GET'])]
@@ -72,9 +76,19 @@ class SearchController extends AbstractController
             return new JsonResponse(['error' => 'search.error.missing_query'], Response::HTTP_BAD_REQUEST);
         }
 
+        $cacheKey = 'spotify_search_'.md5(strtolower(trim($query)));
+
         try {
-            $results = $this->spotifyService->searchTracks($query);
-            $arrayResults = array_map(fn ($track) => $track->toArray(), $results);
+            /** @var array<array<string, mixed>> $arrayResults */
+            $arrayResults = $this->cacheService->getCachedApiResponse(
+                $cacheKey,
+                function () use ($query): array {
+                    $results = $this->spotifyService->searchTracks($query);
+
+                    return array_map(fn ($track) => $track->toArray(), $results);
+                },
+                1800 // 30 minutes
+            );
 
             return new JsonResponse($arrayResults);
         } catch (Exception $e) {
