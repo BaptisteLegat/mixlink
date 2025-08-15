@@ -18,6 +18,7 @@
   "dependencies": {
     "@vueuse/core": "^12.3.0",
     "@vueuse/motion": "^3.0.3",
+    "autoprefixer": "^10.4.21",
     "element-plus": "^2.9.2",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
