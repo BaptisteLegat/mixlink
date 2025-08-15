@@ -10,9 +10,7 @@
     const { t } = useI18n();
     const router = useRouter();
 
-    const navigateTo = (path) => {
-        router.push(path);
-    };
+    const navigateTo = (path) => router.push(path);
 
     const socialLinks = [
         { name: 'Facebook', icon: FacebookIcon, url: 'https://facebook.com' },
@@ -29,125 +27,219 @@
     ];
 </script>
 <template>
-    <el-footer class="footer">
-        <el-row justify="center" align="middle" class="footer-container">
-            <el-col :span="24" class="text-center">
-                <el-link underline="never" @click="navigateTo('/')">
-                    <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
-                    <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" class="logo" fit="contain" />
-                    <h1 :class="isDark ? 'primary-dark' : 'primary'" class="logo-text">link</h1>
-                </el-link>
-            </el-col>
-            <el-col :span="24" class="text-center social-container">
-                <el-space :size="32">
-                    <el-link
-                        v-for="(social, index) in socialLinks"
-                        :key="`social-${index}`"
-                        underline="never"
-                        :href="social.url"
-                        target="_blank"
-                        :aria-label="social.name"
-                    >
-                        <component :is="social.icon" class="social-icon" />
-                    </el-link>
-                </el-space>
-            </el-col>
-            <el-col :span="24" class="text-center link-section">
-                <el-space :size="32" wrap class="link-container">
-                    <el-link
-                        v-for="(link, index) in footerLinks"
-                        :key="`footer-link-${index}`"
-                        underline="never"
-                        @click="navigateTo(link.path)"
-                        class="footer-link"
-                    >
-                        {{ t(link.text) }}
-                    </el-link>
-                </el-space>
-            </el-col>
-        </el-row>
-    </el-footer>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="logo-section">
+                <button @click="navigateTo('/')" class="logo-link" aria-label="Homepage">
+                    <span class="logo-wrapper">
+                        <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
+                        <el-image
+                            :src="isDark ? '/logo-dark.svg' : '/logo.svg'"
+                            alt="mixlink"
+                            class="logo"
+                            fit="contain"
+                            loading="eager"
+                            width="48"
+                            height="48"
+                        />
+                        <h1 :class="isDark ? 'primary-dark' : 'primary'" class="logo-text">link</h1>
+                    </span>
+                </button>
+            </div>
+
+            <nav class="links-section" aria-label="Footer navigation">
+                <ul class="footer-nav">
+                    <li v-for="(link, index) in footerLinks" :key="`footer-link-${index}`">
+                        <button class="footer-link" @click="navigateTo(link.path)" :style="{ minWidth: '80px' }">
+                            {{ t(link.text) }}
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="social-section">
+                <ul class="social-wrapper">
+                    <li v-for="(social, index) in socialLinks" :key="`social-${index}`">
+                        <a :href="social.url" target="_blank" rel="noopener noreferrer" :aria-label="social.name" class="social-link">
+                            <component :is="social.icon" class="social-icon" />
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 </template>
+
 <style scoped>
     .footer {
-        border-top: 1px solid #ebeef5;
-        padding: 20px 0;
-        min-height: 140px;
+        border-top: 1px solid var(--el-border-color);
+        padding: 24px 0;
+        min-height: 128px;
     }
 
     .footer-container {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
     }
 
-    .text-center {
-        text-align: center;
+    .logo-section {
+        flex-shrink: 0;
     }
-
+    .logo-link {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        min-width: 140px;
+        min-height: 48px;
+    }
     .logo {
-        width: 50px;
-        vertical-align: middle;
-    }
-
-    .logo-text {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
+        flex-shrink: 0;
         display: inline-block;
-        font-size: 2.2rem;
-        vertical-align: middle;
+    }
+    .logo-text {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 4px;
+        white-space: nowrap;
+        line-height: 1;
     }
 
-    .social-icon {
-        width: 28px;
-        height: 28px;
-        transition: transform 0.3s ease;
+    .footer-nav {
+        list-style: none;
+        display: flex;
+        gap: 24px;
+        padding: 0;
+        margin: 0;
     }
-
-    .social-icon:hover {
-        transform: scale(1.2);
-    }
-
-    .link-section {
-        margin-top: 20px;
-    }
-
-    .link-container {
-        padding-bottom: 15px;
-        gap: 20px !important;
-    }
-
     .footer-link {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        white-space: nowrap;
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: relative;
+    }
+    .footer-link::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--el-color-primary);
+        transition: width 0.3s;
+        transform: translateX(-50%);
+    }
+    .footer-link:hover::after {
+        width: 80%;
+    }
+
+    .social-wrapper {
+        list-style: none;
+        display: flex;
+        gap: 16px;
+        padding: 0;
+        margin: 0;
+    }
+    .social-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .social-icon {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        flex-shrink: 0;
+        display: inline-block;
     }
 
     @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .logo-wrapper {
+            min-width: 120px;
+            min-height: 40px;
+        }
+        .logo-text {
+            font-size: 1.6rem;
+        }
         .logo {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
         }
-
-        .logo-text {
-            font-size: 1.8rem;
+        .footer-nav {
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            justify-content: center;
         }
-
-        .social-container .el-space {
-            margin: 0 auto;
-        }
-
         .footer-link {
-            font-size: 1rem;
+            min-width: 80px;
+        }
+        .social-link {
+            width: 36px;
+            height: 36px;
+        }
+        .social-icon {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            min-height: 20px;
         }
     }
 
     @media (max-width: 480px) {
-        .link-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .logo-wrapper {
+            min-width: 110px;
+            min-height: 36px;
         }
-
+        .logo-text {
+            font-size: 1.4rem;
+        }
+        .logo {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            min-height: 36px;
+        }
+        .footer-link {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            min-width: 75px;
+        }
+        .social-link {
+            width: 32px;
+            height: 32px;
+        }
         .social-icon {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            min-height: 18px;
         }
     }
 </style>
