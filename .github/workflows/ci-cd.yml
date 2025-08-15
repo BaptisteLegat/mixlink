@@ -191,3 +191,37 @@ jobs:
           tags: |
             ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:latest
             ghcr.io/${{ steps.lowercase_repo.outputs.REPO_LOWER }}/frontend:${{ github.sha }}
+
+  deploy-preprod:
+    if: github.ref == 'refs/heads/develop'
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Preprod
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/baptiste/mixlink-preprod
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
+
+  deploy-prod:
+    if: github.ref == 'refs/heads/master'
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Prod
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/baptiste/mixlink
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
