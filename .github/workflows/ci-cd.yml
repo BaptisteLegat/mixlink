@@ -217,6 +217,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           timeout: 60s
           command_timeout: 15m
           debug: true
@@ -242,6 +243,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           timeout: 60s
           command_timeout: 15m
           debug: true
