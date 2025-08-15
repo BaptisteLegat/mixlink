@@ -192,7 +192,7 @@
         }
 
         @media (max-width: 480px) {
-           display: flex;
+            display: flex;
             flex-direction: column;
             gap: 8px;
 

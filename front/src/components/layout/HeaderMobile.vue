@@ -133,7 +133,11 @@
                     >
                         {{ t('session.rejoin.button') }}
                     </el-menu-item>
-                    <el-menu-item index="create-session" v-else-if="!sessionStore.currentSession && hasActiveSubscription" @click="openCreateSessionModal">
+                    <el-menu-item
+                        index="create-session"
+                        v-else-if="!sessionStore.currentSession && hasActiveSubscription"
+                        @click="openCreateSessionModal"
+                    >
                         {{ t('header.create_session') }}
                     </el-menu-item>
                     <el-menu-item index="profile" @click="handleProfile">
