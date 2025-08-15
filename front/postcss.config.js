@@ -1,48 +1,37 @@
+import autoprefixer from 'autoprefixer'
+import cssnano from 'cssnano'
+
 export default (ctx) => {
-  const isProduction = ctx.env === 'production';
+  const isProduction = ctx.env === 'production'
+
+  const plugins = [
+    autoprefixer({
+      overrideBrowserslist: ['>= 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead']
+    })
+  ]
+
+  if (isProduction) {
+    plugins.push(
+      cssnano({
+        preset: ['default', {
+          discardComments: { removeAll: true },
+          normalizeWhitespace: true,
+          colormin: true,
+          minifyFontValues: true,
+          minifySelectors: true,
+          mergeLonghand: true,
+          mergeRules: true,
+          reduceIdents: false,
+          zindex: false,
+          discardUnused: true,
+          minifyGradients: true,
+          normalizeUrl: true,
+        }]
+      })
+    )
+  }
 
   return {
-    plugins: {
-      autoprefixer: {
-        overrideBrowserslist: ['>= 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead']
-      },
-      ...(isProduction ? {
-        cssnano: {
-          preset: ['default', {
-            discardComments: { removeAll: true },
-            normalizeWhitespace: true,
-            colormin: true,
-            minifyFontValues: true,
-            minifySelectors: true,
-            mergeLonghand: true,
-            mergeRules: true,
-            reduceIdents: false,
-            zindex: false,
-            discardUnused: true,
-            minifyGradients: true,
-            normalizeUrl: true,
-          }]
-        },
-        '@fullhuman/postcss-purgecss': {
-          content: [
-            './index.html',
-            './src/**/*.{vue,js,ts,jsx,tsx}',
-          ],
-          defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
-          safelist: [
-            'html', 'body',
-            /^el-/,
-            /^is-/,
-            /^has-/,
-            /^v-/,
-            /^router-/,
-            /dark/,
-          ],
-          blocklist: [],
-          keyframes: true,
-          variables: true,
-        }
-      } : {})
-    }
-  };
-};
+    plugins
+  }
+}
