@@ -228,11 +228,8 @@ jobs:
             set -e
             echo "=== Starting deployment process ==="
 
-            # Navigate to project directory
             cd /home/baptiste/mixlink-preprod
-            echo "Current directory: $(pwd)"
 
-            # Pull latest images with retry logic
             echo "Pulling latest images..."
             for i in {1..3}; do
               if docker compose pull; then
@@ -248,19 +245,15 @@ jobs:
               fi
             done
 
-            # Start containers
             echo "Starting containers..."
             docker compose up -d --remove-orphans
 
-            # Wait for containers to be healthy
             echo "Waiting for containers to start..."
             sleep 15
 
-            # Show container status
             echo "Container status:"
             docker compose ps
 
-            # Clean up old images
             echo "Cleaning up old images..."
             docker image prune -f || true
 
@@ -288,11 +281,8 @@ jobs:
             set -e
             echo "=== Starting deployment process ==="
 
-            # Navigate to project directory
             cd /home/baptiste/mixlink
-            echo "Current directory: $(pwd)"
 
-            # Pull latest images with retry logic
             echo "Pulling latest images..."
             for i in {1..3}; do
               if docker compose pull; then
@@ -308,19 +298,15 @@ jobs:
               fi
             done
 
-            # Start containers
             echo "Starting containers..."
             docker compose up -d --remove-orphans
 
-            # Wait for containers to be healthy
             echo "Waiting for containers to start..."
             sleep 15
 
-            # Show container status
             echo "Container status:"
             docker compose ps
 
-            # Clean up old images
             echo "Cleaning up old images..."
             docker image prune -f || true
 

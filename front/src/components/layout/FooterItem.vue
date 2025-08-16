@@ -95,17 +95,20 @@
     .logo-section {
         flex-shrink: 0;
     }
+
     .logo-link {
         background: none;
         border: none;
         cursor: pointer;
     }
+
     .logo-wrapper {
         display: flex;
         align-items: center;
         min-width: 140px;
         min-height: 48px;
     }
+
     .logo {
         width: 48px;
         height: 48px;
@@ -114,6 +117,7 @@
         flex-shrink: 0;
         display: inline-block;
     }
+
     .logo-text {
         font-size: 2rem;
         font-weight: 700;
@@ -129,6 +133,7 @@
         padding: 0;
         margin: 0;
     }
+
     .footer-link {
         font-size: 0.95rem;
         font-weight: 500;
@@ -139,7 +144,9 @@
         border: none;
         cursor: pointer;
         position: relative;
+        color: var(--el-text-color-primary) !important;
     }
+
     .footer-link::after {
         content: '';
         position: absolute;
@@ -151,6 +158,7 @@
         transition: width 0.3s;
         transform: translateX(-50%);
     }
+
     .footer-link:hover::after {
         width: 80%;
     }
@@ -162,6 +170,7 @@
         padding: 0;
         margin: 0;
     }
+
     .social-link {
         width: 40px;
         height: 40px;
@@ -169,6 +178,7 @@
         align-items: center;
         justify-content: center;
     }
+
     .social-icon {
         width: 24px;
         height: 24px;
@@ -202,41 +212,50 @@
             align-items: center;
             gap: 20px;
         }
+
         .logo-wrapper {
             min-width: 120px;
             min-height: 40px;
         }
+
         .logo-text {
             font-size: 1.6rem;
         }
+
         .logo {
             width: 40px;
             height: 40px;
             min-width: 40px;
             min-height: 40px;
         }
+
         .footer-nav {
             flex-wrap: wrap;
             gap: 12px 16px;
             justify-content: center;
         }
+
         .footer-link {
             min-width: 80px;
         }
+
         .social-link {
             width: 36px;
             height: 36px;
         }
+
         .social-icon {
             width: 20px;
             height: 20px;
             min-width: 20px;
             min-height: 20px;
         }
+
         .footer-bottom {
             padding: 12px 0;
             margin-top: 16px;
         }
+
         .copyright {
             font-size: 0.8rem;
         }
@@ -247,34 +266,41 @@
             min-width: 110px;
             min-height: 36px;
         }
+
         .logo-text {
             font-size: 1.4rem;
         }
+
         .logo {
             width: 36px;
             height: 36px;
             min-width: 36px;
             min-height: 36px;
         }
+
         .footer-link {
             font-size: 0.85rem;
             padding: 6px 10px;
             min-width: 75px;
         }
+
         .social-link {
             width: 32px;
             height: 32px;
         }
+
         .social-icon {
             width: 18px;
             height: 18px;
             min-width: 18px;
             min-height: 18px;
         }
+
         .footer-bottom {
             padding: 10px 0;
             margin-top: 12px;
         }
+
         .copyright {
             font-size: 0.75rem;
         }
