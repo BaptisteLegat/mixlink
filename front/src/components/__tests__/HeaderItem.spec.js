@@ -117,7 +117,7 @@ describe('Header Component', () => {
         const logo = wrapper.find('img');
         expect(logo.exists()).toBe(true);
         expect(logo.attributes('src')).toBe('/logo.svg');
-        expect(logo.attributes('alt')).toBe('mixlink');
+        expect(logo.attributes('alt')).toBe('mixlink logo');
     });
 
     it('displays login button when not authenticated', () => {
