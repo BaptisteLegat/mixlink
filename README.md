@@ -14,7 +14,7 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 - **Export de playlists** : Exportez la playlist finale sur le service de streaming de l'utilisateur connecté (hôte).
 - **Historique des playlists** : Consultez l'historique de toutes vos playlists exportées depuis votre page profil.
 - **Formulaire de contact** : Page de contact intégrée pour envoyer des messages.
-- **Interface utilisateur moderne** : Expérience fluide, responsive et intuitive grâce à Vue.js et Element Plus.
+- **Interface utilisateur moderne** : Expérience fluide, réactive et intuitive, avec support du mode sombre, grâce à Vue.js et Element Plus.
 - **Support multilingue** : Disponible en français et en anglais.
 
 ---
@@ -36,6 +36,34 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
 
 ---
 
+## Limitations OAuth et configuration des APIs
+
+### Spotify API - Mode développement
+
+L'application Spotify est actuellement en **mode développement**, ce qui implique certaines restrictions importantes :
+
+- **Limitation des utilisateurs** : Seuls 25 utilisateurs maximum peuvent être autorisés à se connecter via Spotify.
+- **Liste d'autorisation obligatoire** : Pour qu'un utilisateur puisse utiliser l'authentification Spotify, son email doit être explicitement ajouté dans le tableau de bord développeur Spotify.
+- **Accès refusé sans autorisation** : Si un utilisateur non autorisé tente de se connecter, il peut parfois réussir l'authentification, mais toutes les requêtes API renverront une erreur 403 (accès refusé).
+
+#### Configuration requise
+
+Pour chaque environnement (développement local, préprod, production), vous devez :
+
+1. Accéder au [tableau de bord développeur Spotify](https://developer.spotify.com/dashboard)
+2. Sélectionner votre application
+3. Aller dans "Settings" puis "User Management"
+4. Ajouter l'email de chaque utilisateur autorisé avec son nom
+
+> **Note** : Le passage en mode étendu nécessite d'être une organisation enregistrée avec au moins 250 000 utilisateurs actifs mensuels. Pour plus d'informations, consultez la [documentation officielle](https://developer.spotify.com/documentation/web-api/concepts/quota-modes).
+
+### Autres APIs
+
+- **SoundCloud** : Aucune limitation particulière pour l'authentification.
+- **Google/YouTube** : Aucune limitation, l'application étant validée par Google.
+
+---
+
 ## Installation
 
 ### Étapes d'installation
@@ -46,7 +74,7 @@ mixlink est une plateforme innovante permettant de créer, partager et collabore
    cd mixlink
    ```
 
-2. **Configurez les fichiers `.env` :**
+2. **Configurez les fichiers `.env`, `.env.test` et `.env.local` :**
    - Frontend : `/front/.env`
    - Backend : `/back/.env`
 
@@ -111,6 +139,10 @@ Cela permet à Stripe d’envoyer les événements de paiement à votre backend 
 - **Construire pour la production :**
   ```sh
   docker-compose exec frontend npm run build
+  ```
+- **Voir la prévisualisation :**
+  ```sh
+  docker-compose exec frontend npm run preview
   ```
 - **Lancer les tests unitaires :**
   ```sh
@@ -189,6 +221,9 @@ Après l’exécution de ces commandes, ouvrez le fichier `index.html` généré
 - Symfony
 - MySQL
 - PHPUnit
+- Doctrine ORM
+- API Platform
+- Redis
 
 ### Outils
 
