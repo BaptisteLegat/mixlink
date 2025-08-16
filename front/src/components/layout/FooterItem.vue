@@ -67,6 +67,11 @@
                 </ul>
             </div>
         </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <p class="copyright">© 2025 mixlink</p>
+            </div>
+        </div>
     </footer>
 </template>
 
@@ -173,6 +178,24 @@
         display: inline-block;
     }
 
+    .footer-bottom {
+        margin-top: 20px;
+    }
+
+    .footer-bottom-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    .copyright {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--el-text-color-secondary);
+        font-weight: 400;
+    }
+
     @media (max-width: 768px) {
         .footer-container {
             flex-direction: column;
@@ -210,6 +233,13 @@
             min-width: 20px;
             min-height: 20px;
         }
+        .footer-bottom {
+            padding: 12px 0;
+            margin-top: 16px;
+        }
+        .copyright {
+            font-size: 0.8rem;
+        }
     }
 
     @media (max-width: 480px) {
@@ -240,6 +270,13 @@
             height: 18px;
             min-width: 18px;
             min-height: 18px;
+        }
+        .footer-bottom {
+            padding: 10px 0;
+            margin-top: 12px;
+        }
+        .copyright {
+            font-size: 0.75rem;
         }
     }
 </style>
