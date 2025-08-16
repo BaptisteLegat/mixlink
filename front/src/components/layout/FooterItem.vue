@@ -30,12 +30,12 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="logo-section">
-                <button @click="navigateTo('/')" class="logo-link" aria-label="Homepage">
+                <button @click="navigateTo('/')" class="logo-link" :aria-label="t('header.logo_link')" :title="t('header.logo_link')">
                     <span class="logo-wrapper">
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
                         <el-image
                             :src="isDark ? '/logo-dark.svg' : '/logo.svg'"
-                            alt="mixlink"
+                            alt="mixlink logo"
                             class="logo"
                             fit="contain"
                             loading="eager"

@@ -76,9 +76,15 @@
         <el-row align="middle">
             <el-col :span="8">
                 <el-row>
-                    <el-link underline="never" @click="$router.push('/')" style="cursor: pointer">
+                    <el-link
+                        underline="never"
+                        @click="$router.push('/')"
+                        style="cursor: pointer"
+                        :aria-label="$t('header.logo_link')"
+                        :title="$t('header.logo_link')"
+                    >
                         <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
-                        <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink" style="width: 40px; height: 40px" fit="contain" />
+                        <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink logo" style="width: 40px; height: 40px" fit="contain" />
                         <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>
                     </el-link>
                 </el-row>
@@ -94,7 +100,7 @@
                                     <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'"> Français </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
-                            <el-link underline="never" type="primary">
+                            <el-link underline="never" type="primary" :aria-label="$t('header.language')" :title="$t('header.language')">
                                 <TranslateIcon style="width: 20px; height: 20px" />
                             </el-link>
                         </el-dropdown>
@@ -105,6 +111,8 @@
                             :active-icon="SunIcon"
                             :inactive-icon="MoonIcon"
                             style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023c0; margin-right: 20px"
+                            :aria-label="$t('header.theme_toggle')"
+                            :title="$t('header.theme_toggle')"
                         />
 
                         <template v-if="authStore.isAuthenticated">
@@ -113,6 +121,8 @@
                                 type="primary"
                                 @click="$router.push(`/session/${sessionStore.currentSession.code}`)"
                                 style="margin-right: 15px"
+                                :aria-label="$t('session.rejoin.button')"
+                                :title="$t('session.rejoin.button')"
                             >
                                 {{ $t('session.rejoin.button') }}
                             </el-button>
@@ -121,11 +131,20 @@
                                 type="primary"
                                 @click="openCreateSessionModal"
                                 style="margin-right: 15px"
+                                :aria-label="$t('header.create_session')"
+                                :title="$t('header.create_session')"
                             >
                                 {{ $t('header.create_session') }}
                             </el-button>
                             <el-dropdown>
-                                <el-avatar :size="40" :src="authStore.user?.profilePicture" :icon="authStore.user?.profilePicture ? null : UserIcon">
+                                <el-avatar
+                                    :size="40"
+                                    :src="authStore.user?.profilePicture"
+                                    :icon="authStore.user?.profilePicture ? null : UserIcon"
+                                    :aria-label="$t('header.user_menu')"
+                                    :title="$t('header.user_menu')"
+                                    :alt="$t('header.user_menu')"
+                                >
                                     <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
                                 </el-avatar>
                                 <template #dropdown>
@@ -146,6 +165,8 @@
                                 type="primary"
                                 style="margin-right: 10px"
                                 @click="$router.push(`/session/${guestSessionCode}`)"
+                                :aria-label="$t('header.join_current_session')"
+                                :title="$t('header.join_current_session')"
                             >
                                 {{ $t('header.join_current_session') }}
                             </el-button>
@@ -154,10 +175,12 @@
                                 type="primary"
                                 @click="openJoinSessionModal"
                                 style="margin-right: 10px"
+                                :aria-label="$t('header.join_session')"
+                                :title="$t('header.join_session')"
                             >
                                 {{ $t('header.join_session') }}
                             </el-button>
-                            <el-button type="primary" @click="$router.push('/login')">
+                            <el-button type="primary" @click="$router.push('/login')" :aria-label="$t('header.login')" :title="$t('header.login')">
                                 {{ $t('header.login') }}
                             </el-button>
                         </template>

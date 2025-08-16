@@ -7,7 +7,12 @@
         "light_mode": "Light mode",
         "create_session": "Create session",
         "join_session": "Join session",
-        "join_current_session": "Join current session"
+        "join_current_session": "Join current session",
+        "language": "Change language",
+        "user_menu": "User menu",
+        "logo_link": "Back to home",
+        "theme_toggle": "Toggle theme",
+        "menu": "Menu"
     },
     "profile": {
         "title": "My profile",

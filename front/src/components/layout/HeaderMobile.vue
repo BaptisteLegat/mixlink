@@ -102,7 +102,12 @@
 
 <template>
     <div>
-        <MenuIcon style="width: 24px; height: 24px; cursor: pointer" @click="drawerVisible = true" />
+        <MenuIcon
+            style="width: 24px; height: 24px; cursor: pointer"
+            @click="drawerVisible = true"
+            :aria-label="t('header.menu')"
+            :title="t('header.menu')"
+        />
 
         <el-drawer v-model="drawerVisible" direction="rtl" size="70%">
             <template #header>
@@ -113,16 +118,18 @@
                         :size="40"
                         :src="authStore.user?.profilePicture"
                         :icon="authStore.user?.profilePicture ? null : UserIcon"
+                        :aria-label="t('header.user_menu')"
+                        :title="t('header.user_menu')"
                     >
                         <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
                     </el-avatar>
                 </div>
             </template>
             <el-menu style="border: 0">
-                <el-menu-item index="language" @click="toggleLanguage">
+                <el-menu-item index="language" @click="toggleLanguage" :aria-label="t('header.language')" :title="t('header.language')">
                     {{ getLanguageText }}
                 </el-menu-item>
-                <el-menu-item index="theme" @click="toggleDarkMode">
+                <el-menu-item index="theme" @click="toggleDarkMode" :aria-label="t('header.theme_toggle')" :title="t('header.theme_toggle')">
                     {{ getThemeText }}
                 </el-menu-item>
                 <template v-if="authStore.isAuthenticated">
@@ -130,6 +137,8 @@
                         index="rejoin-session"
                         v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
                         @click="() => router.push(`/session/${sessionStore.currentSession.code}`)"
+                        :aria-label="t('session.rejoin.button')"
+                        :title="t('session.rejoin.button')"
                     >
                         {{ t('session.rejoin.button') }}
                     </el-menu-item>
@@ -137,13 +146,15 @@
                         index="create-session"
                         v-else-if="!sessionStore.currentSession && hasActiveSubscription"
                         @click="openCreateSessionModal"
+                        :aria-label="t('header.create_session')"
+                        :title="t('header.create_session')"
                     >
                         {{ t('header.create_session') }}
                     </el-menu-item>
-                    <el-menu-item index="profile" @click="handleProfile">
+                    <el-menu-item index="profile" @click="handleProfile" :aria-label="t('header.profile')" :title="t('header.profile')">
                         {{ t('header.profile') }}
                     </el-menu-item>
-                    <el-menu-item index="logout" @click="handleLogout">
+                    <el-menu-item index="logout" @click="handleLogout" :aria-label="t('header.logout')" :title="t('header.logout')">
                         {{ t('header.logout') }}
                     </el-menu-item>
                 </template>
@@ -157,13 +168,21 @@
                                 drawerVisible = false;
                             }
                         "
+                        :aria-label="t('header.join_current_session')"
+                        :title="t('header.join_current_session')"
                     >
                         {{ t('header.join_current_session') }}
                     </el-menu-item>
-                    <el-menu-item index="join-session" v-else-if="!guestSessionCode || !guestPseudo" @click="openJoinSessionModal">
+                    <el-menu-item
+                        index="join-session"
+                        v-else-if="!guestSessionCode || !guestPseudo"
+                        @click="openJoinSessionModal"
+                        :aria-label="t('header.join_session')"
+                        :title="t('header.join_session')"
+                    >
                         {{ t('header.join_session') }}
                     </el-menu-item>
-                    <el-menu-item index="login" @click="handleLogin">
+                    <el-menu-item index="login" @click="handleLogin" :aria-label="t('header.login')" :title="t('header.login')">
                         {{ t('header.login') }}
                     </el-menu-item>
                 </template>
