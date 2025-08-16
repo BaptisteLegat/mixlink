@@ -3,7 +3,6 @@
 @use './styles/_fonts.scss' as *;
 @use './styles/element/index.scss' as *;
 @use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
-@use 'element-plus/dist/index.css' as *;
 
 body {
     font-family: $app-font-family;

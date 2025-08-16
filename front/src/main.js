@@ -1,4 +1,6 @@
 import './assets/main.scss';
+import 'element-plus/dist/index.css';
+
 import { MotionPlugin } from '@vueuse/motion';
 
 import { createApp } from 'vue';

@@ -21,7 +21,11 @@ export default defineConfig(({ mode }) => {
           resolvers: [ElementPlusResolver()],
         }),
         Components({
-          resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
+          resolvers: [ElementPlusResolver({
+            importStyle: 'sass',
+            directives: true,
+            version: '2.4.4'
+          })],
         }),
         ...(!isDev ? [
             compression({ algorithm: 'brotliCompress' }),
