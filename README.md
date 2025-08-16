@@ -222,7 +222,7 @@ Après l’exécution de ces commandes, ouvrez le fichier `index.html` généré
 - MySQL
 - PHPUnit
 - Doctrine ORM
-- API Platform
+- Nelmio ApiDoc Bundle
 - Redis
 
 ### Outils
