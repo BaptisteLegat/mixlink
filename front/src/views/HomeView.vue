@@ -64,26 +64,26 @@
 </script>
 
 <template>
-    <el-container class="landing-page">
-        <div ref="heroRef">
+    <main>
+        <section ref="heroRef" aria-labelledby="hero-title">
             <HeroSection />
-        </div>
-        <div ref="featuresRef" id="features">
+        </section>
+        <section ref="featuresRef" id="features" aria-labelledby="features-title">
             <HowItWorks />
             <FeaturesSection />
-        </div>
-        <div ref="pricingRef">
+        </section>
+        <section ref="pricingRef" aria-labelledby="pricing-title">
             <PricingSection />
-        </div>
-        <div ref="ctaRef">
+        </section>
+        <section ref="ctaRef" aria-labelledby="cta-title">
             <CtaSection @openCreateSessionModal="openCreateSessionModal" />
-        </div>
-    </el-container>
+        </section>
+    </main>
     <CreateSessionModal ref="createSessionModalRef" />
 </template>
 
 <style lang="scss" scoped>
-    .landing-page {
+    main {
         max-width: 1400px;
         margin: 0 auto;
         padding: 0 20px;

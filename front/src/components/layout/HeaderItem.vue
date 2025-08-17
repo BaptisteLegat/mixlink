@@ -72,123 +72,142 @@
     window.addEventListener('guest-joined', updateHasGuestJoined);
 </script>
 <template>
-    <el-header style="border-bottom: 1px solid #ebeef5" height="80px">
-        <el-row align="middle">
-            <el-col :span="8">
-                <el-row>
-                    <el-link
-                        underline="never"
-                        @click="$router.push('/')"
-                        style="cursor: pointer"
-                        :aria-label="$t('header.logo_link')"
-                        :title="$t('header.logo_link')"
-                    >
-                        <h1 :class="isDark ? 'secondary-dark' : 'secondary'">mix</h1>
-                        <el-image :src="isDark ? '/logo-dark.svg' : '/logo.svg'" alt="mixlink logo" style="width: 40px; height: 40px" fit="contain" />
-                        <h1 :class="isDark ? 'primary-dark' : 'primary'">link</h1>
-                    </el-link>
-                </el-row>
-            </el-col>
-            <el-col :span="16">
-                <el-row justify="end" align="middle">
-                    <HeaderMobile v-if="isMobile" />
-                    <template v-else>
-                        <el-dropdown style="margin-right: 20px">
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item @click="changeLanguage('en')" :disabled="locale.value === 'en'"> English </el-dropdown-item>
-                                    <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'"> Français </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                            <el-link underline="never" type="primary" :aria-label="$t('header.language')" :title="$t('header.language')">
-                                <TranslateIcon style="width: 20px; height: 20px" />
-                            </el-link>
-                        </el-dropdown>
-                        <el-switch
-                            v-model="isDark"
-                            size="large"
-                            inline-prompt
-                            :active-icon="SunIcon"
-                            :inactive-icon="MoonIcon"
-                            style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023c0; margin-right: 20px"
-                            :aria-label="$t('header.theme_toggle')"
-                            :title="$t('header.theme_toggle')"
-                        />
-
-                        <template v-if="authStore.isAuthenticated">
-                            <el-button
-                                v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
-                                type="primary"
-                                @click="$router.push(`/session/${sessionStore.currentSession.code}`)"
-                                style="margin-right: 15px"
-                                :aria-label="$t('session.rejoin.button')"
-                                :title="$t('session.rejoin.button')"
-                            >
-                                {{ $t('session.rejoin.button') }}
-                            </el-button>
-                            <el-button
-                                v-else-if="!sessionStore.currentSession && hasActiveSubscription"
-                                type="primary"
-                                @click="openCreateSessionModal"
-                                style="margin-right: 15px"
-                                :aria-label="$t('header.create_session')"
-                                :title="$t('header.create_session')"
-                            >
-                                {{ $t('header.create_session') }}
-                            </el-button>
-                            <el-dropdown>
-                                <el-avatar
-                                    :size="40"
-                                    :src="authStore.user?.profilePicture"
-                                    :icon="authStore.user?.profilePicture ? null : UserIcon"
-                                    :aria-label="$t('header.user_menu')"
-                                    :title="$t('header.user_menu')"
-                                    :alt="$t('header.user_menu')"
-                                >
-                                    <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
-                                </el-avatar>
+    <el-header style="border-bottom: 1px solid #ebeef5" height="100px" role="banner">
+        <nav>
+            <el-row align="middle">
+                <el-col :span="8">
+                    <el-row>
+                        <el-link
+                            underline="never"
+                            @click="$router.push('/')"
+                            style="cursor: pointer"
+                            :aria-label="$t('header.logo_link')"
+                            :title="$t('header.logo_link')"
+                        >
+                            <h1 :class="isDark ? 'secondary-dark' : 'secondary'" class="logo-text">mix</h1>
+                            <el-image
+                                :src="isDark ? '/logo-dark.svg' : '/logo.svg'"
+                                alt="mixlink logo"
+                                style="width: 40px; height: 40px"
+                                fit="contain"
+                            />
+                            <h1 :class="isDark ? 'primary-dark' : 'primary'" class="logo-text">link</h1>
+                        </el-link>
+                    </el-row>
+                </el-col>
+                <el-col :span="16">
+                    <el-row justify="end" align="middle">
+                        <HeaderMobile v-if="isMobile" />
+                        <template v-else>
+                            <el-dropdown style="margin-right: 20px">
                                 <template #dropdown>
                                     <el-dropdown-menu>
-                                        <el-dropdown-item @click="$router.push('/profile')">
-                                            {{ $t('header.profile') }}
-                                        </el-dropdown-item>
-                                        <el-dropdown-item divided @click="authStore.logout()">
-                                            {{ $t('header.logout') }}
+                                        <el-dropdown-item @click="changeLanguage('en')" :disabled="locale.value === 'en'"> English </el-dropdown-item>
+                                        <el-dropdown-item @click="changeLanguage('fr')" :disabled="locale.value === 'fr'">
+                                            Français
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
+                                <el-link underline="never" type="primary" :aria-label="$t('header.language')" :title="$t('header.language')">
+                                    <TranslateIcon style="width: 20px; height: 20px" />
+                                </el-link>
                             </el-dropdown>
+                            <el-switch
+                                v-model="isDark"
+                                size="large"
+                                inline-prompt
+                                :active-icon="SunIcon"
+                                :inactive-icon="MoonIcon"
+                                style="--el-switch-on-color: #753ed6; --el-switch-off-color: #6023c0; margin-right: 10px"
+                                :aria-label="$t('header.theme_toggle')"
+                                :title="$t('header.theme_toggle')"
+                            />
+                            <template v-if="authStore.isAuthenticated">
+                                <el-button
+                                    v-if="sessionStore.currentSession && !isOnCurrentSession() && hasActiveSubscription"
+                                    type="primary"
+                                    @click="$router.push(`/session/${sessionStore.currentSession.code}`)"
+                                    style="margin-right: 15px"
+                                    :aria-label="$t('session.rejoin.button')"
+                                    :title="$t('session.rejoin.button')"
+                                >
+                                    {{ $t('session.rejoin.button') }}
+                                </el-button>
+                                <el-button
+                                    v-else-if="!sessionStore.currentSession && hasActiveSubscription"
+                                    type="primary"
+                                    @click="openCreateSessionModal"
+                                    style="margin-right: 15px"
+                                    :aria-label="$t('header.create_session')"
+                                    :title="$t('header.create_session')"
+                                >
+                                    {{ $t('header.create_session') }}
+                                </el-button>
+                                <el-dropdown>
+                                    <el-avatar
+                                        :size="40"
+                                        :src="authStore.user?.profilePicture"
+                                        :icon="authStore.user?.profilePicture ? null : UserIcon"
+                                        :aria-label="$t('header.user_menu')"
+                                        :title="$t('header.user_menu')"
+                                        :alt="$t('header.user_menu')"
+                                    >
+                                        <template v-if="!authStore.user?.profilePicture">{{ userInitials }}</template>
+                                    </el-avatar>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item @click="$router.push('/profile')">
+                                                {{ $t('header.profile') }}
+                                            </el-dropdown-item>
+                                            <el-dropdown-item divided @click="authStore.logout()">
+                                                {{ $t('header.logout') }}
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                            </template>
+                            <template v-if="!authStore.isAuthenticated">
+                                <el-button
+                                    v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
+                                    type="primary"
+                                    style="margin-right: 10px"
+                                    @click="$router.push(`/session/${guestSessionCode}`)"
+                                    :aria-label="$t('header.join_current_session')"
+                                    :title="$t('header.join_current_session')"
+                                >
+                                    {{ $t('header.join_current_session') }}
+                                </el-button>
+                                <el-button
+                                    v-else-if="(!guestSessionCode || !guestPseudo) && route.name !== 'session'"
+                                    type="primary"
+                                    @click="openJoinSessionModal"
+                                    style="margin-right: 10px"
+                                    :aria-label="$t('header.join_session')"
+                                    :title="$t('header.join_session')"
+                                >
+                                    {{ $t('header.join_session') }}
+                                </el-button>
+                                <el-button
+                                    type="primary"
+                                    @click="$router.push('/login')"
+                                    :aria-label="$t('header.login')"
+                                    :title="$t('header.login')"
+                                >
+                                    {{ $t('header.login') }}
+                                </el-button>
+                            </template>
                         </template>
-                        <template v-if="!authStore.isAuthenticated">
-                            <el-button
-                                v-if="guestSessionCode && guestPseudo && !isGuestOnCurrentSession()"
-                                type="primary"
-                                style="margin-right: 10px"
-                                @click="$router.push(`/session/${guestSessionCode}`)"
-                                :aria-label="$t('header.join_current_session')"
-                                :title="$t('header.join_current_session')"
-                            >
-                                {{ $t('header.join_current_session') }}
-                            </el-button>
-                            <el-button
-                                v-else-if="(!guestSessionCode || !guestPseudo) && route.name !== 'session'"
-                                type="primary"
-                                @click="openJoinSessionModal"
-                                style="margin-right: 10px"
-                                :aria-label="$t('header.join_session')"
-                                :title="$t('header.join_session')"
-                            >
-                                {{ $t('header.join_session') }}
-                            </el-button>
-                            <el-button type="primary" @click="$router.push('/login')" :aria-label="$t('header.login')" :title="$t('header.login')">
-                                {{ $t('header.login') }}
-                            </el-button>
-                        </template>
-                    </template>
-                </el-row>
-            </el-col>
-        </el-row>
+                    </el-row>
+                </el-col>
+            </el-row>
+        </nav>
         <CreateSessionModal ref="createSessionModalRef" />
         <JoinSessionModal ref="joinSessionModalRef" v-if="route.name !== 'session'" />
     </el-header>
 </template>
+<style scoped>
+    .logo-text {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+</style>

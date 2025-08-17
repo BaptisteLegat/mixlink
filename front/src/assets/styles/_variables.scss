@@ -1,22 +1,29 @@
 // --- Colors ---
-$primary-color: #5820a0;
+$primary-color: #4a1a85;
 $secondary-color: #260e4d;
-$purple: #753ed6;
-$purple-light: #baacff;
+$purple: #5f2bb8;
+$purple-light: #8b7ac7;
 $background-color: #ffffff;
-$error-color: #d93025;
-$success-color: #1e8e3e;
-$warning-color: #ea8600;
+$error-color: #c5221f;
+$success-color: #1a7a35;
+$warning-color: #cc7700;
 $info-color: $primary-color;
 
 $text-color-primary: #212121;
-$text-color-secondary: #5f6368;
-$text-color-disabled: #9aa0a6;
+$text-color-secondary: #565656;
+$text-color-disabled: #808080;
 
 $dark-background: #1a1a1a;
 $dark-surface: #2d2d2d;
 $dark-text-primary: #ffffff;
-$dark-text-secondary: #e8eaed;
+$dark-text-secondary: #e0e0e0;
+
+$dark-primary-color: #9b7df0;
+$dark-secondary-color: #c4a7ff;
+$dark-purple: #b39dff;
+$dark-error-color: #ff6b6b;
+$dark-success-color: #51cf66;
+$dark-warning-color: #ffd43b;
 
 // --- Typography ---
 $app-font-family:
