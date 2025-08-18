@@ -16,7 +16,7 @@
     "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
-    "@vueuse/core": "^12.3.0",
+    "@vueuse/core": "^13.7.0",
     "@vueuse/motion": "^3.0.3",
     "autoprefixer": "^10.4.21",
     "cssnano": "^7.1.0",
