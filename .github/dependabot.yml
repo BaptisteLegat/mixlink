@@ -1,4 +1,6 @@
 version: 2
+enable-beta-ecosystems: true
+
 updates:
   - package-ecosystem: "npm"
     directory: "/front"
@@ -12,6 +14,20 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+        dependency-type: "production"
+      dev-dependencies:
+        patterns:
+          - "*"
+        dependency-type: "development"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint*"
+          - "eslint-plugin-*"
 
   - package-ecosystem: "composer"
     directory: "/back"
@@ -25,6 +41,10 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
+    groups:
+      all-composer:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/front"
@@ -38,6 +58,10 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-front:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/back"
@@ -51,3 +75,7 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-back:
+        patterns:
+          - "*"
