@@ -39,7 +39,7 @@
     "eslint": "^9.14.0",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-vue": "^9.30.0",
-    "jsdom": "^25.0.1",
+    "jsdom": "^26.1.0",
     "lighthouse": "^12.8.1",
     "prettier": "^3.3.3",
     "sass": "^1.83.0",
