@@ -19,6 +19,43 @@ export default [
     ...pluginVue.configs['flat/essential'],
 
     {
+        name: 'app/browser-globals',
+        languageOptions: {
+            globals: {
+                // Browser globals
+                window: 'readonly',
+                document: 'readonly',
+                console: 'readonly',
+                localStorage: 'readonly',
+                sessionStorage: 'readonly',
+                navigator: 'readonly',
+                fetch: 'readonly',
+                URL: 'readonly',
+                URLSearchParams: 'readonly',
+                Event: 'readonly',
+                EventSource: 'readonly',
+                FormData: 'readonly',
+                // Timer functions
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+                setInterval: 'readonly',
+                clearInterval: 'readonly',
+                // Intersection Observer
+                IntersectionObserver: 'readonly',
+                // Service Worker globals
+                self: 'readonly',
+                caches: 'readonly',
+                // Node.js globals (for config files)
+                process: 'readonly',
+                global: 'readonly',
+                __dirname: 'readonly',
+                __filename: 'readonly',
+                Buffer: 'readonly',
+            },
+        },
+    },
+
+    {
         ...pluginVitest.configs.recommended,
         files: ['src/**/__tests__/*'],
     },
