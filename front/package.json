@@ -50,7 +50,7 @@
     "vite": "^6.0.9",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-pwa": "^1.0.2",
-    "vite-plugin-vue-devtools": "^7.6.5",
+    "vite-plugin-vue-devtools": "^8.0.0",
     "vitest": "^3.0.7"
   }
 }
