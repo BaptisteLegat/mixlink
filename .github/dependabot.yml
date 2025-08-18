@@ -27,7 +27,20 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/front"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    assignees:
+      - "BaptisteLegat"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/back"
     schedule:
       interval: "monthly"
       day: "monday"
