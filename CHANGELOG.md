@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
+## [1.3.3] - 2025-08-28
+
+### Added
+- Add dependabot configuration for automated dependency updates by creating a `.github/dependabot.yml` file.
+
+### Changed
+- Updated Node.js version to 24 in Dockerfile and GitHub Actions workflows.
+- Updated npm packages to their latest versions.
+
 ## [1.3.2] - 2025-08-15
 
 ### Fixed
