@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- write your changes here -->
 
-## [1.3.3] - 2025-08-28
+## [1.3.3] - 2025-08-18
 
 ### Added
 - Add dependabot configuration for automated dependency updates by creating a `.github/dependabot.yml` file.
