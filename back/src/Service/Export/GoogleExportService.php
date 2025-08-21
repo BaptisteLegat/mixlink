@@ -122,12 +122,7 @@ class GoogleExportService implements ExportServiceInterface
                 }
 
                 try {
-                    $success = $this->addVideoToPlaylist($provider, $playlistId, $videoId);
-                    if ($success) {
-                        ++$exportedTracks;
-                    } else {
-                        ++$failedTracks;
-                    }
+                    $this->addVideoToPlaylist($provider, $playlistId, $videoId) ? ++$exportedTracks : ++$failedTracks;
 
                     // To avoid hitting YouTube API rate limits, we add a delay after each track addition
                     if (($exportedTracks + $failedTracks) < $songs->count()) {
