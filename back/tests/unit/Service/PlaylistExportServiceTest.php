@@ -2,8 +2,11 @@
 
 namespace App\Tests\Unit\Service;
 
+use App\Entity\Plan;
 use App\Entity\Playlist;
+use App\Entity\Subscription;
 use App\Entity\User;
+use App\Repository\PlaylistRepository;
 use App\Service\Export\ExportServiceFactory;
 use App\Service\Export\ExportServiceInterface;
 use App\Service\Export\Model\ExportResult;
@@ -19,20 +22,19 @@ class PlaylistExportServiceTest extends TestCase
     private ExportServiceFactory|MockObject $exportServiceFactoryMock;
     private LoggerInterface|MockObject $loggerMock;
     private ExportServiceInterface|MockObject $exportServiceMock;
-    private User|MockObject $userMock;
-    private Playlist|MockObject $playlistMock;
+    private PlaylistRepository|MockObject $playlistRepositoryMock;
 
     protected function setUp(): void
     {
         $this->exportServiceFactoryMock = $this->createMock(ExportServiceFactory::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
         $this->exportServiceMock = $this->createMock(ExportServiceInterface::class);
-        $this->userMock = $this->createMock(User::class);
-        $this->playlistMock = $this->createMock(Playlist::class);
+        $this->playlistRepositoryMock = $this->createMock(PlaylistRepository::class);
 
         $this->playlistExportService = new PlaylistExportService(
             $this->exportServiceFactoryMock,
             $this->loggerMock,
+            $this->playlistRepositoryMock
         );
     }
 
@@ -64,14 +66,14 @@ class PlaylistExportServiceTest extends TestCase
         $this->exportServiceMock
             ->expects($this->once())
             ->method('isUserConnected')
-            ->with($this->userMock)
+            ->with(new User())
             ->willReturn(true)
         ;
 
         $this->exportServiceMock
             ->expects($this->once())
             ->method('exportPlaylist')
-            ->with($this->playlistMock, $this->userMock)
+            ->with(new Playlist(), new User())
             ->willReturn($expectedResult)
         ;
 
@@ -80,7 +82,7 @@ class PlaylistExportServiceTest extends TestCase
             ->method('warning')
         ;
 
-        $result = $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
+        $result = $this->playlistExportService->exportPlaylist(new Playlist(), new User(), $platform);
 
         $this->assertInstanceOf(ExportResult::class, $result);
         $this->assertEquals('playlist123', $result->playlistId);
@@ -104,7 +106,7 @@ class PlaylistExportServiceTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Platform 'unsupported' is not supported");
 
-        $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
+        $this->playlistExportService->exportPlaylist(new Playlist(), new User(), $platform);
     }
 
     public function testExportPlaylistWithUserNotConnected(): void
@@ -128,14 +130,14 @@ class PlaylistExportServiceTest extends TestCase
         $this->exportServiceMock
             ->expects($this->once())
             ->method('isUserConnected')
-            ->with($this->userMock)
+            ->with(new User())
             ->willReturn(false)
         ;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('User is not connected to spotify');
 
-        $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
+        $this->playlistExportService->exportPlaylist(new Playlist(), new User(), $platform);
     }
 
     public function testExportPlaylistWithException(): void
@@ -159,7 +161,7 @@ class PlaylistExportServiceTest extends TestCase
         $this->exportServiceMock
             ->expects($this->once())
             ->method('isUserConnected')
-            ->with($this->userMock)
+            ->with(new User())
             ->willReturn(true)
         ;
 
@@ -167,7 +169,7 @@ class PlaylistExportServiceTest extends TestCase
         $this->exportServiceMock
             ->expects($this->once())
             ->method('exportPlaylist')
-            ->with($this->playlistMock, $this->userMock)
+            ->with(new Playlist(), new User())
             ->willThrowException(new InvalidArgumentException($exceptionMessage))
         ;
 
@@ -186,7 +188,7 @@ class PlaylistExportServiceTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to export playlist: '.$exceptionMessage);
 
-        $this->playlistExportService->exportPlaylist($this->playlistMock, $this->userMock, $platform);
+        $this->playlistExportService->exportPlaylist(new Playlist(), new User(), $platform);
     }
 
     public function testGetSupportedPlatforms(): void
@@ -202,5 +204,47 @@ class PlaylistExportServiceTest extends TestCase
         $result = $this->playlistExportService->getSupportedPlatforms();
 
         $this->assertEquals($expectedPlatforms, $result);
+    }
+
+    public function testRollbackExportWithPremium(): void
+    {
+        $plan = new Plan()->setName(Plan::PREMIUM);
+        $subscription = new Subscription()->setPlan($plan);
+        $user = new User()->setSubscription($subscription);
+
+        $playlist = new Playlist()
+            ->setName('Test Playlist')
+            ->setUser($user)
+        ;
+
+        $this->playlistRepositoryMock
+            ->expects($this->never())
+            ->method('save')
+        ;
+
+        $this->playlistExportService->rollbackExport($playlist, $user);
+    }
+
+    public function testRollbackExportWithFreePlan(): void
+    {
+        $plan = new Plan()->setName(Plan::FREE);
+        $subscription = new Subscription()->setPlan($plan);
+        $user = new User()->setSubscription($subscription);
+
+        $playlist = new Playlist()
+            ->setName('Test Playlist')
+            ->setUser($user)
+            ->setHasBeenExported(true)
+            ->setExportedPlaylistId('abc123')
+            ->setExportedPlaylistUrl('http://urltest')
+        ;
+
+        $this->playlistRepositoryMock
+            ->expects($this->once())
+            ->method('save')
+            ->with($playlist, true)
+        ;
+
+        $this->playlistExportService->rollbackExport($playlist, $user);
     }
 }

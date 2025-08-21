@@ -208,7 +208,12 @@
         "connect_with_spotify": "Sign in with Spotify",
         "connect_with_soundcloud": "Sign in with SoundCloud",
         "terms_notice": "By logging in, you agree to our",
-        "terms_link": "Terms of service"
+        "terms_link": "Terms of service",
+        "error": {
+            "oauth_missing_code": "Authentication failed: missing authorization code. Please try again.",
+            "oauth_callback_failed": "Authentication failed: callback error. Please try again.",
+            "oauth_generic": "Authentication failed. Please try again."
+        }
     },
     "common": {
         "cancel": "Cancel",
@@ -634,18 +639,12 @@
                 "already_exported": "This playlist has already been exported (free plan limitation)"
             },
             "error": {
-                "load_platforms": "Error loading available platforms",
-                "network_error": "Network error during export",
-                "user_not_connected": "You are not connected to this platform",
-                "playlist_not_found": "Playlist not found",
                 "export_failed": "Playlist export failed",
-                "no_songs": "The playlist contains no songs",
-                "no_platform_available": "No platform available for export",
-                "token_expired": "Session expired, please reconnect",
-                "token_refresh_failed": "Unable to refresh session",
-                "no_refresh_token": "Session expired. Please reconnect to get a new token.",
-                "youtube_permissions": "Insufficient YouTube permissions. Please reconnect and accept all permissions.",
-                "free_user_limit_reached": "You have already exported this playlist. With the free plan, you can only export once per playlist."
+                "unexpected_error": "An unexpected error occurred during playlist export.",
+                "not_owner": "You are not the owner of this playlist.",
+                "subscription_required": "A subscription is required to export this playlist.",
+                "free_user_limit_reached": "You have already exported this playlist. With the free plan, you can only export once per playlist.",
+                "invalid_response": "Server error during export. Please try again."
             },
             "success": "Playlist exported successfully!",
             "confirmation": {

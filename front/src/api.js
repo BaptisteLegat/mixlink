@@ -167,7 +167,15 @@ export async function apiExportPlaylist(playlistId, platform) {
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+            errorData = await response.json();
+        } catch {
+            const error = new Error('Server returned an invalid response');
+            error.translationKey = 'playlist.export.error.invalid_response';
+            throw error;
+        }
+
         const error = new Error('Failed to export playlist');
         if (errorData.error) {
             error.translationKey = errorData.error;
@@ -175,5 +183,14 @@ export async function apiExportPlaylist(playlistId, platform) {
         throw error;
     }
 
-    return response.json();
+    let result;
+    try {
+        result = await response.json();
+    } catch {
+        const error = new Error('Server returned an invalid success response');
+        error.translationKey = 'playlist.export.error.invalid_response';
+        throw error;
+    }
+
+    return result;
 }

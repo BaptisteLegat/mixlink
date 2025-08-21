@@ -122,11 +122,15 @@ class GoogleExportService implements ExportServiceInterface
                 }
 
                 try {
-                    $this->addVideoToPlaylist($provider, $playlistId, $videoId);
-                    ++$exportedTracks;
+                    $success = $this->addVideoToPlaylist($provider, $playlistId, $videoId);
+                    if ($success) {
+                        ++$exportedTracks;
+                    } else {
+                        ++$failedTracks;
+                    }
 
-                    // To avoid hitting YouTube API rate limits, we add a delay after each successful track addition
-                    if ($exportedTracks < $songs->count()) {
+                    // To avoid hitting YouTube API rate limits, we add a delay after each track addition
+                    if (($exportedTracks + $failedTracks) < $songs->count()) {
                         usleep(500000); // 0.5 seconds delay
                     }
                 } catch (RuntimeException $e) {
@@ -173,7 +177,7 @@ class GoogleExportService implements ExportServiceInterface
         return $firstItem['id']['videoId'] ?? null;
     }
 
-    private function addVideoToPlaylist(Provider $provider, string $playlistId, string $videoId): void
+    private function addVideoToPlaylist(Provider $provider, string $playlistId, string $videoId): bool
     {
         $maxRetries = 3;
         $retryDelay = 1; // 1 second between retries
@@ -200,18 +204,22 @@ class GoogleExportService implements ExportServiceInterface
                     ]
                 );
 
-                return;
+                return true;
             } catch (RuntimeException $e) {
                 // Log the original error message from YouTube API
                 $this->logger->error("YouTube API Error (attempt $attempt/$maxRetries): ".$e->getMessage());
 
-                // If this is the last attempt, rethrow the exception
-                if ($attempt === $maxRetries) {
-                    // Handle specific YouTube API errors
-                    if (str_contains($e->getMessage(), '409')) {
-                        throw new RuntimeException('YouTube API conflict (409): '.$e->getMessage());
-                    }
+                // Handle specific YouTube API errors that shouldn't cause a complete failure
+                if (str_contains($e->getMessage(), '409')) {
+                    // 409 conflict often means the video is already in the playlist or duplicate operation
+                    // This is not a critical error, so we can consider it successful
+                    $this->logger->warning('YouTube API conflict (409) - video possibly already in playlist or duplicate operation: '.$e->getMessage());
 
+                    return true; // Consider as successful since the video is in the playlist
+                }
+
+                // If this is the last attempt, rethrow the exception for other errors
+                if ($attempt === $maxRetries) {
                     if (str_contains($e->getMessage(), '403')) {
                         throw new RuntimeException('YouTube API access denied (403): '.$e->getMessage());
                     }
@@ -225,6 +233,9 @@ class GoogleExportService implements ExportServiceInterface
                 $retryDelay *= 2;
             }
         }
+
+        // This should never be reached, but just in case
+        return false;
     }
 
     /**

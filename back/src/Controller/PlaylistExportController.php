@@ -141,8 +141,12 @@ class PlaylistExportController extends AbstractController
         } catch (InvalidArgumentException $e) {
             return $this->handleInvalidArgumentException($e, $playlist, $platform);
         } catch (RuntimeException $e) {
+            $this->playlistExportService->rollbackExport($playlist, $user);
+
             return $this->handleRuntimeException($e, $playlist, $platform);
         } catch (Exception $e) {
+            $this->playlistExportService->rollbackExport($playlist, $user);
+
             return $this->handleUnexpectedException($e, $playlist, $platform);
         }
     }
@@ -150,17 +154,17 @@ class PlaylistExportController extends AbstractController
     private function validateExportRequest(Playlist $playlist, User $user): ?JsonResponse
     {
         if ($playlist->getUser() !== $user) {
-            return new JsonResponse(['error' => 'playlist.export.not_owner'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'playlist.export.error.not_owner'], Response::HTTP_FORBIDDEN);
         }
 
         $subscription = $user->getSubscription();
         if (null === $subscription || !$subscription->isActive()) {
-            return new JsonResponse(['error' => 'playlist.export.subscription_required'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'playlist.export.error.subscription_required'], Response::HTTP_FORBIDDEN);
         }
 
         $isFreePlan = Plan::FREE === $subscription->getPlan()?->getName();
         if ($isFreePlan && $playlist->hasBeenExported()) {
-            return new JsonResponse(['error' => 'playlist.export.free_user_limit_reached'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'playlist.export.error.free_user_limit_reached'], Response::HTTP_FORBIDDEN);
         }
 
         return null;
@@ -205,7 +209,7 @@ class PlaylistExportController extends AbstractController
             'trace' => $e->getTraceAsString(),
         ]);
 
-        return new JsonResponse(['error' => 'playlist.export.failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new JsonResponse(['error' => 'playlist.export.error.export_failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     private function handleUnexpectedException(Exception $e, Playlist $playlist, string $platform): JsonResponse
@@ -217,6 +221,6 @@ class PlaylistExportController extends AbstractController
             'trace' => $e->getTraceAsString(),
         ]);
 
-        return new JsonResponse(['error' => 'playlist.export.unexpected_error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new JsonResponse(['error' => 'playlist.export.error.unexpected_error'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

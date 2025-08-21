@@ -175,7 +175,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.not_owner', $data['error']);
+        $this->assertEquals('playlist.export.error.not_owner', $data['error']);
     }
 
     public function testExportPlaylistNoSubscription(): void
@@ -193,7 +193,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.subscription_required', $data['error']);
+        $this->assertEquals('playlist.export.error.subscription_required', $data['error']);
     }
 
     public function testExportPlaylistInactiveSubscription(): void
@@ -211,7 +211,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.subscription_required', $data['error']);
+        $this->assertEquals('playlist.export.error.subscription_required', $data['error']);
     }
 
     public function testExportPlaylistFreeUserLimitReached(): void
@@ -229,7 +229,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.free_user_limit_reached', $data['error']);
+        $this->assertEquals('playlist.export.error.free_user_limit_reached', $data['error']);
     }
 
     public function testExportPlaylistFreeUserSuccess(): void
@@ -308,7 +308,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.failed', $data['error']);
+        $this->assertEquals('playlist.export.error.export_failed', $data['error']);
     }
 
     public function testExportPlaylistGenericException(): void
@@ -331,7 +331,7 @@ class PlaylistExportControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(500);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('playlist.export.unexpected_error', $data['error']);
+        $this->assertEquals('playlist.export.error.unexpected_error', $data['error']);
     }
 
     public function testExportPlaylistNotFound(): void

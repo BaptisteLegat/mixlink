@@ -356,7 +356,7 @@ class GoogleExportServiceTest extends TestCase
         ;
 
         $this->tokenManagerMock
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(4))
             ->method('getValidAccessToken')
             ->willReturn('token')
         ;
@@ -386,22 +386,26 @@ class GoogleExportServiceTest extends TestCase
             ],
         ]);
 
+        $this->loggerMock
+            ->expects($this->once())
+            ->method('warning')
+            ->with($this->stringContains('YouTube API conflict (409)'))
+        ;
+
         $this->httpClientMock
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(3))
             ->method('request')
             ->willReturnOnConsecutiveCalls(
                 $createPlaylistResponse,
                 $searchVideoResponse,
-                $addVideoErrorResponse,
-                $addVideoErrorResponse,
                 $addVideoErrorResponse
             )
         ;
 
         $result = $this->googleExportService->exportPlaylist($playlist, $user);
 
-        $this->assertEquals(0, $result->exportedTracks);
-        $this->assertEquals(1, $result->failedTracks);
+        $this->assertEquals(1, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
         $this->assertEquals('google', $result->platform);
     }
 
@@ -1115,5 +1119,256 @@ class GoogleExportServiceTest extends TestCase
         $this->expectExceptionMessage('Failed to refresh token and retry request: YouTube API request failed (400): Invalid playlist data');
 
         $this->googleExportService->exportPlaylist($playlist, $user);
+    }
+
+    public function testExportPlaylistWithErrorMissingMessage(): void
+    {
+        $provider = new Provider()
+            ->setName('google')
+            ->setAccessToken('token')
+        ;
+
+        $user = new User()->addProvider($provider);
+
+        $playlist = new Playlist()->setName('Test Playlist');
+
+        $this->tokenManagerMock
+            ->expects($this->exactly(2))
+            ->method('getValidAccessToken')
+            ->willReturn('token')
+        ;
+
+        $errorResponse = $this->createMock(ResponseInterface::class);
+        $errorResponse->method('getStatusCode')->willReturn(Response::HTTP_BAD_REQUEST);
+        $errorResponse->method('toArray')->willReturn([
+            'error' => [
+                'errors' => [
+                    ['reason' => 'invalid', 'message' => 'Invalid parameter'],
+                ],
+            ],
+        ]);
+
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($errorResponse)
+        ;
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('YouTube API request failed (400): [{"reason":"invalid","message":"Invalid parameter"}]');
+
+        $this->googleExportService->exportPlaylist($playlist, $user);
+    }
+
+    public function testExportPlaylistWithErrorNoErrorStructure(): void
+    {
+        $provider = new Provider()
+            ->setName('google')
+            ->setAccessToken('token')
+        ;
+
+        $user = new User()->addProvider($provider);
+
+        $playlist = new Playlist()->setName('Test Playlist');
+
+        $this->tokenManagerMock
+            ->expects($this->exactly(2))
+            ->method('getValidAccessToken')
+            ->willReturn('token')
+        ;
+
+        $errorResponse = $this->createMock(ResponseInterface::class);
+        $errorResponse->method('getStatusCode')->willReturn(Response::HTTP_BAD_REQUEST);
+        $errorResponse->method('toArray')->willReturn([
+            'status' => 'error',
+        ]);
+
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($errorResponse)
+        ;
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('YouTube API request failed (400): Unknown error');
+
+        $this->googleExportService->exportPlaylist($playlist, $user);
+    }
+
+    public function testExportPlaylistWithSongMissingTitle(): void
+    {
+        $provider = new Provider()
+            ->setName('google')
+            ->setAccessToken('token')
+        ;
+
+        $user = new User()->addProvider($provider);
+
+        $playlistId = 'PLrAVdGVsb4Q1234567890';
+
+        $song = new Song()
+            ->setArtists('Test Artist')
+        ;
+
+        $playlist = new Playlist()
+            ->setName('Test Playlist')
+            ->addSong($song)
+        ;
+
+        $this->tokenManagerMock
+            ->expects($this->exactly(2))
+            ->method('getValidAccessToken')
+            ->willReturn('token')
+        ;
+
+        $createPlaylistResponse = $this->createMock(ResponseInterface::class);
+        $createPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $createPlaylistResponse->method('toArray')->willReturn([
+            'id' => $playlistId,
+        ]);
+
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($createPlaylistResponse)
+        ;
+
+        $result = $this->googleExportService->exportPlaylist($playlist, $user);
+
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+    }
+
+    public function testExportPlaylistWithSongMissingArtists(): void
+    {
+        $provider = new Provider()
+            ->setName('google')
+            ->setAccessToken('token')
+        ;
+
+        $user = new User()->addProvider($provider);
+
+        $playlistId = 'PLrAVdGVsb4Q1234567890';
+
+        $song = new Song()
+            ->setTitle('Test Song')
+        ;
+
+        $playlist = new Playlist()
+            ->setName('Test Playlist')
+            ->addSong($song)
+        ;
+
+        $this->tokenManagerMock
+            ->expects($this->exactly(2))
+            ->method('getValidAccessToken')
+            ->willReturn('token')
+        ;
+
+        $createPlaylistResponse = $this->createMock(ResponseInterface::class);
+        $createPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $createPlaylistResponse->method('toArray')->willReturn([
+            'id' => $playlistId,
+        ]);
+
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($createPlaylistResponse)
+        ;
+
+        $result = $this->googleExportService->exportPlaylist($playlist, $user);
+
+        $this->assertEquals(0, $result->exportedTracks);
+        $this->assertEquals(1, $result->failedTracks);
+    }
+
+    public function testExportPlaylistWithMultipleSongsUsesDelay(): void
+    {
+        $provider = new Provider()
+            ->setName('google')
+            ->setAccessToken('token')
+        ;
+
+        $user = new User()->addProvider($provider);
+
+        $playlistId = 'PLrAVdGVsb4Q1234567890';
+        $videoId1 = 'dQw4w9WgXcQ';
+        $videoId2 = 'abc123defg';
+
+        $song1 = new Song()
+            ->setTitle('Song 1')
+            ->setArtists('Artist 1')
+        ;
+
+        $song2 = new Song()
+            ->setTitle('Song 2')
+            ->setArtists('Artist 2')
+        ;
+
+        $playlist = new Playlist()
+            ->setName('Test Playlist')
+            ->addSong($song1)
+            ->addSong($song2)
+        ;
+
+        $this->tokenManagerMock
+            ->expects($this->exactly(6))
+            ->method('getValidAccessToken')
+            ->willReturn('token')
+        ;
+
+        $createPlaylistResponse = $this->createMock(ResponseInterface::class);
+        $createPlaylistResponse->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $createPlaylistResponse->method('toArray')->willReturn([
+            'id' => $playlistId,
+        ]);
+
+        $searchVideoResponse1 = $this->createMock(ResponseInterface::class);
+        $searchVideoResponse1->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $searchVideoResponse1->method('toArray')->willReturn([
+            'items' => [
+                [
+                    'id' => ['videoId' => $videoId1],
+                    'snippet' => ['title' => 'Song 1'],
+                ],
+            ],
+        ]);
+
+        $searchVideoResponse2 = $this->createMock(ResponseInterface::class);
+        $searchVideoResponse2->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $searchVideoResponse2->method('toArray')->willReturn([
+            'items' => [
+                [
+                    'id' => ['videoId' => $videoId2],
+                    'snippet' => ['title' => 'Song 2'],
+                ],
+            ],
+        ]);
+
+        $addVideoResponse1 = $this->createMock(ResponseInterface::class);
+        $addVideoResponse1->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $addVideoResponse1->method('toArray')->willReturn([]);
+
+        $addVideoResponse2 = $this->createMock(ResponseInterface::class);
+        $addVideoResponse2->method('getStatusCode')->willReturn(Response::HTTP_OK);
+        $addVideoResponse2->method('toArray')->willReturn([]);
+
+        $this->httpClientMock
+            ->expects($this->exactly(5))
+            ->method('request')
+            ->willReturnOnConsecutiveCalls(
+                $createPlaylistResponse,
+                $searchVideoResponse1,
+                $addVideoResponse1,
+                $searchVideoResponse2,
+                $addVideoResponse2
+            )
+        ;
+
+        $result = $this->googleExportService->exportPlaylist($playlist, $user);
+
+        $this->assertEquals(2, $result->exportedTracks);
+        $this->assertEquals(0, $result->failedTracks);
     }
 }

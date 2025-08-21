@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Plan;
 use App\Entity\Playlist;
 use App\Entity\User;
+use App\Repository\PlaylistRepository;
 use App\Service\Export\ExportServiceFactory;
 use App\Service\Export\Model\ExportResult;
 use Exception;
@@ -17,6 +19,7 @@ class PlaylistExportService
         #[Autowire(service: ExportServiceFactory::class)]
         private ExportServiceFactory $exportServiceFactory,
         private LoggerInterface $logger,
+        private PlaylistRepository $playlistRepository,
     ) {
     }
 
@@ -58,5 +61,19 @@ class PlaylistExportService
     public function getSupportedPlatforms(): array
     {
         return array_keys($this->exportServiceFactory->getAllServices());
+    }
+
+    public function rollbackExport(Playlist $playlist, User $user): void
+    {
+        $subscription = $user->getSubscription();
+        $isFreePlan = Plan::FREE === $subscription?->getPlan()?->getName();
+
+        if ($isFreePlan) {
+            $playlist->setHasBeenExported(false);
+            $playlist->setExportedPlaylistId(null);
+            $playlist->setExportedPlaylistUrl(null);
+
+            $this->playlistRepository->save($playlist, true);
+        }
     }
 }

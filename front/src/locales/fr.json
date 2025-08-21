@@ -208,7 +208,12 @@
         "connect_with_spotify": "Se connecter avec Spotify",
         "connect_with_soundcloud": "Se connecter avec SoundCloud",
         "terms_notice": "En vous connectant, vous acceptez nos",
-        "terms_link": "Conditions d'utilisation"
+        "terms_link": "Conditions d'utilisation",
+        "error": {
+            "oauth_missing_code": "Échec de l'authentification : code d'autorisation manquant. Veuillez réessayer.",
+            "oauth_callback_failed": "Échec de l'authentification : erreur de callback. Veuillez réessayer.",
+            "oauth_generic": "Échec de l'authentification. Veuillez réessayer."
+        }
     },
     "common": {
         "cancel": "Annuler",
@@ -638,18 +643,12 @@
                 "already_exported": "Cette playlist a déjà été exportée (limitation plan gratuit)"
             },
             "error": {
-                "load_platforms": "Erreur lors du chargement des plateformes disponibles",
-                "network_error": "Erreur de réseau lors de l'export",
-                "user_not_connected": "Vous n'êtes pas connecté à cette plateforme",
-                "playlist_not_found": "Playlist introuvable",
                 "export_failed": "Échec de l'export de la playlist",
-                "no_songs": "La playlist ne contient aucun morceau",
-                "no_platform_available": "Aucune plateforme disponible pour l'export",
-                "token_expired": "Session expirée, veuillez vous reconnecter",
-                "token_refresh_failed": "Impossible de renouveler la session",
-                "no_refresh_token": "Session expirée. Veuillez vous reconnecter pour obtenir un nouveau token.",
-                "youtube_permissions": "Permissions YouTube insuffisantes. Veuillez vous reconnecter et accepter toutes les permissions.",
-                "free_user_limit_reached": "Vous avez déjà exporté cette playlist. Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist."
+                "unexpected_error": "Une erreur inattendue s'est produite lors de l'export de la playlist.",
+                "not_owner": "Vous n'êtes pas le propriétaire de cette playlist.",
+                "subscription_required": "Un abonnement est requis pour exporter cette playlist.",
+                "free_user_limit_reached": "Vous avez déjà exporté cette playlist. Avec le plan gratuit, vous ne pouvez exporter qu'une seule fois par playlist.",
+                "invalid_response": "Erreur serveur lors de l'export. Veuillez réessayer."
             },
             "success": "Playlist exportée avec succès !",
             "confirmation": {
