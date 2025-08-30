@@ -276,6 +276,15 @@ export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
 
 ---
 
+## Roadmap
+
+Consultez notre feuille de route pour connaître les prochaines fonctionnalités et améliorations :
+
+- **[Roadmap complète](ROADMAP.md)** - Vision détaillée sur 12 mois
+- **[Roadmap exécutif](ROADMAP_EXECUTIF.md)** - Plan d'action pour les 6 prochains mois
+
+---
+
 ## Auteurs
 
 - **Baptiste Legat** - Développeur
