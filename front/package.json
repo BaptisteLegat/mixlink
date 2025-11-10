@@ -16,16 +16,16 @@
     "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
-    "@vueuse/core": "^13.7.0",
+    "@vueuse/core": "^14.0.0",
     "@vueuse/motion": "^3.0.3",
     "autoprefixer": "^10.4.21",
-    "cssnano": "^7.1.0",
-    "element-plus": "^2.10.7",
-    "pinia": "^3.0.3",
-    "vue": "^3.5.18",
-    "vue-i18n": "^11.1.11",
+    "cssnano": "^7.1.2",
+    "element-plus": "^2.11.7",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.24",
+    "vue-i18n": "^11.1.12",
     "vue-material-design-icons": "^5.3.1",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
